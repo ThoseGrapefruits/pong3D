@@ -1,5 +1,7 @@
 #lang racket
 
+;; to do next: update ball position
+
 (require
   pict3d
   pict3d/universe
@@ -91,6 +93,7 @@
    (update-player-position s n t)
    n t))
 
+; on-key runs after on-frame, so we should respond immediately to any user input
 (define (on-key s n t k)
     (update-player-position ; respond immediately to input
      (state (state-ball s)
@@ -108,7 +111,7 @@
 (big-bang3d
    (state (ball (dir 1 0 0)
                 (pos 0 0 0))
-          (playfer empty 0)
+          (player empty 0)
           (last 0 0))
    #:frame-delay (/ 1000 60)
    #:on-draw on-draw
