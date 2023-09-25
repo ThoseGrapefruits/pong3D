@@ -199,14 +199,6 @@
     update-player-position)
    s))
 
-(define (on-frame-after s n t)
-  (state
-   (state-ball s)
-   (update-last s n t)
-   (state-opponent s)
-   (state-player s)))
-
-; on-key runs after on-frame, so we should respond immediately to any user input
 (define (on-key s n t k)
   (update-key-pressed s k #t))
 
