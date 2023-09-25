@@ -19,13 +19,16 @@
 
 ;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define BALL-ACCELERATION 257/256)
+(define BALL-ACCELERATION 0.00015)
 (define BALL-RADIUS 3/128)
-(define BALL-SPEED 1/512)
+(define BALL-SPEED 0.001)
 (define BUMPER-SCALE (dir 1/64 3/32 1/32))
+(define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
 (define PLAYER-X 3/4)
 (define OPPONENT-X -3/4)
+
+;; TODO: collision by raytrace
 
 ;; DATA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -54,23 +57,35 @@
         [ball-dir (ball-direction (state-ball s))])
     (let ([ball-pos-prediction (ball-position (state-ball (update-ball-position s)))])
       (cond
+        ; opponent collision
         [(and (< (dir-dx ball-dir) 0)
-              (< (- (pos-x ball-pos-prediction) CONTACT-BUFFER) OPPONENT-X))
+              (< (- (pos-x ball-pos-prediction) CONTACT-BUFFER) OPPONENT-X)
+              (within? (contact-offset-y (state-ball s)
+                                         (opponent-y opp))
+                       (- 0 (dir-dy BUMPER-SCALE))
+                       (dir-dy BUMPER-SCALE)))
          (struct-copy
           state s
           [ball (struct-copy
                  ball (state-ball s)
                  [direction (dir-scale (dir-reflect ball-dir +x)
-                                       BALL-ACCELERATION)])])]
- 
+                                       (get-ball-acceleration s))])])]
+
+        ; player collision
         [(and (> (dir-dx ball-dir) 0)
-              (> (+ (pos-x ball-pos-prediction) CONTACT-BUFFER) PLAYER-X))
+              (within? (+ (pos-x ball-pos-prediction) CONTACT-BUFFER)
+                       (- PLAYER-X CONTACT-BUFFER)
+                       PLAYER-X)
+              (within? (contact-offset-y (state-ball s)
+                                         (player-y plr))
+                       (- 0 (dir-dy BUMPER-SCALE))
+                       (dir-dy BUMPER-SCALE)))
          (struct-copy
           state s
           [ball (struct-copy
                  ball (state-ball s)
                  [direction (dir-scale (dir-reflect ball-dir +x)
-                                       BALL-ACCELERATION)])])]
+                                       (get-ball-acceleration s))])])]
         
         [else s]))))
 
@@ -126,15 +141,23 @@
 
 ; Get the y-offset between the center a bumper and a ball
 (define (contact-offset-y bll y)
-  (let ([bumper-center (+ y (dir-dy BUMPER-SCALE))])
-    (- bumper-center (pos-y (ball-position bll)))))
+    (- (pos-y (ball-position bll)) y))
+
+(define (get-ball-acceleration s)
+  (+ 1 (* BALL-ACCELERATION (state-dt s))))
+
+(define (within? x low high)
+  (cond
+    [(< high low) error("low must be less than high")]
+    [else (and (<= x high)
+               (>= x low))]))
 
 ;; RENDER ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(current-material (material #:ambient 0.01
-                            #:diffuse 0.5
-                            #:specular 0.8
-                            #:roughness 0.2))
+(current-material (material #:ambient 0.1
+                            #:diffuse 3
+                            #:specular 0.3
+                            #:roughness 0.3))
 
 (define render-axes
   (combine (with-emitted (emitted "cyan" 2)
@@ -188,10 +211,10 @@
 
 ; on-key runs after on-frame, so we should respond immediately to any user input
 (define (on-key s n t k)
-  (update-key-pressed (state-player s) k #t))
+  (update-key-pressed s k #t))
 
 (define (on-release s n t k)
-  (update-key-pressed (state-player s) k #f))
+  (update-key-pressed s k #f))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
