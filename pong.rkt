@@ -1,29 +1,34 @@
 #lang racket
 
-;; to do next: update ball position
-
 (require
   pict3d
   pict3d/universe
   racket/set)
 
 ;
-;
+;                                  ═══
 ;
 ;     ^                               
 ;    /                             ╭─╮
 ;   x                              ╰─╯
 ;  /                                                                        ^
 ; v                                                                         |
-;                                                                           z 
-;                                                                           |
+;                               ╓───────╖                                   z 
+;                               ╙───────╜                                   |
 ;                             <=====y=====>                                 v
+
+;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define PLAYER-X 3/4)
+(define OPPONENT-X -3/4)
 
 ;; DATA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (struct ball (direction position))
 
-(struct last (n t))
+(struct last [n t])
+
+(struct opponent (y))
 
 (struct player (pressed y))
 
@@ -32,35 +37,43 @@
                 [else (set-remove (player-pressed p) key)])
           (player-y p)))
 
-(struct state (ball player last))
+(struct state (ball last opponent player))
 
 ;; STATE ACCESSORS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; state -> Number
 (define (state-last-t s) (last-t (state-last s)))
 
+; state Number -> Number
 (define (state-last-dt s t) (- t (state-last-t s)))
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (update-player-position s n t)
-  (let ([pl (state-player s)]
-        [dt (state-last-dt s t)])
+(define (update-ball s n t)
+  (let ([b (state-ball s)])
+    (let ([ball-dir (ball-direction b)])
+      (ball ball-dir
+            (pos+ (ball-position b)
+                  (dir-scale ball-dir (* t 0.00001)))))))
+
+(define (update-opponent s n t) (state-opponent s))
+
+(define (update-player s n t)
+  (update-player-position s n t (state-player s)))
+
+(define (update-player-position s n t pl)
+  (let ([dt (state-last-dt s t)])
     (let ([pressed (player-pressed (state-player s))])
       (cond
         [(set-member? pressed "left")
-         (state (state-ball s)
-                (player pressed (+ (* dt -1/512) (player-y pl)))
-                (state-last s))]
+         (player pressed
+                 (max -1/2 (+ (* dt -1/512) (player-y pl))))]
         [(set-member? pressed "right")
-         (state (state-ball s)
-                (player pressed (+ (* dt 1/512) (player-y pl)))
-                (state-last s))]
-        [else s]))))
+         (player pressed
+                 (min 1/2 (+ (* dt 1/512) (player-y pl))))]
+        [else pl]))))
 
-(define (update-tickers s n t)
-  (state (state-ball s)
-         (state-player s)
-         (last n t)))
+(define (update-last s n t) (last n t))
 
 ;; RENDER ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -69,12 +82,27 @@
                             #:specular 0.8
                             #:roughness 0.2))
 
+(define render-axes
+  (combine (with-emitted (emitted "cyan" 2)
+             (arrow origin -x))
+           (with-emitted (emitted "magenta" 2)
+             (arrow origin -y))
+           (with-emitted (emitted "yellow" 2)
+             (arrow origin -z))))
+
 (define (render-ball s n dt)
-  (sphere (ball-position (state-ball s)) 1/16))
+  (with-emitted (emitted "white" 1.5)
+    (sphere (ball-position (state-ball s)) 3/128)))0
+
+(define (render-opponent s n dt)
+  (with-emitted (emitted 100 60 10 0.03)
+    (rectangle (pos OPPONENT-X (opponent-y (state-opponent s)) 0)
+               (dir 1/64 3/32 1/32))))
 
 (define (render-player s n dt)
-  (rectangle (pos 3/4 (player-y (state-player s)) 0)
-             (dir 1/64 3/32 1/32)))
+  (with-emitted (emitted "cyan" 1.5)
+    (rectangle (pos PLAYER-X (player-y (state-player s)) 0)
+               (dir 1/64 3/32 1/32))))
 
 (define (render-lights+camera s n dt)
   (combine (light (pos 0 1 2) (emitted "Thistle"))
@@ -84,36 +112,49 @@
 ;; EVENT HANDLERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (on-draw s n t)
-  (combine (render-player s n t)
+  (combine (render-opponent s n t)
+           (render-player s n t)
            (render-ball s n t)
            (render-lights+camera s n t)))
 
 (define (on-frame s n t)
-  (update-tickers
-   (update-player-position s n t)
-   n t))
+  (on-frame-after (state
+   (update-ball s n t)
+   (state-last s)
+   (update-opponent s n t)
+   (update-player s n t)) n t))
+
+(define (on-frame-after s n t)
+  (state
+   (state-ball s)
+   (update-last s n t)
+   (state-opponent s)
+   (state-player s)))
 
 ; on-key runs after on-frame, so we should respond immediately to any user input
 (define (on-key s n t k)
-    (update-player-position ; respond immediately to input
-     (state (state-ball s)
-            (player-update-key-pressed (state-player s) k #t)
-            (state-last s))
-     n t))
+  (state (state-ball s)
+         (state-last s)
+         (state-opponent s)
+         (update-player-position
+          s n t
+          (player-update-key-pressed (state-player s) k #t))))
 
 (define (on-release s n t k)
     (state (state-ball s)
-           (player-update-key-pressed (state-player s) k #f)
-           (state-last s)))
+           (state-last s)
+           (state-opponent s)
+           (player-update-key-pressed (state-player s) k #f)))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (big-bang3d
    (state (ball (dir 1 0 0)
                 (pos 0 0 0))
-          (player empty 0)
-          (last 0 0))
-   #:frame-delay (/ 1000 60)
+          (last 0 0)
+          (opponent 0)
+          (player empty 0))
+   #:frame-delay (/ 1000 120)
    #:on-draw on-draw
    #:on-frame on-frame
    #:on-key on-key
