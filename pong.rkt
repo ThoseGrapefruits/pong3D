@@ -25,8 +25,10 @@
 (define BUMPER-SCALE (dir 1/64 3/32 1/32))
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
-(define PLAYER-X 3/4)
 (define OPPONENT-X -3/4)
+(define PLAYER-X 3/4)
+(define SCREEN-WIDTH 1920)
+(define SCREEN-HEIGHT 1080)
 
 ;; TODO: collision by raytrace
 
@@ -122,20 +124,15 @@
   (let ([pressed (player-pressed (state-player s))])
     (cond
       [(set-member? pressed "left")
-       (struct-copy
-        state s
-        [player (struct-copy
-                player (state-player s)
-                [y (max -1/2 (+ (* (state-dt s) -1/512) (player-y (state-player s))))])])]
+       (set-player-position s (max -1/2 (+ (* (state-dt s) -1/512) (player-y (state-player s)))))]
       [(set-member? pressed "right")
-       (struct-copy
-        state s
-        [player (struct-copy
-                 player (state-player s)
-                [y (min 1/2 (+ (* (state-dt s) 1/512) (player-y (state-player s))))])])]
+       (set-player-position s (min 1/2 (+ (* (state-dt s) 1/512) (player-y (state-player s)))))]
       [else s])))
 
 (define (update-last s n t) (last n t))
+
+(define (set-player-position s y)
+  (struct-copy state s [player (struct-copy player (state-player s) [y y])]))
 
 ;; CALCULATION UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -213,8 +210,14 @@
 (define (on-key s n t k)
   (update-key-pressed s k #t))
 
+(define (on-mouse s n t x y e)
+  (set-player-position s (- (* 1.6 (/ x SCREEN-WIDTH)) 0.8)))
+
 (define (on-release s n t k)
   (update-key-pressed s k #f))
+
+(define (stop-state? s n t)
+  (set-member? (player-pressed (state-player s)) "escape"))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -226,10 +229,13 @@
           (opponent 0)      ; opponent
           (player empty 0)  ; player
           0)                ; t
-   #:frame-delay (/ 1000 119)
+   #:frame-delay (/ 1000 59.9)
+   #:name "Pong3D — Racket"
    #:on-draw on-draw
    #:on-frame on-frame
    #:on-key on-key
+   #:on-mouse on-mouse
    #:on-release on-release
-   #:width 1920
-   #:height 1080)
+   #:stop-state? stop-state?
+   #:width SCREEN-WIDTH
+   #:height SCREEN-HEIGHT)
