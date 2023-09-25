@@ -19,6 +19,11 @@
 
 ;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define BALL-ACCELERATION 257/256)
+(define BALL-RADIUS 3/128)
+(define BALL-SPEED 1/512)
+(define BUMPER-SCALE (dir 1/64 3/32 1/32))
+(define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
 (define PLAYER-X 3/4)
 (define OPPONENT-X -3/4)
 
@@ -26,54 +31,103 @@
 
 (struct ball (direction position))
 
-(struct last [n t])
-
 (struct opponent (y))
 
 (struct player (pressed y))
 
-(define (player-update-key-pressed p key is-pressed)
-  (player (cond [is-pressed (set-add (player-pressed p) key)]
-                [else (set-remove (player-pressed p) key)])
-          (player-y p)))
-
-(struct state (ball last opponent player))
-
-;; STATE ACCESSORS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; state -> Number
-(define (state-last-t s) (last-t (state-last s)))
-
-; state Number -> Number
-(define (state-last-dt s t) (- t (state-last-t s)))
+(struct state (ball dt n opponent player t))
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (update-ball s n t)
-  (let ([b (state-ball s)])
+(define (update-ball s)
+  (let ([b (state-ball s)]
+        [dt (state-dt s)])
     (let ([ball-dir (ball-direction b)])
-      (ball ball-dir
-            (pos+ (ball-position b)
-                  (dir-scale ball-dir (* t 0.00001)))))))
+      (let ([ball-pos-prediction (update-ball-position s)])
+        ((compose1
+          update-ball-direction
+          update-ball-position) s)))))
 
-(define (update-opponent s n t) (state-opponent s))
-
-(define (update-player s n t)
-  (update-player-position s n t (state-player s)))
-
-(define (update-player-position s n t pl)
-  (let ([dt (state-last-dt s t)])
-    (let ([pressed (player-pressed (state-player s))])
+(define (update-ball-direction s)
+  (let ([plr (state-player s)]
+        [opp (state-opponent s)]
+        [ball-dir (ball-direction (state-ball s))])
+    (let ([ball-pos-prediction (ball-position (state-ball (update-ball-position s)))])
       (cond
-        [(set-member? pressed "left")
-         (player pressed
-                 (max -1/2 (+ (* dt -1/512) (player-y pl))))]
-        [(set-member? pressed "right")
-         (player pressed
-                 (min 1/2 (+ (* dt 1/512) (player-y pl))))]
-        [else pl]))))
+        [(and (< (dir-dx ball-dir) 0)
+              (< (- (pos-x ball-pos-prediction) CONTACT-BUFFER) OPPONENT-X))
+         (struct-copy
+          state s
+          [ball (struct-copy
+                 ball (state-ball s)
+                 [direction (dir-scale (dir-reflect ball-dir +x)
+                                       BALL-ACCELERATION)])])]
+ 
+        [(and (> (dir-dx ball-dir) 0)
+              (> (+ (pos-x ball-pos-prediction) CONTACT-BUFFER) PLAYER-X))
+         (struct-copy
+          state s
+          [ball (struct-copy
+                 ball (state-ball s)
+                 [direction (dir-scale (dir-reflect ball-dir +x)
+                                       BALL-ACCELERATION)])])]
+        
+        [else s]))))
+
+(define (update-ball-position s)
+    (struct-copy
+     state s
+     [ball (struct-copy
+            ball (state-ball s)
+            [position
+             (pos+ (ball-position (state-ball s))
+                   (dir-scale (ball-direction (state-ball s))
+                              (* (state-dt s) BALL-SPEED)))])]))
+
+(define (update-counters s n t)
+  (struct-copy state s
+               [dt (- t (state-t s))]
+               [n n]
+               [t t]))
+
+(define (update-key-pressed s key is-pressed)
+  (struct-copy
+   state s
+   [player
+    (struct-copy
+     player (state-player s)
+     [pressed
+      (cond
+        [is-pressed (set-add (player-pressed (state-player s)) key)]
+        [else (set-remove (player-pressed (state-player s)) key)])])]))
+
+(define (update-opponent s) s)
+
+(define (update-player-position s)
+  (let ([pressed (player-pressed (state-player s))])
+    (cond
+      [(set-member? pressed "left")
+       (struct-copy
+        state s
+        [player (struct-copy
+                player (state-player s)
+                [y (max -1/2 (+ (* (state-dt s) -1/512) (player-y (state-player s))))])])]
+      [(set-member? pressed "right")
+       (struct-copy
+        state s
+        [player (struct-copy
+                 player (state-player s)
+                [y (min 1/2 (+ (* (state-dt s) 1/512) (player-y (state-player s))))])])]
+      [else s])))
 
 (define (update-last s n t) (last n t))
+
+;; CALCULATION UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Get the y-offset between the center a bumper and a ball
+(define (contact-offset-y bll y)
+  (let ([bumper-center (+ y (dir-dy BUMPER-SCALE))])
+    (- bumper-center (pos-y (ball-position bll)))))
 
 ;; RENDER ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -92,17 +146,17 @@
 
 (define (render-ball s n dt)
   (with-emitted (emitted "white" 1.5)
-    (sphere (ball-position (state-ball s)) 3/128)))0
+    (sphere (ball-position (state-ball s)) BALL-RADIUS)))0
 
 (define (render-opponent s n dt)
   (with-emitted (emitted 100 60 10 0.03)
     (rectangle (pos OPPONENT-X (opponent-y (state-opponent s)) 0)
-               (dir 1/64 3/32 1/32))))
+               BUMPER-SCALE)))
 
 (define (render-player s n dt)
   (with-emitted (emitted "cyan" 1.5)
     (rectangle (pos PLAYER-X (player-y (state-player s)) 0)
-               (dir 1/64 3/32 1/32))))
+               BUMPER-SCALE)))
 
 (define (render-lights+camera s n dt)
   (combine (light (pos 0 1 2) (emitted "Thistle"))
@@ -118,11 +172,12 @@
            (render-lights+camera s n t)))
 
 (define (on-frame s n t)
-  (on-frame-after (state
-   (update-ball s n t)
-   (state-last s)
-   (update-opponent s n t)
-   (update-player s n t)) n t))
+  ((compose1
+    (λ (s) (update-counters s n t))
+    update-ball
+    update-opponent
+    update-player-position)
+   s))
 
 (define (on-frame-after s n t)
   (state
@@ -133,29 +188,25 @@
 
 ; on-key runs after on-frame, so we should respond immediately to any user input
 (define (on-key s n t k)
-  (state (state-ball s)
-         (state-last s)
-         (state-opponent s)
-         (update-player-position
-          s n t
-          (player-update-key-pressed (state-player s) k #t))))
+  (update-key-pressed (state-player s) k #t))
 
 (define (on-release s n t k)
-    (state (state-ball s)
-           (state-last s)
-           (state-opponent s)
-           (player-update-key-pressed (state-player s) k #f)))
+  (update-key-pressed (state-player s) k #f))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (big-bang3d
-   (state (ball (dir 1 0 0)
+   (state (ball (dir 1 0 0) ; ball
                 (pos 0 0 0))
-          (last 0 0)
-          (opponent 0)
-          (player empty 0))
-   #:frame-delay (/ 1000 120)
+          0                 ; dt
+          0                 ; n
+          (opponent 0)      ; opponent
+          (player empty 0)  ; player
+          0)                ; t
+   #:frame-delay (/ 1000 119)
    #:on-draw on-draw
    #:on-frame on-frame
    #:on-key on-key
-   #:on-release on-release)
+   #:on-release on-release
+   #:width 1920
+   #:height 1080)
