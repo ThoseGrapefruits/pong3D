@@ -29,6 +29,7 @@
 (define PLAYER-X 3/4)
 (define SCREEN-WIDTH 1920)
 (define SCREEN-HEIGHT 1080)
+(define WALL-Y 1)
 
 ;; TODO: collision by raytrace
 
@@ -43,63 +44,6 @@
 (struct state (ball dt n opponent player t))
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (update-ball s)
-  (let ([b (state-ball s)]
-        [dt (state-dt s)])
-    (let ([ball-dir (ball-direction b)])
-      (let ([ball-pos-prediction (update-ball-position s)])
-        ((compose1
-          update-ball-direction
-          update-ball-position) s)))))
-
-(define (update-ball-direction s)
-  (let ([plr (state-player s)]
-        [opp (state-opponent s)]
-        [ball-dir (ball-direction (state-ball s))])
-    (let ([ball-pos-prediction (ball-position (state-ball (update-ball-position s)))])
-      (cond
-        ; opponent collision
-        [(and (< (dir-dx ball-dir) 0)
-              (< (- (pos-x ball-pos-prediction) CONTACT-BUFFER) OPPONENT-X)
-              (within? (contact-offset-y (state-ball s)
-                                         (opponent-y opp))
-                       (- 0 (dir-dy BUMPER-SCALE))
-                       (dir-dy BUMPER-SCALE)))
-         (struct-copy
-          state s
-          [ball (struct-copy
-                 ball (state-ball s)
-                 [direction (dir-scale (dir-reflect ball-dir +x)
-                                       (get-ball-acceleration s))])])]
-
-        ; player collision
-        [(and (> (dir-dx ball-dir) 0)
-              (within? (+ (pos-x ball-pos-prediction) CONTACT-BUFFER)
-                       (- PLAYER-X CONTACT-BUFFER)
-                       PLAYER-X)
-              (within? (contact-offset-y (state-ball s)
-                                         (player-y plr))
-                       (- 0 (dir-dy BUMPER-SCALE))
-                       (dir-dy BUMPER-SCALE)))
-         (struct-copy
-          state s
-          [ball (struct-copy
-                 ball (state-ball s)
-                 [direction (dir-scale (dir-reflect ball-dir +x)
-                                       (get-ball-acceleration s))])])]
-        
-        [else s]))))
-
-(define (update-ball-position s)
-    (struct-copy
-     state s
-     [ball (struct-copy
-            ball (state-ball s)
-            [position
-             (pos+ (ball-position (state-ball s))
-                   (dir-scale (ball-direction (state-ball s))
-                              (* (state-dt s) BALL-SPEED)))])]))
 
 (define (update-counters s n t)
   (struct-copy state s
@@ -117,17 +61,6 @@
       (cond
         [is-pressed (set-add (player-pressed (state-player s)) key)]
         [else (set-remove (player-pressed (state-player s)) key)])])]))
-
-(define (update-opponent s) s)
-
-(define (update-player-position s)
-  (let ([pressed (player-pressed (state-player s))])
-    (cond
-      [(set-member? pressed "left")
-       (set-player-position s (max -1/2 (+ (* (state-dt s) -1/512) (player-y (state-player s)))))]
-      [(set-member? pressed "right")
-       (set-player-position s (min 1/2 (+ (* (state-dt s) 1/512) (player-y (state-player s)))))]
-      [else s])))
 
 (define (update-last s n t) (last n t))
 
@@ -194,9 +127,9 @@
 (define (on-frame s n t)
   ((compose1
     (λ (s) (update-counters s n t))
-    update-ball
-    update-opponent
-    update-player-position)
+    on-frame-ball
+    on-frame-opponent
+    on-frame-player-position)
    s))
 
 (define (on-key s n t k)
@@ -210,6 +143,105 @@
 
 (define (stop-state? s n t)
   (set-member? (player-pressed (state-player s)) "escape"))
+
+;; EVENT HANDLERS — ON-FRAME ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (on-frame-ball s)
+  ((compose1
+    on-frame-ball-direction
+    on-frame-ball-position) s))
+
+(define (on-frame-ball-collision-bumper s)
+  (let ([plr (state-player s)]
+        [opp (state-opponent s)]
+        [bll (state-ball s)])
+    (cond
+      ; opponent collision
+      [(and (< (dir-dx (ball-direction bll)) 0)
+            (< (- (pos-x (ball-position bll)) CONTACT-BUFFER) OPPONENT-X)
+            (within? (contact-offset-y (state-ball s)
+                                       (opponent-y opp))
+                     (- 0 (dir-dy BUMPER-SCALE))
+                     (dir-dy BUMPER-SCALE)))
+       (struct-copy
+        state s
+        [ball (struct-copy
+               ball (state-ball s)
+               [direction (dir-scale (dir-reflect (ball-direction bll) +x)
+                                     (get-ball-acceleration s))])])]
+
+      ; player collision
+      [(and (> (dir-dx (ball-direction bll)) 0)
+            (within? (+ (pos-x (ball-position bll)) CONTACT-BUFFER)
+                     (- PLAYER-X CONTACT-BUFFER)
+                     PLAYER-X)
+            (within? (contact-offset-y (state-ball s)
+                                       (player-y plr))
+                     (- 0 (dir-dy BUMPER-SCALE))
+                     (dir-dy BUMPER-SCALE)))
+       (struct-copy
+        state s
+        [ball (struct-copy
+               ball (state-ball s)
+               [direction (dir-scale (dir-reflect (ball-direction bll) +x)
+                                     (get-ball-acceleration s))])])]
+        
+      [else s])))
+
+
+(define (on-frame-ball-collision-wall s)
+  (let ([plr (state-player s)]
+        [opp (state-opponent s)]
+        [bll (state-ball s)])
+    (cond
+      ; left wall collision
+      [(and (< (dir-dy (ball-direction bll)) 0)
+            (< (pos-y (ball-position bll)) (- 0 (- WALL-Y BALL-RADIUS))))
+       (struct-copy
+        state s
+        [ball (struct-copy
+               ball (state-ball s)
+               [direction (dir-reflect (ball-direction bll) +y)])])]
+         
+      ; right wall collision
+      [(and (> (dir-dy (ball-direction bll)) 0)
+            (> (pos-y (ball-position bll)) (- WALL-Y BALL-RADIUS)))
+       (struct-copy
+        state s
+        [ball (struct-copy
+               ball (state-ball s)
+               [direction (dir-reflect (ball-direction bll) +y)])])]
+      [else s])))
+
+(define (on-frame-ball-direction s)
+  ((compose1
+    on-frame-ball-collision-bumper
+    on-frame-ball-collision-wall) s))
+
+(define (on-frame-ball-position s)
+    (struct-copy
+     state s
+     [ball (struct-copy
+            ball (state-ball s)
+            [position
+             (pos+ (ball-position (state-ball s))
+                   (dir-scale (ball-direction (state-ball s))
+                              (* (state-dt s) BALL-SPEED)))])]))
+
+(define (on-frame-opponent s) s)
+
+(define (on-frame-player-position s)
+  (let ([pressed (player-pressed (state-player s))])
+    (cond
+      [(set-member? pressed "left")
+       (set-player-position
+        s
+        (max -1/2 (- (* (state-dt s) 1/512) (player-y (state-player s)))))]
+      [(set-member? pressed "right")
+       (set-player-position
+        s
+        (min 1/2  (+ (* (state-dt s) 1/512) (player-y (state-player s)))))]
+      [else s])))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
