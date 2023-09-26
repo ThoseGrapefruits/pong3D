@@ -41,17 +41,17 @@
 
 (struct player (pressed y))
 
-(struct state (ball dt n opponent player t))
+(struct state (ball dt n opponent paused? player t))
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (update-counters s n t)
-  (struct-copy state s
-               [dt (- t (state-t s))]
-               [n n]
-               [t t]))
+  (struct-copy state (update-dt s n t) [n n] [t t]))
 
-(define (update-key-pressed s key is-pressed)
+(define (update-dt s n t)
+  (struct-copy state s [dt (- t (state-t s))]))
+
+(define (update-key-pressed s key pressed?)
   (struct-copy
    state s
    [player
@@ -59,7 +59,7 @@
      player (state-player s)
      [pressed
       (cond
-        [is-pressed (set-add (player-pressed (state-player s)) key)]
+        [pressed? (set-add (player-pressed (state-player s)) key)]
         [else (set-remove (player-pressed (state-player s)) key)])])]))
 
 (define (update-last s n t) (last n t))
@@ -132,17 +132,11 @@
     on-frame-player-position)
    s))
 
-(define (on-key s n t k)
-  (update-key-pressed s k #t))
-
 (define (on-mouse s n t x y e)
   (set-player-position s (- (* 1.6 (/ x SCREEN-WIDTH)) 0.8)))
 
-(define (on-release s n t k)
-  (update-key-pressed s k #f))
-
-(define (stop-state? s n t)
-  (set-member? (player-pressed (state-player s)) "escape"))
+(define (pause-state? s n t)
+  (state-paused? s))
 
 ;; EVENT HANDLERS — ON-FRAME ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -169,7 +163,6 @@
                ball (state-ball s)
                [direction (dir-scale (dir-reflect (ball-direction bll) +x)
                                      (get-ball-acceleration s))])])]
-
       ; player collision
       [(and (> (dir-dx (ball-direction bll)) 0)
             (within? (+ (pos-x (ball-position bll)) CONTACT-BUFFER)
@@ -188,7 +181,6 @@
         
       [else s])))
 
-
 (define (on-frame-ball-collision-wall s)
   (let ([plr (state-player s)]
         [opp (state-opponent s)]
@@ -202,7 +194,6 @@
         [ball (struct-copy
                ball (state-ball s)
                [direction (dir-reflect (ball-direction bll) +y)])])]
-         
       ; right wall collision
       [(and (> (dir-dy (ball-direction bll)) 0)
             (> (pos-y (ball-position bll)) (- WALL-Y BALL-RADIUS)))
@@ -243,14 +234,31 @@
         (min 1/2  (+ (* (state-dt s) 1/512) (player-y (state-player s)))))]
       [else s])))
 
+;; EVENT HANDLERS — ON-KEY ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (on-key s n t k)
+  (update-key-pressed
+   (on-key-immediate s k)
+   k #t))
+
+; Immediate reactions to keypresses
+(define (on-key-immediate s k)
+  (cond
+    [(string=? k "escape") (struct-copy state s [paused? (not (state-paused? s))])]
+    [else s]))
+
+(define (on-release s n t k)
+  (update-key-pressed s k #f))
+
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (big-bang3d
-   (state (ball (dir 1 0 0) ; ball
+   (state (ball (dir 1 0.9 0) ; ball
                 (pos 0 0 0))
           0                 ; dt
           0                 ; n
           (opponent 0)      ; opponent
+          #t                ; paused
           (player empty 0)  ; player
           0)                ; t
    #:frame-delay (/ 1000 59.9)
@@ -260,6 +268,6 @@
    #:on-key on-key
    #:on-mouse on-mouse
    #:on-release on-release
-   #:stop-state? stop-state?
+   #:pause-state? pause-state?
    #:width SCREEN-WIDTH
    #:height SCREEN-HEIGHT)
