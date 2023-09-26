@@ -227,11 +227,11 @@
       [(set-member? pressed "left")
        (set-player-position
         s
-        (max -1/2 (- (* (state-dt s) 1/512) (player-y (state-player s)))))]
+        (max -1 (+ (player-y (state-player s)) (* (state-dt s) -1/512))))]
       [(set-member? pressed "right")
        (set-player-position
         s
-        (min 1/2  (+ (* (state-dt s) 1/512) (player-y (state-player s)))))]
+        (min 1  (+ (player-y (state-player s)) (* (state-dt s)  1/512))))]
       [else s])))
 
 ;; EVENT HANDLERS — ON-KEY ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
