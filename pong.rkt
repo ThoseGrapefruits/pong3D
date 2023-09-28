@@ -120,16 +120,6 @@
 
 ;; EVENT HANDLERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: on-frame : State Natural Flonum -> State)
-(define (on-frame s n t)
-  ((compose-n
-    (λ ([s : State]) (update-counters s n t))
-    on-frame-pause
-    on-frame-ball
-    on-frame-opponent
-    on-frame-player-position)
-   s))
-
 (: on-mouse : State Natural Flonum Integer Integer Any -> State)
 (define (on-mouse s n t x y e)
   (set-player-position s (- (* 1.6 (/ x SCREEN-WIDTH)) 0.8)))
@@ -139,6 +129,16 @@
   (State-paused? s))
 
 ;; EVENT HANDLERS — ON-FRAME ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(: on-frame : State Natural Flonum -> State)
+(define (on-frame s n t)
+  ((compose-n
+    (λ ([s : State]) (update-counters s n t))
+    on-frame-pause
+    on-frame-ball
+    on-frame-opponent
+    on-frame-player-position)
+   s))
 
 (: on-frame-ball : State -> State)
 (define (on-frame-ball s)
