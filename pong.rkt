@@ -19,15 +19,15 @@
 
 ;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define BALL-ACCELERATION 0.0002)
+(define BALL-ACCELERATION 0.005)
 (define BALL-RADIUS 3/128)
 (define BALL-SPEED 0.001)
 (define BUMPER-SCALE (dir 1/64 7/64 1/32))
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
-(define OPPONENT-SPEED 0.0010)
-(define OPPONENT-X -3/4)
-(define PLAYER-X 3/4)
+(define OPPONENT-SPEED 0.001)
+(define OPPONENT-X -1)
+(define PLAYER-X 1)
 (define SCREEN-WIDTH 1200)
 (define SCREEN-HEIGHT 1080)
 (define SPIN-FACTOR 40)
@@ -342,9 +342,9 @@
 
 (define (render-opponent s n dt)
   (parameterize
-      ([current-material (material #:ambient 0.01
-                                  #:diffuse 0.1
-                                  #:specular 0.6
+      ([current-material (material #:ambient 0
+                                  #:diffuse 0
+                                  #:specular 0
                                   #:roughness 0.3)]
        [current-emitted (emitted 100 60 10 0.03)])
     (rectangle (pos OPPONENT-X (opponent-y (state-opponent s)) 0)
@@ -352,11 +352,11 @@
 
 (define (render-player s n dt)
   (parameterize
-      ([current-material (material #:ambient 0.01
-                                  #:diffuse 0.1
+      ([current-material (material #:ambient 0
+                                  #:diffuse 0
                                   #:specular 0.6
                                   #:roughness 0.3)]
-       [current-emitted (emitted "plum" 1.5)])
+       [current-emitted (emitted "plum" 2)])
     (rectangle (pos PLAYER-X (player-y (state-player s)) 0)
                BUMPER-SCALE)))
 
@@ -372,14 +372,18 @@
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define (random-0-1)
+  (/ (random 4294967087)
+     4294967086.0))
+
 (define (state-reset s)
-  (struct-copy state state-start
+  (struct-copy state (state-start)
                [dt (state-dt s)]
                [n  (state-n s)]
                [t  (state-t s)]))
 
-(define state-start
-  (state (ball (dir 1 0.75 0) ; ball
+(define (state-start)
+  (state (ball (dir -1 (* 1.5 (- 0.5 (random-0-1))) 0) ; ball
                (pos 0 0 0))
          0                 ; dt
          0                 ; n
@@ -390,7 +394,7 @@
          0))               ; t
 
 (big-bang3d
-   (struct-copy state state-start [paused? #t])
+   (struct-copy state (state-start) [paused? #t])
    #:frame-delay (/ 1000 59.9)
    #:name "Pong3D — Racket"
    #:on-draw on-draw
