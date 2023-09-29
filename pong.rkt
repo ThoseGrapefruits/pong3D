@@ -10,11 +10,11 @@
 ;
 ;                                  ═══
 ;
-;     +                               
+;     -                               
 ;    /                             ╭─╮
 ;   x                              ╰─╯
 ;  /                                                                        +
-; -                                                                         |
+; +                                                                         |
 ;                               ╓───────╖                                   z 
 ;                               ╙───────╜                                   |
 ;                             - ——— y ——— +                                 -
@@ -26,10 +26,13 @@
 (define BALL-SPEED 0.001)
 (define BUMPER-SCALE (dir 1/64 7/64 1/32))
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
+(define BOUNDS-BUMPER-GAP (* 4 (dir-dx BUMPER-SCALE)))
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
 (define OPPONENT-SPEED 0.001)
 (define OPPONENT-X -1.0)
+(define OPPONENT-BOUNDS (- OPPONENT-X BOUNDS-BUMPER-GAP))
 (define PLAYER-X 1.0)
+(define PLAYER-BOUNDS (+ PLAYER-X BOUNDS-BUMPER-GAP))
 (define SCREEN-WIDTH 1200)
 (define SCREEN-HEIGHT 1080)
 (define SPIN-FACTOR 40.0)
@@ -38,22 +41,25 @@
 (define CAMERA-X (+ 0.5 (/ 1.0 ASPECT-RATIO)))
 (define CAMERA-Y (/ (+ 0.5 (/ 1.0 ASPECT-RATIO)) 2.0))
 
+;; TODO: endgame & refactor state into state machine thing
+
 ;; DATA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (struct Ball ([direction : Dir] [position : Pos]))
 
-(struct Opponent ([y : Flonum ]))
+(struct Opponent ([lives : Nonnegative-Integer] [y : Flonum ]))
 
-(struct Player ([pressed : (Setof String)] [y : Flonum]))
+(struct Player ([lives : Nonnegative-Integer] [pressed : (Setof String)] [y : Flonum]))
 
-(struct State ([ball : Ball]
-               [dt : Flonum]
-               [n : Natural]
-               [opponent : Opponent]
-               [pause-next-frame? : Boolean]
-               [paused? : Boolean]
-               [player : Player]
-               [t : Flonum]))
+(struct State
+  ([ball : Ball]
+   [dt : Flonum]
+   [n : Natural]
+   [opponent : Opponent]
+   [pause-next-frame? : Boolean]
+   [paused? : Boolean]
+   [player : Player]
+   [t : Flonum]))
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -95,7 +101,9 @@
 
 (: clamp-bumper-y : Flonum -> Flonum)
 (define (clamp-bumper-y y)
-  (clamp y (+ -1.0 (* 3.0 (dir-dy BUMPER-SCALE))) (- 1.0 (* 3.0 (dir-dy BUMPER-SCALE)))))
+  (clamp y
+         (+ (- 0 WALL-Y) (* 1.0 (dir-dy BUMPER-SCALE)))
+         (- WALL-Y (* 1.0 (dir-dy BUMPER-SCALE)))))
 
 ; Get the y-offset between the center a bumper and a ball
 (: get-contact-offset-y : State Flonum -> Flonum)
@@ -134,6 +142,8 @@
 (define (on-frame s n t)
   ((compose-n
     (λ ([s : State]) (update-counters s n t))
+    on-frame-lives
+    on-frame-endgame
     on-frame-pause
     on-frame-ball
     on-frame-opponent
@@ -242,6 +252,9 @@
                    (dir-scale (Ball-direction (State-ball s))
                               (* (State-dt s) BALL-SPEED)))])]))
 
+(: on-frame-endgame : State -> State)
+(define (on-frame-endgame s) s)
+
 (: on-frame-opponent : State -> State)
 (define (on-frame-opponent s)
   (let ([aim-buffer (/ BUMPER-CONTACT-WIDTH 8)]
@@ -276,12 +289,33 @@
       [(set-member? pressed "left")
        (set-player-position
         s
-        (max (- 0 WALL-Y) (+ (Player-y (State-player s)) (* (State-dt s) -1/512))))]
+        (+ (Player-y (State-player s)) (* (State-dt s) -1/512)))]
       [(set-member? pressed "right")
        (set-player-position
         s
-        (min WALL-Y       (+ (Player-y (State-player s)) (* (State-dt s)  1/512))))]
+        (+ (Player-y (State-player s)) (* (State-dt s)  1/512)))]
       [else s])))
+
+(: on-frame-lives : State -> State)
+(define (on-frame-lives s)
+  (let ([ball-pos (Ball-position (State-ball s))])
+    (cond [(< (pos-x ball-pos) OPPONENT-BOUNDS)
+           (struct-copy
+            State s
+            [ball (State-ball (state-start))]
+            [opponent
+             (struct-copy
+              Opponent (State-opponent s)
+              [lives (max 0 (sub1 (Opponent-lives (State-opponent s))))])])]
+          [(> (pos-x ball-pos) PLAYER-BOUNDS)
+           (struct-copy
+            State s
+            [ball (State-ball (state-start))]
+            [player
+             (struct-copy
+              Player (State-player s)
+              [lives (max 0 (sub1 (Player-lives (State-player s)))) ])])]
+          [else s])))
 
 ;; EVENT HANDLERS — ON-KEY ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -296,9 +330,12 @@
 ; Immediate reactions to keypresses
 (define (on-key-immediate s k)
   (cond
-    [(string=? k " ") (struct-copy State s [paused? (not (State-paused? s))])]
-    [(string=? k "r") (struct-copy State (state-reset s)
-                                   [pause-next-frame? #t])]
+    [(string=? k " ")
+     (struct-copy State s
+                  [paused? (not (State-paused? s))])]
+    [(string=? k "r")
+     (struct-copy State (state-reset s)
+                  [pause-next-frame? #t])]
     [else s]))
 
 (: on-release : State Natural Flonum String -> State)
@@ -308,6 +345,8 @@
 ;; RENDER ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; CONSTANTS
+(define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
+(define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
 (current-material (material #:ambient 0
                             #:diffuse 0
@@ -316,9 +355,9 @@
 (: arena-bumper Pict3D)
 (define arena-bumper
   (combine (with-emitted (emitted "oldlace" 2) (cylinder origin 1))
-           (for/list : (Listof Pict3D) ([z  (in-range 0 10)])
-             (light (pos 0 0 (- (* 2 (/ z 9)) 1))
-                    (emitted "oldlace" 1)))))
+           (for/list : (Listof Pict3D) ([z (in-range 0 10)])
+             (light (pos 0.0 0.0 (/ z 9.0))
+                    (emitted "oldlace" 4.0)))))
 
 (: axes Pict3D)
 (define axes
@@ -336,6 +375,7 @@
   (combine (render-opponent s)
            (render-player s)
            (render-ball s)
+           (render-hud s)
            (render-lights+camera s)
            (render-arena s)
            (render-arena-bumpers s)))
@@ -351,11 +391,28 @@
                                   #:roughness 0.3)]
        [current-color (rgba 0.6 0.6 0.6)])
     (transform 
-     (cylinder origin 1
+     (combine (cylinder origin 1
                #:arc (arc 180 360)
                #:inside? #t
                #:top-cap? #f
                #:bottom-cap? #f)
+              (transform
+               (light origin (emitted "goldenrod" 0.0001))
+               (affine-compose
+                (move-y -0.5)
+                (move-z -0.99)
+                (scale 40)))
+              (with-emitted
+                  (emitted 0 0 0.01 20)
+                (move-y (cylinder origin 1
+                                  #:arc (arc 180 360)
+                                  #:inside? #t
+                                  #:top-cap? #f
+                                  #:bottom-cap? #t
+                                  #:start-cap? #f
+                                  #:end-cap? #f
+                                  #:outer-wall? #f)
+                        0)))
      (affine-compose (scale-x 10)
                      (move-z -0.1)
                      (rotate-x -90)
@@ -383,6 +440,22 @@
    (with-emitted (emitted "oldlace" 1.5)
      (sphere (Ball-position (State-ball s)) BALL-RADIUS))))
 
+(: render-hud : State -> Pict3D)
+(define (render-hud s)
+  (combine
+   ; opponent
+   (parameterize ([current-emitted COLOR-OPPONENT-EMITTED])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0 (Opponent-lives (State-opponent s)))])
+        (cube (pos 0.5 (+ 0.5 (* n 0.08)) 0.4) 0.02))))
+   ; player
+   (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0 (Player-lives (State-player s)))])
+        (cube (pos 0.5 (+ 0.5 (* n 0.08)) 0.2) 0.02))))))
+
 (: render-opponent : State -> Pict3D)
 (define (render-opponent s)
   (parameterize
@@ -390,7 +463,7 @@
                                   #:diffuse 0
                                   #:specular 0
                                   #:roughness 0.3)]
-       [current-emitted (emitted 100 60 10 0.03)])
+       [current-emitted COLOR-OPPONENT-EMITTED])
     (rectangle (pos OPPONENT-X (Opponent-y (State-opponent s)) 0)
                BUMPER-SCALE)))
 
@@ -401,7 +474,7 @@
                                   #:diffuse 0
                                   #:specular 0.6
                                   #:roughness 0.3)]
-       [current-emitted (emitted "plum" 2)])
+       [current-emitted COLOR-PLAYER-EMITTED])
     (rectangle (pos PLAYER-X (Player-y (State-player s)) 0)
                BUMPER-SCALE)))
 
@@ -438,10 +511,10 @@
                (pos 0.0 0.0 0.0))
          0.0                 ; dt
          0                   ; n
-         (Opponent 0.0)      ; opponent
+         (Opponent 3 0.0)      ; opponent
          #f                  ; pause-next-frame?
          #f                  ; paused?
-         (Player (set) 0.0)  ; player
+         (Player 3 (set) 0.0)  ; player
          0.0))               ; t
 
 (big-bang3d
