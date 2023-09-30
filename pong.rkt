@@ -81,43 +81,29 @@
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: get-state-constructor (All (S) (-> (∩ S State) Any)))
-(define (get-state-constructor s)
-  (cond [(State-Main-Menu? s) State-Main-Menu]
-        [(State-Paused? s) State-Paused]
-        [(State-Play? s) State-Play]
+; [distant, maniacal laughter]
+; https://stackoverflow.com/a/77208704/2883258
+;
+; This horrible macro expansion thing lets us get around the fact that
+; struct-copy doesn't have much runtime flexibility with choosing what child
+; struct to use when copying, while avoiding repeating the same cond statement
+; in a bunch of different update methods.
+(define-syntax-rule (base-state-update s [t #:parent State v] ...)
+  (cond [(State-Main-Menu? s)
+         (struct-copy State-Main-Menu s [t #:parent State v]...)]
+        [(State-Paused? s)
+         (struct-copy State-Paused s [t #:parent State v]...)]
+        [(State-Play? s)
+         (struct-copy State-Play s [t #:parent State v]...)]
         [else (error (~s "Invalid state" s))]))
 
-;;
-;;
-;; nope
-;;
-;; can't do what I want because of methods like the below, unless I have a switch
-;; for every type of state
-;;
-;;
-
+; Update game timers in state
 (: update-counters : State Natural Flonum -> State)
 (define (update-counters s n t)
-  (cond [(State-Main-Menu? s)
-         (struct-copy
-          State-Main-Menu s
-          [dt #:parent State (get-dt s n t) ]
-          [n #:parent State n]
-          [t #:parent State t])]
-        [(State-Paused? s)
-         (struct-copy
-          State-Paused s
-          [dt #:parent State (get-dt s n t)]
-          [n #:parent State n]
-          [t #:parent State t])]
-        [(State-Play? s)
-         (struct-copy
-          State-Play s
-          [dt #:parent State (get-dt s n t)]
-          [n #:parent State n]
-          [t #:parent State t])]
-        [else (error (~s "Invalid state" s))]))
+  (base-state-update s
+                     [dt #:parent State (get-dt s n t) ]
+                     [n #:parent State n]
+                     [t #:parent State t]))
 
 (: get-dt : (State Natural Flonum -> Flonum))
 (define (get-dt s n t)
@@ -125,12 +111,11 @@
 
 (: update-key-pressed : State String Boolean -> State)
 (define (update-key-pressed s key pressed?)
-  (struct-copy
-   State s
-   [pressed
-    (cond
-      [pressed? (set-add (State-pressed s) key)]
-      [else (set-remove (State-pressed s) key)])]))
+  (base-state-update s
+                     [pressed #:parent State
+                              (cond
+                                [pressed? (set-add (State-pressed s) key)]
+                                [else (set-remove (State-pressed s) key)])]))
 
 (: set-player-position : State-Play Flonum -> State-Play)
 (define (set-player-position s y)
@@ -196,10 +181,10 @@
 
 (: on-frame : State Natural Flonum -> State)
 (define (on-frame s n t)
-   ((compose-n
-     (λ ([s : State]) (update-counters s n t))
-     on-frame-game-play)
-    s))
+  ((compose-n
+    (λ ([s : State]) (update-counters s n t))
+    on-frame-game-play)
+   s))
 
 ;; EVENT HANDLERS — ON-FRAME-GAME-PAUSED ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -456,7 +441,7 @@
 ;; WIP
 (: position-screen-space : Flonum Flonum Flonum -> Affine)
 (define (position-screen-space x y z)
- (affine-compose (move (pos- CAMERA-POS origin))))
+  (affine-compose (move (pos- CAMERA-POS origin))))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -478,17 +463,17 @@
 (define (render-game-play-arena s)
   (parameterize
       ([current-material (material #:ambient 0.01
-                                  #:diffuse 0.1
-                                  #:specular 0.6
-                                  #:roughness 0.3)]
+                                   #:diffuse 0.1
+                                   #:specular 0.6
+                                   #:roughness 0.3)]
        [current-color (rgba 0.6 0.6 0.6)])
     (transform
-              ; tunnel
+     ; tunnel
      (combine (cylinder origin 1
-               #:arc (arc 180 360)
-               #:inside? #t
-               #:top-cap? #f
-               #:bottom-cap? #f)
+                        #:arc (arc 180 360)
+                        #:inside? #t
+                        #:top-cap? #f
+                        #:bottom-cap? #f)
               ; end of the tunnel
               (transform
                (light origin (emitted "goldenrod" 0.0001))
@@ -514,14 +499,14 @@
 (: render-game-play-arena-bumpers : State-Play -> Pict3D)
 (define (render-game-play-arena-bumpers s)
   (combine
-    (transform arena-bumper
-      (affine-compose
-       (move-y (+ WALL-Y BALL-RADIUS))
-       (scale (dir 10 1/256 1/256))))
-    (transform arena-bumper
-      (affine-compose
-       (move-y (- 0.0 WALL-Y BALL-RADIUS))
-       (scale (dir 10 1/256 1/256))))))
+   (transform arena-bumper
+              (affine-compose
+               (move-y (+ WALL-Y BALL-RADIUS))
+               (scale (dir 10 1/256 1/256))))
+   (transform arena-bumper
+              (affine-compose
+               (move-y (- 0.0 WALL-Y BALL-RADIUS))
+               (scale (dir 10 1/256 1/256))))))
 
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
@@ -556,9 +541,9 @@
 (define (render-game-play-opponent s)
   (parameterize
       ([current-material (material #:ambient 0
-                                  #:diffuse 0
-                                  #:specular 0
-                                  #:roughness 0.3)]
+                                   #:diffuse 0
+                                   #:specular 0
+                                   #:roughness 0.3)]
        [current-emitted COLOR-OPPONENT-EMITTED])
     (rectangle (pos OPPONENT-X (Opponent-y (State-Play-opponent s)) 0)
                BUMPER-SCALE)))
@@ -567,9 +552,9 @@
 (define (render-game-play-player s)
   (parameterize
       ([current-material (material #:ambient 0
-                                  #:diffuse 0
-                                  #:specular 0.6
-                                  #:roughness 0.3)]
+                                   #:diffuse 0
+                                   #:specular 0.6
+                                   #:roughness 0.3)]
        [current-emitted COLOR-PLAYER-EMITTED])
     (rectangle (pos PLAYER-X (Player-y (State-Play-player s)) 0)
                BUMPER-SCALE)))
@@ -620,21 +605,21 @@
 
 (define (state-start-game-play-ball)
   (Ball (dir -1.0 (* 1.5 (- 0.5 (random-0-1))) 0.0)
-               (pos 0.0 0.0 0.0)))
+        (pos 0.0 0.0 0.0)))
 
 (big-bang3d
-   (state-start)
-   #:frame-delay (max 1.0 (abs (/ 1000.0 59.9))) ; take that type checker lol
-   #:name "Pong3D — Racket"
-   #:on-draw on-draw
-   #:on-frame on-frame
-   #:on-key on-key
-   #:on-mouse on-mouse
-   #:on-release on-release
-   #:pause-state? pause-state?
-   #:valid-state? valid-state?
-   #:width SCREEN-WIDTH
-   #:height SCREEN-HEIGHT)
+ (state-start)
+ #:frame-delay (max 1.0 (abs (/ 1000.0 59.9))) ; take that type checker lol
+ #:name "Pong3D — Racket"
+ #:on-draw on-draw
+ #:on-frame on-frame
+ #:on-key on-key
+ #:on-mouse on-mouse
+ #:on-release on-release
+ #:pause-state? pause-state?
+ #:valid-state? valid-state?
+ #:width SCREEN-WIDTH
+ #:height SCREEN-HEIGHT)
 
 ;; TASKS & IDEAS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
