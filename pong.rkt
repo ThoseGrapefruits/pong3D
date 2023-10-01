@@ -1,6 +1,7 @@
 #lang typed/racket
 
 (require
+  math/flonum
   pict3d
   pict3d/universe
   racket/set
@@ -20,7 +21,8 @@
 
 ;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define BALL-ACCELERATION 0.02)
+(define BALL-ACCELERATION-PADDLE 1.04)
+(define BALL-ACCELERATION-WALL 1.01)
 (define BALL-RADIUS 3/128)
 (define BALL-SPEED 0.001)
 (define BUMPER-SCALE (dir 1/64 7/64 1/32))
@@ -50,11 +52,12 @@
    [pos : Pos]))
 
 (struct Opponent
-  ([lives : Nonnegative-Integer]
-   [y : Flonum ]))
+  ([y : Flonum ]))
 
 (struct Player
   ([lives : Nonnegative-Integer]
+   [score : Nonnegative-Integer]
+   [score-multiplier : Nonnegative-Flonum]
    [y : Flonum]))
 
 (struct State
@@ -90,12 +93,12 @@
 ; in a bunch of different update methods.
 (define-syntax-rule (base-state-update s [t #:parent State v] ...)
   (cond [(State-Main-Menu? s)
-         (struct-copy State-Main-Menu s [t #:parent State v]...)]
+         (struct-copy State-Main-Menu s [t #:parent State v] ...)]
         [(State-Paused? s)
-         (struct-copy State-Paused s [t #:parent State v]...)]
+         (struct-copy State-Paused s [t #:parent State v] ...)]
         [(State-Play? s)
-         (struct-copy State-Play s [t #:parent State v]...)]
-        [else (error (~s "Invalid state" s))]))
+         (struct-copy State-Play s [t #:parent State v] ...)]
+        [else (error (~s "Invalid state: " s))]))
 
 ; Update game timers in state
 (: update-counters : State Natural Flonum -> State)
@@ -127,6 +130,12 @@
 
 ;; CALCULATION UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: get-new-player-score : Player Nonnegative-Integer -> Nonnegative-Integer)
+(define (get-new-player-score player n)
+  (+ (Player-score player)
+     (max 0 (fl->exact-integer (ceiling (* (exact->inexact n)
+                                 (Player-score-multiplier player)))))))
+
 (: clamp : Flonum Flonum Flonum -> Flonum)
 (define (clamp x low high)
   (cond
@@ -136,22 +145,13 @@
 (: clamp-bumper-y : Flonum -> Flonum)
 (define (clamp-bumper-y y)
   (clamp y
-         (+ (- 0 WALL-Y) (* 1.0 (dir-dy BUMPER-SCALE)))
+         (+ (- 0.0 WALL-Y) (* 1.0 (dir-dy BUMPER-SCALE)))
          (- WALL-Y (* 1.0 (dir-dy BUMPER-SCALE)))))
 
 ; Get the y-offset between the center a bumper and a ball
 (: get-contact-offset-y : State-Play Flonum -> Flonum)
 (define (get-contact-offset-y s y)
   (- (pos-y (Ball-pos (State-Play-ball s))) y))
-
-(: get-ball-acceleration : State-Play -> Flonum)
-(define (get-ball-acceleration s)
-  (+ 1.0 BALL-ACCELERATION))
-
-(: sign : Flonum -> (U -1.0 1.0))
-(define (sign n)
-  (cond [(< n 0.0) -1.0]
-        [else 1.0]))
 
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
@@ -169,7 +169,10 @@
   
 (: on-mouse-game-play : State Natural Flonum Integer Integer Any -> State)
 (define (on-mouse-game-play s n t x y e)
-  (cond [(State-Play? s) (set-player-position s (- (* 1.6 (/ x SCREEN-WIDTH)) 0.8))]
+  (cond [(State-Play? s)
+         (set-player-position
+          s
+          (- (* 1.6 (/ (exact->inexact x) SCREEN-WIDTH)) 0.8))]
         [else s]))
 
 ; Game is never hard-paused, we manage pause state separately and just don't run
@@ -238,7 +241,7 @@
                                (* (- 180 SPIN-FACTOR)
                                   (get-contact-offset-y s (Opponent-y opponent)))
                                0))
-                 (get-ball-acceleration s))])])]
+                 BALL-ACCELERATION-PADDLE)])])]
       ; player collision
       [(and (positive? (dir-dx (Ball-dir ball)))
             (within? (+ (pos-x (Ball-pos ball)) CONTACT-BUFFER)
@@ -258,7 +261,11 @@
                             (* (- SPIN-FACTOR)
                                (get-contact-offset-y s (Player-y player)))
                             0))
-                          (get-ball-acceleration s))])])]
+                          BALL-ACCELERATION-PADDLE)])]
+        [player
+         (struct-copy
+          Player player
+          [score (get-new-player-score player 10)])])]
       [else s])))
 
 (: on-frame-game-play-ball-collision-wall : State-Play -> State-Play)
@@ -275,7 +282,7 @@
                Ball ball
                [dir (dir-scale
                      (dir-reflect (Ball-dir ball) +y)
-                     (get-ball-acceleration s))])])]
+                     BALL-ACCELERATION-WALL)])])]
       ; right wall collision
       [(and (positive? (dir-dy (Ball-dir ball)))
             (> (pos-y (Ball-pos ball)) (- WALL-Y BALL-RADIUS)))
@@ -285,7 +292,7 @@
                Ball ball
                [dir (dir-scale
                      (dir-reflect (Ball-dir ball) +y)
-                     (get-ball-acceleration s))])])]
+                     BALL-ACCELERATION-WALL)])])]
       [else s])))
 
 (: on-frame-game-play-ball-direction : State-Play -> State-Play)
@@ -293,7 +300,6 @@
   ((compose1
     on-frame-game-play-ball-collision-bumper
     on-frame-game-play-ball-collision-wall) s))
-
 
 (: on-frame-game-play-ball-position : State-Play -> State-Play)
 (define (on-frame-game-play-ball-position s)
@@ -333,7 +339,7 @@
                             [else
                              (* OPPONENT-SPEED
                                 (State-dt s)
-                                (sign pos-diff))]))])])))))
+                                (flsgn pos-diff))]))])])))))
 
 (: on-frame-game-play-player-position : State-Play -> State-Play)
 (define (on-frame-game-play-player-position s)
@@ -353,23 +359,23 @@
 (: on-frame-game-play-lives : State-Play -> State-Play)
 (define (on-frame-game-play-lives s)
   (let ([ball (State-Play-ball s)]
-        [opponent (State-Play-opponent s)])
+        [player (State-Play-player s)])
     (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
            (struct-copy
             State-Play s
             [ball (state-start-game-play-ball)]
-            [opponent
+            [player
              (struct-copy
-              Opponent opponent
-              [lives (max 0 (sub1 (Opponent-lives (State-Play-opponent s))))])])]
+              Player player
+              [score (get-new-player-score player 500)])])]
           [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
            (struct-copy
             State-Play s
             [ball (state-start-game-play-ball)]
             [player
              (struct-copy
-              Player (State-Play-player s)
-              [lives (max 0 (sub1 (Player-lives (State-Play-player s))))])])]
+              Player player
+              [lives (max 0 (sub1 (Player-lives player)))])])]
           [else s])))
 
 ;; EVENT HANDLERS — ON-KEY ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -521,21 +527,13 @@
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
-  (let ([opponent (State-Play-opponent s)]
-        [player (State-Play-player s)])
-    (combine
-     ; opponent
-     (parameterize ([current-emitted COLOR-OPPONENT-EMITTED])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0 (Opponent-lives opponent))])
-          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.4) 0.02))))
+  (let ([player (State-Play-player s)])
      ; player
      (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
        (combine
         (for/list : (Listof Pict3D)
           ([n (range 0 (Player-lives player))])
-          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.2) 0.02)))))))
+          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.2) 0.02))))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
@@ -581,7 +579,7 @@
     (cond [(flonum? result) result]
           [else (error "random did not return flonum")])))
 
-(: state-reset : State -> State)
+(: state-reset : State -> State-Play)
 (define (state-reset s)
   (struct-copy
    State-Play (state-start)
@@ -600,8 +598,12 @@
 
    ; State-Play
    (state-start-game-play-ball) ; ball
-   (Opponent 3 0.0)             ; opponent
-   (Player 3 0.0)))             ; player
+   (Opponent 0.0) ; y           ; opponent
+   (Player 3   ; lives          ; player
+           0   ; score
+           1.0 ; score-multiplier
+           0.0 ; y
+           )))
 
 (define (state-start-game-play-ball)
   (Ball (dir -1.0 (* 1.5 (- 0.5 (random-0-1))) 0.0)
@@ -620,9 +622,3 @@
  #:valid-state? valid-state?
  #:width SCREEN-WIDTH
  #:height SCREEN-HEIGHT)
-
-;; TASKS & IDEAS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; STATE MACHINE
-;; Turn the majority of the State object into a (U ...) of possible states (e.g.
-;; playing vs pause menu vs main menu, etc
