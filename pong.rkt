@@ -67,6 +67,10 @@
    [t    : Flonum])
   #:transparent)
 
+(struct State-Game-Over State
+  ([end-state : State-Play])
+  #:transparent)
+
 (struct State-Main-Menu State
   ()
   #:transparent)
@@ -79,7 +83,8 @@
 (struct State-Play State
   ([ball : Ball]
    [opponent : Opponent]
-   [player : Player])
+   [player : Player]
+   [start-t : Flonum])
   #:transparent)
 
 ;; STATE UPDATERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,13 +97,24 @@
 ; struct to use when copying, while avoiding repeating the same cond statement
 ; in a bunch of different update methods.
 (define-syntax-rule (base-state-update s [t #:parent State v] ...)
-  (cond [(State-Main-Menu? s)
+  (cond [(State-Game-Over? s)
+         (struct-copy State-Game-Over s [t #:parent State v] ...)]
+        [(State-Main-Menu? s)
          (struct-copy State-Main-Menu s [t #:parent State v] ...)]
         [(State-Paused? s)
          (struct-copy State-Paused s [t #:parent State v] ...)]
         [(State-Play? s)
          (struct-copy State-Play s [t #:parent State v] ...)]
         [else (error (~s "Invalid state: " s))]))
+
+; This other horrible macro syntax expansion thing lets us transition between
+; states more easily, copying the fields stored on the base State struct.
+(define-syntax-rule (state-transition S s field ...)
+  (S (State-dt s)
+     (State-n s)
+     (State-pressed s)
+     (State-t s)
+     field ...))
 
 ; Update game timers in state
 (: update-counters : State Natural Flonum -> State)
@@ -201,13 +217,13 @@
 (: on-frame-game-play : State -> State)
 (define (on-frame-game-play s)
   (cond [(State-Play? s)
-         ((compose-n
-           on-frame-game-play-lives
-           on-frame-game-play-endgame
-           on-frame-game-play-ball
-           on-frame-game-play-opponent
-           on-frame-game-play-player-position)
-          s)]
+          (on-frame-game-play-endgame
+           ((compose-n
+             on-frame-game-play-lives
+             on-frame-game-play-ball
+             on-frame-game-play-opponent
+             on-frame-game-play-player-position)
+            s))]
         [else s]))
 
 (: on-frame-game-play-ball : State-Play -> State-Play)
@@ -313,8 +329,11 @@
                    (dir-scale (Ball-dir ball)
                               (* (State-dt s) BALL-SPEED)))])])))
 
-(: on-frame-game-play-endgame : State-Play -> State-Play)
-(define (on-frame-game-play-endgame s) s)
+(: on-frame-game-play-endgame : State-Play -> (U State-Game-Over State-Play))
+(define (on-frame-game-play-endgame s)
+  (cond [(= 0 (Player-lives (State-Play-player s)))
+         (state-transition State-Game-Over s s)]
+        [else s]))
 
 (: on-frame-game-play-opponent : State-Play -> State-Play)
 (define (on-frame-game-play-opponent s)
@@ -383,19 +402,19 @@
 (: on-key : State Natural Flonum String -> State)
 (define (on-key s n t k)
   (update-key-pressed
-   (on-key-immediate s k)
+   (on-key-immediate s n t k)
    k #t))
 
-(: on-key-immediate : State String -> State)
+(: on-key-immediate : State Natural Flonum String -> State)
 ; Immediate reactions to keypresses
-(define (on-key-immediate s k)
+(define (on-key-immediate s n t k)
   (cond
     [(string=? k "Escape")
      (cond [(State-Play? s) (struct-copy State-Paused s)]
            [(State-Paused? s) (State-Paused-resume-state s)]
            [else s])]
     [(string=? k "r")
-     (state-reset s)]
+     (state-reset s n t)]
     [else s]))
 
 (: on-release : State Natural Flonum String -> State)
@@ -412,7 +431,7 @@
                             #:roughness 0.3))
 
 ; CONSTANTS
-
+(define CAMERA (basis 'camera (point-at CAMERA-POS CAMERA-LOOK-AT)))
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
@@ -436,7 +455,8 @@
 
 (: on-draw : State Natural Flonum -> Pict3D)
 (define (on-draw s n t)
-  (combine (render-game-play s)))
+  (combine (render-game-play s)
+           (render-game-over s)))
 
 ; RENDER FUNCTIONS
 
@@ -448,6 +468,21 @@
 (: position-screen-space : Flonum Flonum Flonum -> Affine)
 (define (position-screen-space x y z)
   (affine-compose (move (pos- CAMERA-POS origin))))
+
+; RENDER FUNCTIONS — GAME OVER
+
+(: render-game-over : State -> Pict3D)
+(define (render-game-over s)
+  (cond
+    [(State-Game-Over? s)
+     (combine
+      CAMERA
+      (render-game-over-message s))]
+    [else empty-pict3d]))
+
+(: render-game-over-message : State -> Pict3D)
+(define (render-game-over-message s)
+  (with-emitted (emitted "red" 2.0) (rotate-z (cube origin 0.5) 45)))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -561,13 +596,14 @@
 (define (render-game-play-lights+camera s)
   (combine (light (pos 0 1 2) (emitted "Thistle"))
            (light (pos 0 -1 -2) (emitted "PowderBlue"))
-           (basis 'camera (point-at CAMERA-POS CAMERA-LOOK-AT))))
+           CAMERA))
 
 ;; VALIDATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (: valid-state? : State Natural Flonum -> Boolean)
 (define (valid-state? s n t)
-  (or (State-Main-Menu? s)
+  (or (State-Game-Over? s)
+      (State-Main-Menu? s)
       (State-Paused? s)
       (State-Play? s)))
 
@@ -579,22 +615,22 @@
     (cond [(flonum? result) result]
           [else (error "random did not return flonum")])))
 
-(: state-reset : State -> State-Play)
-(define (state-reset s)
+(: state-reset : State Natural Flonum -> State-Play)
+(define (state-reset s n t)
   (struct-copy
-   State-Play (state-start)
+   State-Play (state-start t)
    [dt #:parent State (State-dt s)]
    [n  #:parent State (State-n s)]
    [t  #:parent State (State-t s)]))
 
-(: state-start : -> State)
-(define (state-start)
+(: state-start : (->* () (Flonum) State))
+(define (state-start [t 0.0])
   (State-Play
    ; State
    0.0   ; dt
    0     ; n
    (set) ; pressed
-   0.0   ; t
+   t     ; t
 
    ; State-Play
    (state-start-game-play-ball) ; ball
@@ -603,7 +639,8 @@
            0   ; score
            1.0 ; score-multiplier
            0.0 ; y
-           )))
+           )
+   t))   ; start-t
 
 (define (state-start-game-play-ball)
   (Ball (dir -1.0 (* 1.5 (- 0.5 (random-0-1))) 0.0)
