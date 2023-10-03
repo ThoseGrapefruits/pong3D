@@ -146,12 +146,6 @@
 
 ;; CALCULATION UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: get-new-player-score : Player Nonnegative-Integer -> Nonnegative-Integer)
-(define (get-new-player-score player n)
-  (+ (Player-score player)
-     (max 0 (fl->exact-integer (ceiling (* (exact->inexact n)
-                                 (Player-score-multiplier player)))))))
-
 (: clamp : Flonum Flonum Flonum -> Flonum)
 (define (clamp x low high)
   (cond
@@ -168,6 +162,17 @@
 (: get-contact-offset-y : State-Play Flonum -> Flonum)
 (define (get-contact-offset-y s y)
   (- (pos-y (Ball-pos (State-Play-ball s))) y))
+
+(: get-new-player-score : Player Nonnegative-Integer -> Nonnegative-Integer)
+(define (get-new-player-score player n)
+  (+ (Player-score player)
+     (max 0 (fl->exact-integer (ceiling (* (exact->inexact n)
+                                 (Player-score-multiplier player)))))))
+
+(: get-number-place : Integer Integer Integer -> Integer)
+(define (get-number-place n over under)
+  (exact-floor (/ (exact->inexact (- (modulo n over) (modulo n under)))
+                  (exact->inexact under))))
 
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
@@ -281,7 +286,7 @@
         [player
          (struct-copy
           Player player
-          [score (get-new-player-score player 10)])])]
+          [score (get-new-player-score player 1)])])]
       [else s])))
 
 (: on-frame-game-play-ball-collision-wall : State-Play -> State-Play)
@@ -386,7 +391,7 @@
             [player
              (struct-copy
               Player player
-              [score (get-new-player-score player 500)])])]
+              [score (get-new-player-score player 10)])])]
           [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
            (struct-copy
             State-Play s
@@ -563,12 +568,38 @@
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
   (let ([player (State-Play-player s)])
-     ; player
+    ; player score
+    (combine
+     ; ones
+     (parameterize ([current-emitted (emitted 1 1 1 2)])
+       (combine
+        (for/list : (Listof Pict3D)
+          ([n (range 0 (get-number-place (Player-score player) 10 1))])
+          (sphere (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.03)) 0.1) 0.01))))
+     ; tens
+     (parameterize ([current-emitted (emitted 0.5 0.7 1 2)])
+       (combine
+        (for/list : (Listof Pict3D)
+          ([n (range 0.0 (get-number-place (Player-score player) 100 10))])
+          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.07) 0.01))))
+     ; hundreds
+     (parameterize ([current-emitted (emitted 1 0.8 0 1.5)])
+       (combine
+        (for/list : (Listof Pict3D)
+          ([n (range 0.0 (get-number-place (Player-score player) 1000 100))])
+          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.04) 0.01))))
+     ; thousands
+     (parameterize ([current-emitted (emitted 0.6 0 0.8 1.5)])
+       (combine
+        (for/list : (Listof Pict3D)
+          ([n (range 0.0 (get-number-place (Player-score player) 10000 1000))])
+          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.01) 0.01))))
+     ; player lives
      (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
        (combine
         (for/list : (Listof Pict3D)
           ([n (range 0 (Player-lives player))])
-          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.2) 0.02))))))
+          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.2) 0.02)))))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
@@ -635,11 +666,10 @@
    ; State-Play
    (state-start-game-play-ball) ; ball
    (Opponent 0.0) ; y           ; opponent
-   (Player 3   ; lives          ; player
-           0   ; score
-           1.0 ; score-multiplier
-           0.0 ; y
-           )
+   (Player 3    ; lives         ; player
+           5297 ; score
+           1.0  ; score-multiplier
+           0.0) ; y
    t))   ; start-t
 
 (define (state-start-game-play-ball)
