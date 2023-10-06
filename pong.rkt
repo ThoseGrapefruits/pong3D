@@ -25,7 +25,7 @@
 (define BALL-ACCELERATION-WALL 1.01)
 (define BALL-RADIUS 3/128)
 (define BALL-SPEED 0.001)
-(define CAMERA-SPACE-DISTANCE 0.2)
+(define CAMERA-SPACE-DISTANCE 0.05)
 (define BUMPER-SCALE (dir 1/64 7/64 1/32))
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
 (define BOUNDS-BUMPER-GAP (* 10 (dir-dx BUMPER-SCALE)))
@@ -46,17 +46,15 @@
 (define (aspect-ratio) (/ SCREEN-WIDTH-INEXACT
                           SCREEN-HEIGHT-INEXACT))
 
-(: camera-x : -> Flonum)
-(define (camera-x) (+ 0.5 (/ 1.0 (aspect-ratio))))
-
-(: camera-z : -> Flonum)
-(define (camera-z) (/ (+ 0.5 (/ 1.0 (aspect-ratio)) 2.0)))
-
 (: CAMERA-LOOK-AT : Pos)
 (define CAMERA-LOOK-AT origin)
 
 (: camera-pos : -> Pos)
-(define (camera-pos) (pos (camera-x) 0 (camera-z)))
+(define (camera-pos)
+  (define ar (aspect-ratio))
+  (pos (+ 2.0 (* ar -0.3))   ; distance
+       0.0                   ; side-to-side
+       (+ 1.0 (* ar -0.2)))) ; elevation
 
 (: camera-dir : -> Dir)
 (define (camera-dir)
@@ -492,11 +490,7 @@
 
 (: camera-transform : State -> Affine)
 (define (camera-transform s)
-  (define t (State-t s))
-  (affine-compose (rotate-x (/ t 1700.0))
-                  (rotate-y (/ t -1000.0))
-                  (rotate-z (/ t 500.0))
-                  (camera-point-at)))
+  (camera-point-at))
 
 ; RENDER — ON-DRAW
 
@@ -516,8 +510,9 @@
 ; wrap-within
 (: wrap-within : Flonum Flonum -> Flonum)
 (define (wrap-within n width)
-  (cond [(or (> n width) (< n (- width))) (error "n below screen bounds")]
-        [(negative? n) (- width n)]
+  (cond [(negative? width) (error "negative width")]
+        [(or (> n width) (< n (- width))) (error "n outside screen bounds")]
+        [(negative? n) (+ width n)]
         [else n]))
 
 ; Get a transformation that moves an object from the origin to the given (x,y,z)
@@ -527,15 +522,16 @@
 (: position-screen-space-pixels : (->* (State Flonum Flonum) (Flonum) Affine))
 (define (position-screen-space-pixels s x y [z 1.0])
   (define cam-t (camera-transform s))
-  (define dir   ((camera-ray-dir cam-t
-                                 #:width SCREEN-WIDTH
-                                 #:height SCREEN-HEIGHT
-                                 #:z-near CAMERA-SPACE-DISTANCE)
-                 (wrap-within x SCREEN-WIDTH-INEXACT)
-                 (wrap-within y SCREEN-HEIGHT-INEXACT)))
+  (define z-near (* z CAMERA-SPACE-DISTANCE))
+  (define dir ((camera-ray-dir cam-t
+                               #:width SCREEN-WIDTH
+                               #:height SCREEN-HEIGHT
+                               #:z-near z-near)
+               (wrap-within x SCREEN-WIDTH-INEXACT)
+               (wrap-within y SCREEN-HEIGHT-INEXACT)))
   (affine-compose (move dir)
                   cam-t
-                  (scale CAMERA-SPACE-DISTANCE)))
+                  (scale z-near)))
 
 ; Get a transformation that moves an object from the origin to the given (x,y,z)
 ; coordinate in screen-space, where (-1,-1,1) is the top-left of the camera
@@ -564,7 +560,7 @@
 (: render-game-over-message : State-Game-Over -> Pict3D)
 (define (render-game-over-message s)
   (transform (with-emitted (emitted "red" 2.0)
-                         (rotate-z (cube origin 0.5) 45))
+                         (rotate-z (move-z (cube origin 0.5) 1.0) 45))
              (position-screen-space-relative s 0.0 0.0)))
 
 (: render-game-over-score : State-Game-Over -> Pict3D)
@@ -573,7 +569,7 @@
               (Player-score
                (State-Play-player
                 (State-Game-Over-end-state s))))
-             (position-screen-space-pixels s -300.0 -300.0)))
+             (position-screen-space-relative s 0.0 0.0)))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -653,19 +649,19 @@
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
-  (let ([player (State-Play-player s)])
-    ; player score
-    (combine
-     (transform (render-player-score (Player-score player))
-                (position-screen-space-pixels s 100.0 100.0))
-     ; player lives
-     (transform
-      (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
-        (combine
-         (for/list : (Listof Pict3D)
-           ([n (range 0 (Player-lives player))])
-           (cube (pos (* (exact->inexact n) -0.08) 0 0) 0.02))))
-      (position-screen-space-pixels s 1100.0 100.0)))))
+  (define player (State-Play-player s))
+  ; player score
+  (combine
+   (transform (render-player-score (Player-score player))
+              (position-screen-space-pixels s 100.0 100.0))
+   ; player lives
+   (transform
+    (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+      (combine
+       (for/list : (Listof Pict3D)
+         ([n (range 0 (Player-lives player))])
+         (cube (pos (* (exact->inexact n) -0.08) 0 0) 0.02))))
+    (position-screen-space-pixels s -100.0 100.0))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
