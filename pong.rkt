@@ -25,25 +25,44 @@
 (define BALL-ACCELERATION-WALL 1.01)
 (define BALL-RADIUS 3/128)
 (define BALL-SPEED 0.001)
+(define CAMERA-SPACE-DISTANCE 0.2)
 (define BUMPER-SCALE (dir 1/64 7/64 1/32))
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
 (define BOUNDS-BUMPER-GAP (* 10 (dir-dx BUMPER-SCALE)))
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
-(define FOV 120)
 (define OPPONENT-SPEED 0.001)
 (define OPPONENT-X -1.0)
 (define OPPONENT-BOUNDS (- OPPONENT-X BOUNDS-BUMPER-GAP))
 (define PLAYER-X 1.0)
 (define PLAYER-BOUNDS (+ PLAYER-X BOUNDS-BUMPER-GAP))
 (define SCREEN-WIDTH 1200)
+(define SCREEN-WIDTH-INEXACT (exact->inexact SCREEN-WIDTH))
 (define SCREEN-HEIGHT 1080)
+(define SCREEN-HEIGHT-INEXACT (exact->inexact SCREEN-HEIGHT))
 (define SPIN-FACTOR 40.0)
 (define WALL-Y 0.8)
-(define ASPECT-RATIO (/ SCREEN-WIDTH SCREEN-HEIGHT))
-(define CAMERA-X (+ 0.5 (/ 1.0 ASPECT-RATIO)))
-(define CAMERA-Z (/ (+ 0.5 (/ 1.0 ASPECT-RATIO)) 2.0))
+
+(: aspect-ratio : -> Flonum)
+(define (aspect-ratio) (/ SCREEN-WIDTH-INEXACT
+                          SCREEN-HEIGHT-INEXACT))
+
+(: camera-x : -> Flonum)
+(define (camera-x) (+ 0.5 (/ 1.0 (aspect-ratio))))
+
+(: camera-z : -> Flonum)
+(define (camera-z) (/ (+ 0.5 (/ 1.0 (aspect-ratio)) 2.0)))
+
+(: CAMERA-LOOK-AT : Pos)
 (define CAMERA-LOOK-AT origin)
-(define CAMERA-POS (pos CAMERA-X 0 CAMERA-Z))
+
+(: camera-pos : -> Pos)
+(define (camera-pos) (pos (camera-x) 0 (camera-z)))
+
+(: camera-dir : -> Dir)
+(define (camera-dir)
+  (define normalized (dir-normalize (pos- origin (camera-pos))))
+  (cond [normalized normalized]
+        [else (error "normalized not normal")]))
 
 ;; DATA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -174,6 +193,12 @@
   (exact-floor (/ (exact->inexact (- (modulo n over) (modulo n under)))
                   (exact->inexact under))))
 
+(: random-0-1 : -> Flonum)
+(define (random-0-1)
+  (let ([result (/ (exact->inexact (random 4294967087)) 4294967086.0)])
+    (cond [(flonum? result) result]
+          [else (error "random did not return flonum")])))
+
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
   (cond
@@ -224,18 +249,18 @@
   (cond [(State-Play? s)
           (on-frame-game-play-endgame
            ((compose-n
-             on-frame-game-play-lives
              on-frame-game-play-ball
              on-frame-game-play-opponent
-             on-frame-game-play-player-position)
+             on-frame-game-play-player-position
+             on-frame-game-play-lives)
             s))]
         [else s]))
 
 (: on-frame-game-play-ball : State-Play -> State-Play)
 (define (on-frame-game-play-ball s)
   ((compose1
-    on-frame-game-play-ball-direction
-    on-frame-game-play-ball-position) s))
+    on-frame-game-play-ball-position
+    on-frame-game-play-ball-direction) s))
 
 (: on-frame-game-play-ball-collision-bumper : State-Play -> State-Play)
 (define (on-frame-game-play-ball-collision-bumper s)
@@ -435,8 +460,8 @@
                             #:specular 0
                             #:roughness 0.3))
 
-; CONSTANTS
-(define CAMERA (basis 'camera (point-at CAMERA-POS CAMERA-LOOK-AT)))
+;; RENDER — CONSTANTS
+
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
@@ -456,7 +481,24 @@
            (with-emitted (emitted "yellow" 2)
              (arrow origin -z))))
 
-; ON-DRAW
+;; RENDER — CAMERA
+
+(: camera : State -> Pict3D)
+(define (camera s)
+  (basis 'camera (camera-transform s)))
+
+(: camera-point-at : -> Affine)
+(define (camera-point-at) (point-at (camera-pos) CAMERA-LOOK-AT))
+
+(: camera-transform : State -> Affine)
+(define (camera-transform s)
+  (define t (State-t s))
+  (affine-compose (rotate-x (/ t 1700.0))
+                  (rotate-y (/ t -1000.0))
+                  (rotate-z (/ t 500.0))
+                  (camera-point-at)))
+
+; RENDER — ON-DRAW
 
 (: on-draw : State Natural Flonum -> Pict3D)
 (define (on-draw s n t)
@@ -465,14 +507,47 @@
 
 ; RENDER FUNCTIONS
 
+; Scale a [-1,1] value up to a range of the given width.
+(: scale--1-1 : Flonum Integer -> Flonum)
+(define (scale--1-1 n width)
+  (let ([half-width (/ (exact->inexact width) 2.0)])
+  (+ (* n half-width) half-width)))
+
+; wrap-within
+(: wrap-within : Flonum Flonum -> Flonum)
+(define (wrap-within n width)
+  (cond [(or (> n width) (< n (- width))) (error "n below screen bounds")]
+        [(negative? n) (- width n)]
+        [else n]))
+
 ; Get a transformation that moves an object from the origin to the given (x,y,z)
 ; coordinate in screen-space, where (0,0,1) is the top-left of the camera
-; viewport, placed in a z-plane 1 unit away from the camera.
+; viewport and (SCREEN-WIDTH,SCREEN-HEIGHT,1) is the bottom-right, placed in a
+; z-plane 1 unit away from the camera.
+(: position-screen-space-pixels : (->* (State Flonum Flonum) (Flonum) Affine))
+(define (position-screen-space-pixels s x y [z 1.0])
+  (define cam-t (camera-transform s))
+  (define dir   ((camera-ray-dir cam-t
+                                 #:width SCREEN-WIDTH
+                                 #:height SCREEN-HEIGHT
+                                 #:z-near CAMERA-SPACE-DISTANCE)
+                 (wrap-within x SCREEN-WIDTH-INEXACT)
+                 (wrap-within y SCREEN-HEIGHT-INEXACT)))
+  (affine-compose (move dir)
+                  cam-t
+                  (scale CAMERA-SPACE-DISTANCE)))
 
-;; WIP
-(: position-screen-space : Flonum Flonum Flonum -> Affine)
-(define (position-screen-space x y z)
-  (affine-compose (move (pos- CAMERA-POS origin))))
+; Get a transformation that moves an object from the origin to the given (x,y,z)
+; coordinate in screen-space, where (-1,-1,1) is the top-left of the camera
+; viewport, and (1,1,1) is the bottom-right, placed in a z-plane 1 unit away
+; from the camera.
+(: position-screen-space-relative : (->* (State Flonum Flonum) (Flonum) Affine))
+(define (position-screen-space-relative s x y [z 1.0])
+  (position-screen-space-pixels
+   s
+   (scale--1-1 x SCREEN-WIDTH)
+   (scale--1-1 y SCREEN-HEIGHT)
+   z))
 
 ; RENDER FUNCTIONS — GAME OVER
 
@@ -481,13 +556,24 @@
   (cond
     [(State-Game-Over? s)
      (combine
-      CAMERA
-      (render-game-over-message s))]
+      (camera s)
+      (render-game-over-message s)
+      (render-game-over-score s))]
     [else empty-pict3d]))
 
-(: render-game-over-message : State -> Pict3D)
+(: render-game-over-message : State-Game-Over -> Pict3D)
 (define (render-game-over-message s)
-  (with-emitted (emitted "red" 2.0) (rotate-z (cube origin 0.5) 45)))
+  (transform (with-emitted (emitted "red" 2.0)
+                         (rotate-z (cube origin 0.5) 45))
+             (position-screen-space-relative s 0.0 0.0)))
+
+(: render-game-over-score : State-Game-Over -> Pict3D)
+(define (render-game-over-score s)
+  (transform (render-player-score
+              (Player-score
+               (State-Play-player
+                (State-Game-Over-end-state s))))
+             (position-screen-space-pixels s -300.0 -300.0)))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -570,36 +656,16 @@
   (let ([player (State-Play-player s)])
     ; player score
     (combine
-     ; ones
-     (parameterize ([current-emitted (emitted 1 1 1 2)])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0 (get-number-place (Player-score player) 10 1))])
-          (sphere (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.03)) 0.1) 0.01))))
-     ; tens
-     (parameterize ([current-emitted (emitted 0.5 0.7 1 2)])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0.0 (get-number-place (Player-score player) 100 10))])
-          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.07) 0.01))))
-     ; hundreds
-     (parameterize ([current-emitted (emitted 1 0.8 0 1.5)])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0.0 (get-number-place (Player-score player) 1000 100))])
-          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.04) 0.01))))
-     ; thousands
-     (parameterize ([current-emitted (emitted 0.6 0 0.8 1.5)])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0.0 (get-number-place (Player-score player) 10000 1000))])
-          (sphere (pos 0.5 (+ 0.5 (* n 0.03)) 0.01) 0.01))))
+     (transform (render-player-score (Player-score player))
+                (position-screen-space-pixels s 100.0 100.0))
      ; player lives
-     (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([n (range 0 (Player-lives player))])
-          (cube (pos 0.5 (+ 0.5 (* (exact->inexact n) 0.08)) 0.2) 0.02)))))))
+     (transform
+      (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+        (combine
+         (for/list : (Listof Pict3D)
+           ([n (range 0 (Player-lives player))])
+           (cube (pos (* (exact->inexact n) -0.08) 0 0) 0.02))))
+      (position-screen-space-pixels s 1100.0 100.0)))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
@@ -627,7 +693,36 @@
 (define (render-game-play-lights+camera s)
   (combine (light (pos 0 1 2) (emitted "Thistle"))
            (light (pos 0 -1 -2) (emitted "PowderBlue"))
-           CAMERA))
+           (camera s)))
+
+(: render-player-score : Nonnegative-Integer -> Pict3D)
+(define (render-player-score score)
+  (combine
+   ; ones
+   (parameterize ([current-emitted (emitted 1 1 1 2)])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0 (get-number-place score 10 1))])
+        (sphere (pos (* n 0.03) 0.0 0.0) 0.01))))
+   ; tens
+   (parameterize ([current-emitted (emitted 0.5 0.7 1 2)])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0.0 (get-number-place score 100 10))])
+        (sphere (pos (* n 0.03) 0.03 0.0) 0.01))))
+   ; hundreds
+   (parameterize ([current-emitted (emitted 1 0.8 0 1.5)])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0.0 (get-number-place score 1000 100))])
+        (sphere (pos (* n 0.03) 0.06 0.0) 0.01))))
+   ; thousands
+   (parameterize ([current-emitted (emitted 0.6 0 0.8 1.5)])
+     (combine
+      (for/list : (Listof Pict3D)
+        ([n (range 0.0 (get-number-place score 10000 1000))])
+        (sphere (pos (* n 0.03) 0.09 0.0) 0.01))))
+   ))
 
 ;; VALIDATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -639,12 +734,6 @@
       (State-Play? s)))
 
 ;; BANGIN ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(: random-0-1 : -> Flonum)
-(define (random-0-1)
-  (let ([result (/ (exact->inexact (random 4294967087)) 4294967086.0)])
-    (cond [(flonum? result) result]
-          [else (error "random did not return flonum")])))
 
 (: state-reset : State Natural Flonum -> State-Play)
 (define (state-reset s n t)
@@ -667,7 +756,7 @@
    (state-start-game-play-ball) ; ball
    (Opponent 0.0) ; y           ; opponent
    (Player 3    ; lives         ; player
-           5297 ; score
+           0    ; score
            1.0  ; score-multiplier
            0.0) ; y
    t))   ; start-t
