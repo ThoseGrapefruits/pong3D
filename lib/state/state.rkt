@@ -1,7 +1,16 @@
 #lang typed/racket/base
 
-(require
-  pict3d)
+(require pict3d)
+
+(provide
+ (struct-out Ball)
+ (struct-out Opponent)
+ (struct-out Player)
+ (struct-out State)
+ (struct-out State-Game-Over)
+ (struct-out State-Main-Menu)
+ (struct-out State-Paused)
+ (struct-out State-Play))
 
 (struct Ball
   ([dir : Dir]
@@ -42,13 +51,3 @@
    [player : Player]
    [start-t : Flonum])
   #:transparent)
-
-(provide
- (struct-out Ball)
- (struct-out Opponent)
- (struct-out Player)
- (struct-out State)
- (struct-out State-Game-Over)
- (struct-out State-Main-Menu)
- (struct-out State-Paused)
- (struct-out State-Play))
