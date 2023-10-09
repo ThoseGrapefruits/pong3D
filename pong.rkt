@@ -4,7 +4,8 @@
   math/flonum
   pict3d
   pict3d/universe
-  racket/set
+  typed/racket/base
+  typed/racket/gui
   typed-compose)
 
 ;
@@ -21,25 +22,67 @@
 
 ;; CONSTANTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: BALL-ACCELERATION-PADDLE : Flonum)
 (define BALL-ACCELERATION-PADDLE 1.04)
+
+(: BALL-ACCELERATION-WALL : Flonum)
 (define BALL-ACCELERATION-WALL 1.01)
-(define BALL-RADIUS 3/128)
+
+(: BALL-RADIUS : Flonum)
+(define BALL-RADIUS 0.024)
+
+(: BALL-SPEED : Flonum)
 (define BALL-SPEED 0.001)
+
+(: CAMERA-SPACE-DISTANCE : Flonum)
 (define CAMERA-SPACE-DISTANCE 0.05)
-(define BUMPER-SCALE (dir 1/64 7/64 1/32))
+
+(: BUMPER-SCALE : Dir)
+(define BUMPER-SCALE (dir 0.015 0.11 0.03))
+
+(: BUMPER-CONTACT-WIDTH : Flonum)
 (define BUMPER-CONTACT-WIDTH (+ (dir-dy BUMPER-SCALE) BALL-RADIUS))
+
+(: BOUNDS-BUMPER-GAP : Flonum)
 (define BOUNDS-BUMPER-GAP (* 10 (dir-dx BUMPER-SCALE)))
+
+(: CONTACT-BUFFER : Flonum)
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
+
+(: FRAME-DELAY-MILLIS : Positive-Real)
+(define FRAME-DELAY-MILLIS (max 1.0 (abs (/ 1000.0 59.9))))
+
+(: OPPONENT-SPEED : Flonum)
 (define OPPONENT-SPEED 0.001)
+
+(: OPPONENT-X : Flonum)
 (define OPPONENT-X -1.0)
+
+(: OPPONENT-BOUNDS : Flonum)
 (define OPPONENT-BOUNDS (- OPPONENT-X BOUNDS-BUMPER-GAP))
+
+(: PLAYER-X : Flonum)
 (define PLAYER-X 1.0)
+
+(: PLAYER-BOUNDS : Flonum)
 (define PLAYER-BOUNDS (+ PLAYER-X BOUNDS-BUMPER-GAP))
+
+(: REDIRECT-FACTOR : Flonum)
+(define REDIRECT-FACTOR 40.0)
+
+(: SCREEN-WIDTH : Positive-Integer)
 (define SCREEN-WIDTH 1200)
+
+(: SCREEN-WIDTH-INEXACT : Flonum)
 (define SCREEN-WIDTH-INEXACT (exact->inexact SCREEN-WIDTH))
+
+(: SCREEN-HEIGHT : Positive-Integer)
 (define SCREEN-HEIGHT 1080)
+
+(: SCREEN-HEIGHT-INEXACT : Flonum)
 (define SCREEN-HEIGHT-INEXACT (exact->inexact SCREEN-HEIGHT))
-(define SPIN-FACTOR 40.0)
+
+(: WALL-Y : Flonum)
 (define WALL-Y 0.8)
 
 (: aspect-ratio : -> Flonum)
@@ -48,19 +91,6 @@
 
 (: CAMERA-LOOK-AT : Pos)
 (define CAMERA-LOOK-AT origin)
-
-(: camera-pos : -> Pos)
-(define (camera-pos)
-  (define ar (aspect-ratio))
-  (pos (+ 2.0 (* ar -0.3))   ; distance
-       0.0                   ; side-to-side
-       (+ 1.0 (* ar -0.2)))) ; elevation
-
-(: camera-dir : -> Dir)
-(define (camera-dir)
-  (define normalized (dir-normalize (pos- origin (camera-pos))))
-  (cond [normalized normalized]
-        [else (error "normalized not normal")]))
 
 ;; DATA ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -137,21 +167,25 @@
 (: update-counters : State Natural Flonum -> State)
 (define (update-counters s n t)
   (base-state-update s
-                     [dt #:parent State (get-dt s n t) ]
+                     [dt #:parent State (get-dt s t) ]
                      [n #:parent State n]
                      [t #:parent State t]))
 
-(: get-dt : (State Natural Flonum -> Flonum))
-(define (get-dt s n t)
+(: get-dt : (State Flonum -> Flonum))
+(define (get-dt s t)
   (- t (State-t s)))
 
 (: update-key-pressed : State String Boolean -> State)
 (define (update-key-pressed s key pressed?)
-  (base-state-update s
-                     [pressed #:parent State
-                              (cond
-                                [pressed? (set-add (State-pressed s) key)]
-                                [else (set-remove (State-pressed s) key)])]))
+  (cond
+    [(string-prefix? key "wheel-") s]
+    [else
+     (base-state-update
+      s
+      [pressed #:parent State
+               (cond
+                 [pressed? (set-add (State-pressed s) key)]
+                 [else (set-remove (State-pressed s) key)])])]))
 
 (: set-player-position : State-Play Flonum -> State-Play)
 (define (set-player-position s y)
@@ -191,6 +225,13 @@
   (exact-floor (/ (exact->inexact (- (modulo n over) (modulo n under)))
                   (exact->inexact under))))
 
+(: digits : (->* (Nonnegative-Integer) (Nonnegative-Integer) (Listof Nonnegative-Integer)))
+(define (digits n [radix 10])
+  (define-values (q r) (quotient/remainder n radix))
+  (cons r (if (= 0 q)
+              null
+              (digits q radix))))
+
 (: random-0-1 : -> Flonum)
 (define (random-0-1)
   (let ([result (/ (exact->inexact (random 4294967087)) 4294967086.0)])
@@ -206,12 +247,12 @@
 
 ;; EVENT HANDLERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: on-mouse : State Natural Flonum Integer Integer Any -> State)
+(: on-mouse : State Natural Flonum Integer Integer String -> State)
 (define (on-mouse s n t x y e)
   (cond [State-Play? s (on-mouse-game-play s n t x y e)]
         [else s]))
   
-(: on-mouse-game-play : State Natural Flonum Integer Integer Any -> State)
+(: on-mouse-game-play : State Natural Flonum Integer Integer String -> State)
 (define (on-mouse-game-play s n t x y e)
   (cond [(State-Play? s)
          (set-player-position
@@ -282,7 +323,7 @@
                 (dir-scale
                  (dir-reflect (Ball-dir ball)
                               (angles->dir
-                               (* (- 180 SPIN-FACTOR)
+                               (* (- 180 REDIRECT-FACTOR)
                                   (get-contact-offset-y s (Opponent-y opponent)))
                                0))
                  BALL-ACCELERATION-PADDLE)])])]
@@ -302,7 +343,7 @@
           [dir (dir-scale (dir-reflect
                            (Ball-dir ball)
                            (angles->dir
-                            (* (- SPIN-FACTOR)
+                            (* (- REDIRECT-FACTOR)
                                (get-contact-offset-y s (Player-y player)))
                             0))
                           BALL-ACCELERATION-PADDLE)])]
@@ -374,7 +415,7 @@
          State-Play s
          [opponent (struct-copy
                     Opponent opponent
-                    [y (+ (Opponent-y opponent)
+                    [y (clamp-bumper-y (+ (Opponent-y opponent)
                           (cond
                             [(within?
                               (pos-y (Ball-pos ball))
@@ -386,7 +427,7 @@
                             [else
                              (* OPPONENT-SPEED
                                 (State-dt s)
-                                (flsgn pos-diff))]))])])))))
+                                (flsgn pos-diff))])))])])))))
 
 (: on-frame-game-play-player-position : State-Play -> State-Play)
 (define (on-frame-game-play-player-position s)
@@ -485,8 +526,21 @@
 (define (camera s)
   (basis 'camera (camera-transform s)))
 
+(: camera-dir : -> Dir)
+(define (camera-dir)
+  (define normalized (dir-normalize (pos- origin (camera-pos))))
+  (cond [normalized normalized]
+        [else (error "normalized not normal")]))
+
 (: camera-point-at : -> Affine)
 (define (camera-point-at) (point-at (camera-pos) CAMERA-LOOK-AT))
+
+(: camera-pos : -> Pos)
+(define (camera-pos)
+  (define ar (aspect-ratio))
+  (pos (+ 2.0 (* ar -0.3))   ; distance
+       0.0                   ; side-to-side
+       (+ 1.0 (* ar -0.2)))) ; elevation
 
 (: camera-transform : State -> Affine)
 (define (camera-transform s)
@@ -591,8 +645,8 @@
 (define (render-game-play-arena s)
   (parameterize
       ([current-material (material #:ambient 0.01
-                                   #:diffuse 0.1
-                                   #:specular 0.6
+                                   #:diffuse 0.15
+                                   #:specular 0.3
                                    #:roughness 0.3)]
        [current-color (rgba 0.6 0.6 0.6)])
     (transform
@@ -763,7 +817,7 @@
 
 (big-bang3d
  (state-start)
- #:frame-delay (max 1.0 (abs (/ 1000.0 59.9))) ; take that type checker lol
+ #:frame-delay FRAME-DELAY-MILLIS
  #:name "Pong3D — Racket"
  #:on-draw on-draw
  #:on-frame on-frame
@@ -774,3 +828,5 @@
  #:valid-state? valid-state?
  #:width SCREEN-WIDTH
  #:height SCREEN-HEIGHT)
+
+;; WINDOWING ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
