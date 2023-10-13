@@ -1,9 +1,10 @@
 #lang typed/racket
 
 (require
-  math/flonum
+  math/flonum 
   pict3d
   typed-compose
+  typed/racket/gui
   "../config.rkt"
   "../state/accessors.rkt"
   "../state/init.rkt"
