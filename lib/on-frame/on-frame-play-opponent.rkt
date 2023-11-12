@@ -42,8 +42,8 @@
 
 (: predict-ball-y : (->* (State-Play) ((Sequenceof Pos-Dir)) Flonum))
 (define (predict-ball-y s [path (predict-ball-path s)])
-  (define first (stream-first path))
-  (define b-pos (Pos-Dir-pos first))
+  (define current-pos-dir (stream-first path))
+  (match-define (Pos-Dir b-pos b-dir) current-pos-dir)
   (cond [(empty? path) 0.0] ; return to center
         [(fl= (pos-x b-pos) OPPONENT-X) (pos-y b-pos)]
         [else (predict-ball-y s (stream-rest path))]))
@@ -51,12 +51,29 @@
 (: predict-ball-path : State-Play -> (Sequenceof Pos-Dir))
 (define (predict-ball-path s)
   (define ball (State-Play-ball s))
-  (predict-ball-path-internal s (Pos-Dir (Ball-pos ball) (Ball-dir ball))))
+  (predict-ball-path-internal (Pos-Dir (Ball-pos ball) (Ball-dir ball))))
 
-(: predict-ball-path-internal : State-Play Pos-Dir -> (Sequenceof Pos-Dir))
-(define (predict-ball-path-internal s from)
+(: predict-ball-path-internal : Pos-Dir -> (Sequenceof Pos-Dir))
+(define (predict-ball-path-internal from)
   (define to (predict-next-ball-pos-dir from))
-  (stream-cons to (predict-ball-path-internal s to)))
+  (stream-cons to (predict-ball-path-internal to)))
 
 (: predict-next-ball-pos-dir : Pos-Dir -> Pos-Dir)
-(define (predict-next-ball-pos-dir pd) pd) ; TODO
+(define (predict-next-ball-pos-dir pd)
+  (match-define (Pos-Dir p d) pd)
+  (match-define-values (yaw pitch) (dir->angles d))
+  (define wall-y (cond [(positive? (dir-dy d)) BALL-MAX-Y    ]
+                       [else                   (- BALL-MAX-Y)]))
+  (define end-x (cond [(positive? (dir-dx d)) PLAYER-X   ]
+                      [else                  OPPONENT-X ]))
+  (define tan-pitch (tan pitch))
+
+  (define end-dx (- end-x (pos-x p)))
+  (define end-dy (* end-dx tan-pitch))
+  (define wall-dy (- wall-y (pos-y p)))
+  (define wall-dx (/ wall-dy tan-pitch))
+  (define dx (min end-dx wall-dx))
+  (define dy (min end-dy wall-dy))
+
+  (Pos-Dir (pos+ p (dir dx dy 0.0))
+           (dir-reflect d +y)))
