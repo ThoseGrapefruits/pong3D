@@ -79,8 +79,8 @@
 ; Scale a [-1,1] value up to a range of the given width.
 (: scale--1-1 : Flonum Integer -> Flonum)
 (define (scale--1-1 n width)
-  (let ([half-width (/ (exact->inexact width) 2.0)])
-  (+ (* n half-width) half-width)))
+  (define half-width (/ (exact->inexact width) 2.0))
+  (+ (* n half-width) half-width))
 
 ; wrap-within
 (: wrap-within : Flonum Flonum -> Flonum)
@@ -213,14 +213,14 @@
 
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
-  (let ([ball (State-Play-ball s)])
-    (combine
-     (light
-      (Ball-pos ball)
-      (emitted "oldlace" 0.1)
-      #:range 1)
-     (with-emitted (emitted "oldlace" 1.5)
-       (sphere (Ball-pos ball) BALL-RADIUS)))))
+  (define ball (State-Play-ball s))
+  (combine
+   (light
+    (Ball-pos ball)
+    (emitted "oldlace" 0.1)
+    #:range 1)
+   (with-emitted (emitted "oldlace" 1.5)
+     (sphere (Ball-pos ball) BALL-RADIUS))))
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)

@@ -69,3 +69,6 @@
 
 (: WALL-Y : Flonum)
 (define WALL-Y 0.8)
+
+(: BALL-MAX-Y : Flonum)
+(define BALL-MAX-Y (- WALL-Y BALL-RADIUS))

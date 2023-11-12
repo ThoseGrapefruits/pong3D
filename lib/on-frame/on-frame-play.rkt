@@ -34,37 +34,37 @@
 
 (: on-frame-play-player-position : State-Play -> State-Play)
 (define (on-frame-play-player-position s)
-  (let ([player (State-Play-player s)]
-        [pressed (State-pressed s)])
-    (cond
-      [(set-member? pressed "left")
-       (State-set-player-position
-        s
-        (+ (Player-y player) (* (State-dt s) -1/512)))]
-      [(set-member? pressed "right")
-       (State-set-player-position
-        s
-        (+ (Player-y player) (* (State-dt s)  1/512)))]
-      [else s])))
+  (define player (State-Play-player s))
+  (define pressed (State-pressed s))
+  (cond
+    [(set-member? pressed "left")
+     (State-set-player-position
+      s
+      (+ (Player-y player) (* (State-dt s) -1/512)))]
+    [(set-member? pressed "right")
+     (State-set-player-position
+      s
+      (+ (Player-y player) (* (State-dt s)  1/512)))]
+    [else s]))
 
 (: on-frame-play-lives : State-Play -> State-Play)
 (define (on-frame-play-lives s)
-  (let ([ball (State-Play-ball s)]
-        [player (State-Play-player s)])
-    (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
+  (define ball (State-Play-ball s))
+  (define player (State-Play-player s))
+  (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
+         (struct-copy
+          State-Play s
+          [ball (state-start-game-play-ball)]
+          [player
            (struct-copy
-            State-Play s
-            [ball (state-start-game-play-ball)]
-            [player
-             (struct-copy
-              Player player
-              [score (get-new-player-score player 10)])])]
-          [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
+            Player player
+            [score (get-new-player-score player 10)])])]
+        [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
+         (struct-copy
+          State-Play s
+          [ball (state-start-game-play-ball)]
+          [player
            (struct-copy
-            State-Play s
-            [ball (state-start-game-play-ball)]
-            [player
-             (struct-copy
-              Player player
-              [lives (max 0 (sub1 (Player-lives player)))])])]
-          [else s])))
+            Player player
+            [lives (max 0 (sub1 (Player-lives player)))])])]
+        [else s]))

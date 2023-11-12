@@ -13,28 +13,30 @@
 
 (: on-frame-play-opponent : State-Play -> State-Play)
 (define (on-frame-play-opponent s)
-  (let ([ball (State-Play-ball s)]
-        [opponent (State-Play-opponent s)])
-    (let ([aim-buffer (/ BUMPER-CONTACT-WIDTH 8)]
-          [pos-desired (pos-y (Ball-pos ball))])
-      (let ([pos-diff (- pos-desired (Opponent-y opponent))])
-        (struct-copy
-         State-Play s
-         [opponent (struct-copy
-                    Opponent opponent
-                    [y (clamp-bumper-y (+ (Opponent-y opponent)
-                          (cond
-                            [(within?
-                              (pos-y (Ball-pos ball))
-                              (- (Opponent-y opponent) aim-buffer)
-                              (+ (Opponent-y opponent) aim-buffer))
-                             (* OPPONENT-SPEED
-                                (State-dt s)
-                                pos-diff)]
-                            [else
-                             (* OPPONENT-SPEED
-                                (State-dt s)
-                                (flsgn pos-diff))])))])])))))
+  (define ball (State-Play-ball s))
+  (define opponent (State-Play-opponent s))
+  (define aim-buffer (/ BUMPER-CONTACT-WIDTH 8))
+  (define pos-desired (pos-y (Ball-pos ball)))
+  (define pos-diff (- pos-desired (Opponent-y opponent)))
+  (define y-desired (+ (Opponent-y opponent)
+                       (cond
+                         [(within?
+                           (pos-y (Ball-pos ball))
+                           (- (Opponent-y opponent) aim-buffer)
+                           (+ (Opponent-y opponent) aim-buffer))
+                          (* OPPONENT-SPEED
+                             (State-dt s)
+                             pos-diff)]
+                         [else
+                          (* OPPONENT-SPEED
+                             (State-dt s)
+                             (flsgn pos-diff))])))
+  (struct-copy
+   State-Play s
+   [opponent
+    (struct-copy
+     Opponent opponent
+     [y (clamp-bumper-y y-desired)])]))
 
 (struct Pos-Dir
   ([pos : Pos]

@@ -22,9 +22,9 @@
 
 (: random-0-1 : -> Flonum)
 (define (random-0-1)
-  (let ([result (/ (exact->inexact (random 4294967087)) 4294967086.0)])
-    (cond [(flonum? result) result]
-          [else (error "random did not return flonum")])))
+  (define result (/ (exact->inexact (random 4294967087)) 4294967086.0))
+  (cond [(flonum? result) result]
+        [else (error "random did not return flonum")]))
 
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
