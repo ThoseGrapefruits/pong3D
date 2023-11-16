@@ -55,6 +55,7 @@
          (struct-copy
           State-Play s
           [ball (state-start-game-play-ball)]
+          [ball-predicted-pos null]
           [player
            (struct-copy
             Player player
@@ -63,6 +64,7 @@
          (struct-copy
           State-Play s
           [ball (state-start-game-play-ball)]
+          [ball-predicted-pos null]
           [player
            (struct-copy
             Player player

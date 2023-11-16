@@ -5,6 +5,7 @@
   "../config.rkt"
   "../state/accessors.rkt"
   "../state/state.rkt"
+  "../util/ball/ball-prediction.rkt"
   "../util/number/index.rkt"
   "../util/player/index.rkt")
 
@@ -30,18 +31,18 @@
           (within? (State-get-contact-offset-y s (Opponent-y opponent))
                    (- (dir-dy BUMPER-SCALE))
                    (dir-dy BUMPER-SCALE)))
+     (define reflection-yaw
+       (* (- 180 REDIRECT-FACTOR)
+          (State-get-contact-offset-y s (Opponent-y opponent))))
+     (define reflection-axis (angles->dir reflection-yaw 0))
+     (define ball-new (struct-copy
+             Ball ball
+             [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
+                             BALL-ACCELERATION-PADDLE)]))
      (struct-copy
       State-Play s
-      [ball (struct-copy
-             Ball ball
-             [dir
-              (dir-scale
-               (dir-reflect (Ball-dir ball)
-                            (angles->dir
-                             (* (- 180 REDIRECT-FACTOR)
-                                (State-get-contact-offset-y s (Opponent-y opponent)))
-                             0))
-               BALL-ACCELERATION-PADDLE)])])]
+      [ball ball-new]
+      [ball-predicted-pos (predict-ball-pos ball-new)])]
     ; player collision
     [(and (positive? (dir-dx (Ball-dir ball)))
           (within? (+ (pos-x (Ball-pos ball)) CONTACT-BUFFER)
@@ -50,18 +51,19 @@
           (within? (State-get-contact-offset-y s (Player-y player))
                    (- (dir-dy BUMPER-SCALE))
                    (dir-dy BUMPER-SCALE)))
-     (struct-copy
-      State-Play s
-      [ball
+     (define reflection-yaw
+       (* (- REDIRECT-FACTOR)
+          (State-get-contact-offset-y s (Player-y player))))
+     (define reflection-axis (angles->dir reflection-yaw 0))
+     (define ball-new
        (struct-copy
         Ball ball
-        [dir (dir-scale (dir-reflect
-                         (Ball-dir ball)
-                         (angles->dir
-                          (* (- REDIRECT-FACTOR)
-                             (State-get-contact-offset-y s (Player-y player)))
-                          0))
-                        BALL-ACCELERATION-PADDLE)])]
+        [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
+                        BALL-ACCELERATION-PADDLE)]))
+     (struct-copy
+      State-Play s
+      [ball ball-new]
+      [ball-predicted-pos (predict-ball-pos ball-new)]
       [player
        (struct-copy
         Player player

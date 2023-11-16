@@ -11,6 +11,7 @@
 (define (state-reset s n t)
   (struct-copy
    State-Play (state-start t)
+   [ball-predicted-pos null]
    [dt #:parent State (State-dt s)]
    [n  #:parent State (State-n s)]
    [t  #:parent State (State-t s)]))
@@ -26,7 +27,8 @@
 
    ; State-Play
    (state-start-game-play-ball) ; ball
-   (Opponent 0.0) ; y           ; opponent
+   null
+   (Opponent null 0.0) ; y      ; opponent
    (Player 3    ; lives         ; player
            0    ; score
            1.0  ; score-multiplier
