@@ -31,7 +31,8 @@
                            (+ (Opponent-y opponent) aim-buffer))
                           (* OPPONENT-SPEED
                              (State-dt s)
-                             pos-diff)]
+                             pos-diff
+                             0.2)]
                          [else
                           (* OPPONENT-SPEED
                              (State-dt s)

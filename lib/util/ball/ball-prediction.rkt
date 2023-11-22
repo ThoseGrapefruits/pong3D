@@ -1,6 +1,7 @@
 #lang typed/racket
 
 (require
+  math/flonum
   pict3d
   typed/racket/stream
   "../../config.rkt"
@@ -17,8 +18,12 @@
   (define current-pos-dir (stream-first path))
   (match-define (Pos-Dir b-pos b-dir) current-pos-dir)
   (cond [(empty? path) 0.0] ; return to center
-        [(<= (pos-x b-pos) OPPONENT-X) b-pos] ; hit opponent bound
-        [(>= (pos-x b-pos) PLAYER-X)   b-pos] ; hit player bound
+        [(and (<= (pos-x b-pos) OPPONENT-X)
+              (negative? (dir-dx b-dir)))
+         b-pos] ; hit opponent bound
+        [(and (>= (pos-x b-pos) PLAYER-X)
+              (positive? (dir-dx b-dir)))
+         b-pos] ; hit player bound
         [else (predict-ball-pos ball (stream-rest path))]))
 
 (: predict-ball-path : Ball -> (Sequenceof Pos-Dir))
@@ -33,21 +38,21 @@
 (: predict-next-ball-pos-dir : Pos-Dir -> Pos-Dir)
 (define (predict-next-ball-pos-dir pd)
   (match-define (Pos-Dir p d) pd)
-  (writeln (format "pos ~a dir ~a" p d))
-  ; TODO 180 yaw w/ reverse direction
-  (match-define-values (yaw pitch) (dir->angles d))
-  (define wall-y (cond [(positive? (dir-dy d)) BALL-MAX-Y    ]
-                       [else                   (- BALL-MAX-Y)]))
-  (define end-x (cond [(positive? (dir-dx d)) PLAYER-X   ]
-                      [else                  OPPONENT-X ]))
-  (define tan-yaw (tan yaw))
+  (define dx-source (dir-dx d))
+  (define dy-source (dir-dy d))
+  ; TODO calc angles differently
+  (define wall-y (cond [(positive? dy-source)    BALL-MAX-Y ]
+                       [else           (- BALL-MAX-Y)]))
+  (define end-x (cond [(positive? dx-source) PLAYER-X   ]
+                      [else           OPPONENT-X ]))
+  (define tan-theta (/ dy-source dx-source))
 
-  (writeln (format "yaw ~a pitch ~a" yaw pitch))
+  ; (printf "~n~npos ~a ~ndir ~a ~ntan-theta ~a ~ntheta ~a ~n~n" p d tan-theta theta)
 
   (define end-dx (- end-x (pos-x p)))
-  (define end-dy (* end-dx tan-yaw))
+  (define end-dy (* end-dx tan-theta))
   (define wall-dy (- wall-y (pos-y p)))
-  (define wall-dx (/ wall-dy tan-yaw))
+  (define wall-dx (/ wall-dy tan-theta))
   (define dx (if (positive? end-dx) (min end-dx wall-dx) (max end-dx wall-dx)))
   (define dy (if (positive? end-dy) (min end-dy wall-dy) (max end-dy wall-dy)))
 
