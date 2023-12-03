@@ -26,13 +26,13 @@
   (define y-desired (+ (Opponent-y opponent)
                        (cond
                          [(within?
-                           (pos-y (Ball-pos ball))
+                           pos-desired-y
                            (- (Opponent-y opponent) aim-buffer)
                            (+ (Opponent-y opponent) aim-buffer))
                           (* OPPONENT-SPEED
                              (State-dt s)
                              pos-diff
-                             0.2)]
+                             0.1)]
                          [else
                           (* OPPONENT-SPEED
                              (State-dt s)

@@ -17,14 +17,14 @@
 ;
 ;                                  ═══
 ;
-;     -                               
+;     ⊖
 ;    /                             ╭─╮
 ;   x                              ╰─╯
-;  /                                                                        +
-; +                                                                         |
+;  /                                                                        ⊕
+; ⊕                                                                         |
 ;                               ╓───────╖                                   z 
 ;                               ╙───────╜                                   |
-;                             - ——— y ——— +                                 -
+;                             ⊖ ——— y ——— ⊕                                 ⊖
 
 
 (big-bang3d
@@ -39,3 +39,5 @@
  #:valid-state? valid-state?
  #:width SCREEN-WIDTH
  #:height SCREEN-HEIGHT)
+
+0
