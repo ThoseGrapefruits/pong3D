@@ -10,6 +10,7 @@
 
 ; GLOBAL SETTINGS
 
+(current-pict3d-fov FOV)
 (current-material (material #:ambient 0
                             #:diffuse 0
                             #:specular 0
@@ -65,9 +66,10 @@
 (: camera-pos : -> Pos)
 (define (camera-pos)
   (define ar (aspect-ratio))
-  (pos (+ 2.0 (* ar -0.3))   ; distance
-       0.0                   ; side-to-side
-       (+ 1.0 (* ar -0.2)))) ; elevation
+  (define fov (exact->inexact FOV))
+  (pos (+ 2.0 (* ar -0.3) (* fov 0.01))    ; distance
+       0.0                                 ; side-to-side
+       (+ 1.0 (* ar -0.2) (* fov 0.001)))) ; elevation
 
 (: camera-transform : State -> Affine)
 (define (camera-transform s)
@@ -177,13 +179,15 @@
                         #:inside? #t
                         #:top-cap? #f
                         #:bottom-cap? #f)
-              ; end of the tunnel
+              ; sun
               (transform
                (light origin (emitted "goldenrod" 0.0001))
                (affine-compose
+                (rotate-z (- 135.0 (* 0.003 (State-t s))))
                 (move-y -0.5)
                 (move-z -0.99)
                 (scale 40)))
+              ; sky
               (with-emitted
                   (emitted 0 0 0.01 20)
                 (cylinder origin 1
@@ -214,7 +218,23 @@
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
+  (define predicted-pos (State-Play-ball-predicted-pos s))
+  ; (define shift-dir (dir 0.0 0.0 (* 2.0 (dir-dz BUMPER-SCALE))))
+  ; (define shift-neg (dir-negate shift-dir))
+  (define is-player (positive? (dir-dx (Ball-dir ball))))
   (combine
+   ; predicted position
+   (cond [(null? predicted-pos) empty-pict3d]
+         [else (with-emitted (emitted (if is-player COLOR-PLAYER-EMITTED "black") 0.3)
+                ;  (combine
+                ;   (arrow (pos+ predicted-pos (dir-scale shift-dir 3.0)) shift-neg)
+                ;   (arrow (pos+ predicted-pos (dir-scale shift-neg 3.0)) shift-dir))
+                (transform
+                 (sphere origin BALL-RADIUS)
+                 (affine-compose
+                  (move (pos- predicted-pos origin))
+                  (rotate-y (if is-player 90.0 -90.0))
+                  )))])
    (light
     (Ball-pos ball)
     (emitted "oldlace" 0.1)
@@ -235,29 +255,29 @@
       (combine
        (for/list : (Listof Pict3D)
          ([n (range 0 (Player-lives player))])
-         (cube (pos (* (exact->inexact n) -0.08) 0 0) 0.02))))
+         (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
     (position-screen-space-pixels s -100.0 100.0))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
   (parameterize
-      ([current-material (material #:ambient 0
-                                   #:diffuse 0
-                                   #:specular 0
+      ([current-material (material #:ambient 0.0
+                                   #:diffuse 0.0
+                                   #:specular 0.0
                                    #:roughness 0.3)]
        [current-emitted COLOR-OPPONENT-EMITTED])
-    (rectangle (pos OPPONENT-X (Opponent-y (State-Play-opponent s)) 0)
+    (rectangle (pos OPPONENT-X (Opponent-y (State-Play-opponent s)) 0.0)
                BUMPER-SCALE)))
 
 (: render-game-play-player : State-Play -> Pict3D)
 (define (render-game-play-player s)
   (parameterize
-      ([current-material (material #:ambient 0
-                                   #:diffuse 0
+      ([current-material (material #:ambient 0.0
+                                   #:diffuse 0.0
                                    #:specular 0.6
                                    #:roughness 0.3)]
        [current-emitted COLOR-PLAYER-EMITTED])
-    (rectangle (pos PLAYER-X (Player-y (State-Play-player s)) 0)
+    (rectangle (pos PLAYER-X (Player-y (State-Play-player s)) 0.0)
                BUMPER-SCALE)))
 
 (: render-game-play-lights+camera : State-Play -> Pict3D)

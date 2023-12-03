@@ -17,17 +17,28 @@
     on-frame-play-ball-position
     on-frame-play-ball-direction) s))
 
+; TODO this stuff still isn't quite right, and gets more incorrect the faster
+; the ball is moving + the more oblique its trajectory is. We basically need to
+; calculate where the ball would hit on the paddle, then move it there and then
+; reflected back out proportionally to how far away it is from the paddle. Right
+; now, I'm half-doing this, but the collision point is the ball's current y,
+; instead of the calculated y collision point. Probably not a huge difference in
+; most circumstances but it's still wrong and probably makes some collisions
+; feel bad / wrong.
+
 (: on-frame-play-ball-collision-bumper : State-Play -> State-Play)
 (define (on-frame-play-ball-collision-bumper s)
   (define player (State-Play-player s))
   (define opponent (State-Play-opponent s))
   (define ball (State-Play-ball s))
+  (define ball-speed-x (abs (dir-dx (Ball-dir ball))))
+  (define ball-berth-x (* ball-speed-x (* (State-dt s) BALL-SPEED)))
   (cond
     ; opponent collision
     [(and (negative? (dir-dx (Ball-dir ball)))
-          (within? (+ (pos-x (Ball-pos ball)) CONTACT-BUFFER)
-                   (+ OPPONENT-X CONTACT-BUFFER)
-                   (+ OPPONENT-X (* CONTACT-BUFFER 2)))
+          (within? (pos-x (Ball-pos ball))
+                   (- OPPONENT-X CONTACT-BUFFER ball-berth-x)
+                   OPPONENT-X-COLLISION)
           (within? (State-get-contact-offset-y s (Opponent-y opponent))
                    (- (dir-dy BUMPER-SCALE))
                    (dir-dy BUMPER-SCALE)))
@@ -45,9 +56,9 @@
       [ball-predicted-pos (predict-ball-pos ball-new)])]
     ; player collision
     [(and (positive? (dir-dx (Ball-dir ball)))
-          (within? (+ (pos-x (Ball-pos ball)) CONTACT-BUFFER)
-                   (- PLAYER-X CONTACT-BUFFER)
-                   PLAYER-X)
+          (within? (pos-x (Ball-pos ball))
+                   PLAYER-X-COLLISION
+                   (+ PLAYER-X CONTACT-BUFFER ball-berth-x))
           (within? (State-get-contact-offset-y s (Player-y player))
                    (- (dir-dy BUMPER-SCALE))
                    (dir-dy BUMPER-SCALE)))

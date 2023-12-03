@@ -20,7 +20,7 @@
   (define pos-desired-y
     (cond [(null? pos-predicted) ball-y]
           [(positive? (dir-dx (Ball-dir ball))) 0.0]
-          [(> (pos-x pos-predicted) OPPONENT-X) ball-y]
+          [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]
           [else (pos-y pos-predicted)]))
   (define pos-diff (- pos-desired-y (Opponent-y opponent)))
   (define y-desired (+ (Opponent-y opponent)

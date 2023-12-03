@@ -34,6 +34,9 @@
 (: CONTACT-BUFFER : Flonum)
 (define CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
 
+(: FOV : Positive-Real)
+(define FOV 60)
+
 (: FRAME-DELAY-MILLIS : Positive-Real)
 (define FRAME-DELAY-MILLIS (max 1.0 (abs (/ 1000.0 59.9))))
 
@@ -43,11 +46,17 @@
 (: OPPONENT-X : Flonum)
 (define OPPONENT-X -1.0)
 
+(: OPPONENT-X-COLLISION : Flonum)
+(define OPPONENT-X-COLLISION (+ OPPONENT-X CONTACT-BUFFER))
+
 (: OPPONENT-BOUNDS : Flonum)
 (define OPPONENT-BOUNDS (- OPPONENT-X BOUNDS-BUMPER-GAP))
 
 (: PLAYER-X : Flonum)
 (define PLAYER-X 1.0)
+
+(: PLAYER-X-COLLISION : Flonum)
+(define PLAYER-X-COLLISION   (- PLAYER-X   CONTACT-BUFFER))
 
 (: PLAYER-BOUNDS : Flonum)
 (define PLAYER-BOUNDS (+ PLAYER-X BOUNDS-BUMPER-GAP))
