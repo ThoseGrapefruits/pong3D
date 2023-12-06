@@ -39,5 +39,3 @@
  #:valid-state? valid-state?
  #:width SCREEN-WIDTH
  #:height SCREEN-HEIGHT)
-
-0

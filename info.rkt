@@ -2,4 +2,5 @@
 
 (define name "pong-racket")
 (define deps '("pict3d"
-               "typed-compose"))
+               "typed-compose"
+               "typed-racket-stream"))

@@ -41,7 +41,7 @@
 (define FRAME-DELAY-MILLIS (max 1.0 (abs (/ 1000.0 59.9))))
 
 (: OPPONENT-SPEED : Flonum)
-(define OPPONENT-SPEED 0.001)
+(define OPPONENT-SPEED 0.0007)
 
 (: OPPONENT-X : Flonum)
 (define OPPONENT-X -1.0)

@@ -16,20 +16,31 @@
   ([pos : Pos]
    [dir : Dir]))
 
-(provide predict-ball-pos)
+(provide
+  predict-ball-pos
+  predict-ball-pos-ends
+  predict-ball-pos-ends-2)
 
-(: predict-ball-pos : (->* (Ball) ((Sequenceof Pos-Dir)) Pos))
-(define (predict-ball-pos ball [path (predict-ball-path ball)])
+(: predict-ball-pos : Ball -> Pos)
+(define (predict-ball-pos ball)
+  (stream-first (predict-ball-pos-ends ball)))
+
+(: predict-ball-pos-ends-2 : Ball -> (Listof Pos))
+(define (predict-ball-pos-ends-2 ball)
+  (stream->list (stream-take (predict-ball-pos-ends ball) 2)))
+
+(: predict-ball-pos-ends : (->* (Ball) ((Sequenceof Pos-Dir)) (Sequenceof Pos)))
+(define (predict-ball-pos-ends ball [path (predict-ball-path ball)])
   (define current-pos-dir (stream-first path))
   (match-define (Pos-Dir b-pos b-dir) current-pos-dir)
   (cond [(empty? path) 0.0] ; return to center
-        [(and (<= (pos-x b-pos) OPPONENT-X-COLLISION)
-              (negative? (dir-dx b-dir)))
-         b-pos] ; hit opponent bound
-        [(and (>= (pos-x b-pos) PLAYER-X-COLLISION)
-              (positive? (dir-dx b-dir)))
-         b-pos] ; hit player bound
-        [else (predict-ball-pos ball (stream-rest path))]))
+        [(or (and (<= (pos-x b-pos) OPPONENT-X-COLLISION) ; hit opponent bound
+                  (positive? (dir-dx b-dir)))
+             (and (>= (pos-x b-pos) PLAYER-X-COLLISION) ; hit player bound
+                  (negative? (dir-dx b-dir))))
+         (stream-cons b-pos (predict-ball-pos-ends ball (stream-rest path)))]
+        [else
+         (predict-ball-pos-ends ball (stream-rest path))]))
 
 (: predict-ball-path : Ball -> (Sequenceof Pos-Dir))
 (define (predict-ball-path ball)
@@ -83,6 +94,12 @@
   (define dy (if (positive? end-dy)
                  (min end-dy wall-dy)
                  (max end-dy wall-dy)))
+  (define pos-new (pos+ p (dir dx dy 0.0)))
+  (define dir-new (if (or (and (<= (pos-x pos-new) OPPONENT-X-COLLISION) ; hit opponent bound
+                               (negative? dx-source))
+                          (and (>= (pos-x pos-new) PLAYER-X-COLLISION) ; hit player bound
+                               (positive? dx-source)))
+                      (dir-reflect d +x)
+                      (dir-reflect d +y)))
 
-  (Pos-Dir (pos+ p (dir dx dy 0.0))
-           (dir-reflect d +y)))
+  (Pos-Dir pos-new dir-new))

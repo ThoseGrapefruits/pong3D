@@ -52,19 +52,25 @@
   (define ball (State-Play-ball s))
   (define player (State-Play-player s))
   (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
+         (define state-fresh (state-reset s (State-n s) (State-t s)))
          (struct-copy
           State-Play s
-          [ball (state-start-game-play-ball)]
-          [ball-predicted-pos null]
+          [ball (State-Play-ball state-fresh)]
+          [ball-predicted-pos-ends (State-Play-ball-predicted-pos-ends state-fresh)]
+          [opponent (struct-copy
+            Opponent (State-Play-opponent s)
+            [y (Opponent-y (State-Play-opponent state-fresh))]
+          )]
           [player
            (struct-copy
             Player player
             [score (get-new-player-score player 10)])])]
         [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
+         (define state-fresh (state-reset s (State-n s) (State-t s)))
          (struct-copy
           State-Play s
-          [ball (state-start-game-play-ball)]
-          [ball-predicted-pos null]
+          [ball (State-Play-ball state-fresh)]
+          [ball-predicted-pos-ends (State-Play-ball-predicted-pos-ends state-fresh)]
           [player
            (struct-copy
             Player player

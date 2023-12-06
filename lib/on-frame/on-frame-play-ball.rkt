@@ -53,7 +53,7 @@
      (struct-copy
       State-Play s
       [ball ball-new]
-      [ball-predicted-pos (predict-ball-pos ball-new)])]
+      [ball-predicted-pos-ends (predict-ball-pos-ends-2 ball-new)])]
     ; player collision
     [(and (positive? (dir-dx (Ball-dir ball)))
           (within? (pos-x (Ball-pos ball))
@@ -74,7 +74,7 @@
      (struct-copy
       State-Play s
       [ball ball-new]
-      [ball-predicted-pos (predict-ball-pos ball-new)]
+      [ball-predicted-pos-ends (predict-ball-pos-ends-2 ball-new)]
       [player
        (struct-copy
         Player player

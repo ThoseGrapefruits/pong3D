@@ -17,8 +17,7 @@
    [pos : Pos]))
 
 (struct Opponent
-  ([predicted-ball-y : (U Null Flonum)]
-   [y : Flonum ]))
+  ([y : Flonum ]))
 
 (struct Player
   ([lives : Nonnegative-Integer]
@@ -48,7 +47,7 @@
 
 (struct State-Play State
   ([ball : Ball]
-   [ball-predicted-pos : (U Pos Null)]
+   [ball-predicted-pos-ends : (Listof Pos)]
    [opponent : Opponent]
    [player : Player]
    [start-t : Flonum])

@@ -218,23 +218,22 @@
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
-  (define predicted-pos (State-Play-ball-predicted-pos s))
-  ; (define shift-dir (dir 0.0 0.0 (* 2.0 (dir-dz BUMPER-SCALE))))
-  ; (define shift-neg (dir-negate shift-dir))
-  (define is-player (positive? (dir-dx (Ball-dir ball))))
+  (define ball-emitted (if (positive? (dir-dx (Ball-dir ball)))
+                           COLOR-OPPONENT-EMITTED
+                           COLOR-PLAYER-EMITTED))
   (combine
    ; predicted position
-   (cond [(null? predicted-pos) empty-pict3d]
-         [else (with-emitted (emitted (if is-player COLOR-PLAYER-EMITTED "black") 0.3)
-                ;  (combine
-                ;   (arrow (pos+ predicted-pos (dir-scale shift-dir 3.0)) shift-neg)
-                ;   (arrow (pos+ predicted-pos (dir-scale shift-neg 3.0)) shift-dir))
-                (transform
-                 (sphere origin BALL-RADIUS)
-                 (affine-compose
-                  (move (pos- predicted-pos origin))
-                  (rotate-y (if is-player 90.0 -90.0))
-                  )))])
+   (for/list : (Listof Pict3D)
+     ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
+     (define is-player (positive? (pos-x predicted-pos)))
+     (cond [(null? predicted-pos) empty-pict3d]
+           [else (with-emitted
+                     (emitted "oldlace" 0.3)
+                   (transform
+                    (sphere origin BALL-RADIUS)
+                    (affine-compose
+                     (move (pos- predicted-pos origin))
+                     (rotate-y (if is-player 90.0 -90.0)))))]))
    (light
     (Ball-pos ball)
     (emitted "oldlace" 0.1)

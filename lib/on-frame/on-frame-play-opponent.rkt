@@ -16,10 +16,12 @@
   (define ball-y (pos-y (Ball-pos ball)))
   (define opponent (State-Play-opponent s))
   (define aim-buffer (/ BUMPER-CONTACT-WIDTH 8))
-  (define pos-predicted (State-Play-ball-predicted-pos s))
+  (define pos-predicted-maybe
+    (findf (λ ([p : Pos]) (negative? (pos-x p)))
+           (State-Play-ball-predicted-pos-ends s)))
+  (define pos-predicted (if (false? pos-predicted-maybe) null pos-predicted-maybe));
   (define pos-desired-y
     (cond [(null? pos-predicted) ball-y]
-          [(positive? (dir-dx (Ball-dir ball))) 0.0]
           [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]
           [else (pos-y pos-predicted)]))
   (define pos-diff (- pos-desired-y (Opponent-y opponent)))

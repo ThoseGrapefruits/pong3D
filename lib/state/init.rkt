@@ -2,6 +2,7 @@
 
 (require
   pict3d
+  "../util/ball/ball-prediction.rkt"
   "../util/number/index.rkt"
   "./state.rkt")
 
@@ -11,13 +12,15 @@
 (define (state-reset s n t)
   (struct-copy
    State-Play (state-start t)
-   [ball-predicted-pos null]
    [dt #:parent State (State-dt s)]
    [n  #:parent State (State-n s)]
    [t  #:parent State (State-t s)]))
 
 (: state-start : (->* () (Flonum) State))
 (define (state-start [t 0.0])
+  (define ball (state-start-game-play-ball))
+  (define predicted-ball-y (pos-y (predict-ball-pos ball)))
+  (define ball-ppe (predict-ball-pos-ends-2 ball))
   (State-Play
    ; State
    0.0   ; dt
@@ -26,13 +29,15 @@
    t     ; t
 
    ; State-Play
-   (state-start-game-play-ball) ; ball
-   null
-   (Opponent null 0.0) ; y      ; opponent
-   (Player 3    ; lives         ; player
-           0    ; score
-           1.0  ; score-multiplier
-           0.0) ; y
+   ball      ; ball
+   ball-ppe  ; ball-predicted-pos-ends
+   (Opponent ; opponent
+    predicted-ball-y) ; y
+   (Player   ; player
+    3    ; lives
+    0    ; score
+    1.0  ; score-multiplier
+    0.0) ; y
    t))   ; start-t
 
 (define (state-start-game-play-ball)
