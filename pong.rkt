@@ -9,9 +9,8 @@
   "./lib/on-frame/index.rkt"
   "./lib/on-key.rkt"
   "./lib/on-mouse.rkt"
+  "./lib/sound/index.rkt"
   "./lib/state/init.rkt"
-  "./lib/state/setters.rkt"
-  "./lib/state/state.rkt"
   "./lib/state/validation.rkt")
 
 ;
@@ -26,6 +25,7 @@
 ;                               ╙───────╜                                   |
 ;                             ⊖ ——— y ——— ⊕                                 ⊖
 
+; (rs-play SOUND-MUSIC #t)
 
 (big-bang3d
  (state-start)
@@ -39,3 +39,5 @@
  #:valid-state? valid-state?
  #:width SCREEN-WIDTH
  #:height SCREEN-HEIGHT)
+
+(rs-stop)
