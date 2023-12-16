@@ -51,7 +51,7 @@
              Ball ball
              [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
                              BALL-ACCELERATION-PADDLE)]))
-     (rs-play SOUND-BALL-BOUNCE-BUMPER)
+     (rs-play-random SOUNDS-BALL-BOUNCE-BUMPER)
      (struct-copy
       State-Play s
       [ball ball-new]
@@ -73,7 +73,7 @@
         Ball ball
         [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
                         BALL-ACCELERATION-PADDLE)]))
-     (rs-play SOUND-BALL-BOUNCE-BUMPER)
+     (rs-play-random SOUNDS-BALL-BOUNCE-BUMPER)
      (struct-copy
       State-Play s
       [ball ball-new]
@@ -91,7 +91,7 @@
     ; left wall collision
     [(and (negative? (dir-dy (Ball-dir ball)))
           (< (pos-y (Ball-pos ball)) (- BALL-MAX-Y)))
-     (rs-play SOUND-BALL-BOUNCE-WALL)
+     (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (struct-copy
       State-Play s
       [ball (struct-copy
@@ -102,7 +102,7 @@
     ; right wall collision
     [(and (positive? (dir-dy (Ball-dir ball)))
           (> (pos-y (Ball-pos ball)) BALL-MAX-Y))
-     (rs-play SOUND-BALL-BOUNCE-WALL)
+     (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (struct-copy
       State-Play s
       [ball (struct-copy

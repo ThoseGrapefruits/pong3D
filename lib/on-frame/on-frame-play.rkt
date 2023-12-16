@@ -4,6 +4,7 @@
   pict3d
   typed-compose
   "../config.rkt"
+  "../sound/index.rkt"
   "../state/init.rkt"
   "../state/setters.rkt"
   "../state/state.rkt"
@@ -29,6 +30,7 @@
 (: on-frame-play-endgame : State-Play -> (U State-Game-Over State-Play))
 (define (on-frame-play-endgame s)
   (cond [(= 0 (Player-lives (State-Play-player s)))
+         (rs-play SOUND-ENDGAME)
          (State-transition State-Game-Over s s)]
         [else s]))
 
