@@ -285,31 +285,31 @@
            (light (pos 0 -1 -2) (emitted "PowderBlue"))
            (camera s)))
 
+(define-struct Score-Section
+  ([color-emitted : Emitted]
+   [y : Flonum]
+   [place-low : Integer]
+   [place-high : Integer]))
+
+(define SCORE-SECTIONS : (Listof Score-Section)
+  (list (Score-Section (emitted 1.0 1.0 1.0 2.0) 0.0  10       1)   ; ones
+        (Score-Section (emitted 0.5 0.7 1.0 2.0) 0.03 100     10)   ; tens
+        (Score-Section (emitted 1.0 0.8 0.0 1.5) 0.06 1000   100)   ; hundreds
+        (Score-Section (emitted 0.6 0.0 0.8 1.5) 0.09 10000 1000))) ; thousands
+
 (: render-player-score : Nonnegative-Integer -> Pict3D)
 (define (render-player-score score)
   (combine
-   ; ones
-   (parameterize ([current-emitted (emitted 1 1 1 2)])
-     (combine
-      (for/list : (Listof Pict3D)
-        ([n (range 0 (get-number-place score 10 1))])
-        (sphere (pos (* n 0.03) 0.0 0.0) 0.01))))
-   ; tens
-   (parameterize ([current-emitted (emitted 0.5 0.7 1 2)])
-     (combine
-      (for/list : (Listof Pict3D)
-        ([n (range 0.0 (get-number-place score 100 10))])
-        (sphere (pos (* n 0.03) 0.03 0.0) 0.01))))
-   ; hundreds
-   (parameterize ([current-emitted (emitted 1 0.8 0 1.5)])
-     (combine
-      (for/list : (Listof Pict3D)
-        ([n (range 0.0 (get-number-place score 1000 100))])
-        (sphere (pos (* n 0.03) 0.06 0.0) 0.01))))
-   ; thousands
-   (parameterize ([current-emitted (emitted 0.6 0 0.8 1.5)])
-     (combine
-      (for/list : (Listof Pict3D)
-        ([n (range 0.0 (get-number-place score 10000 1000))])
-        (sphere (pos (* n 0.03) 0.09 0.0) 0.01))))
-   ))
+    (for/list : (Listof Pict3D)
+      ([ score-section SCORE-SECTIONS ])
+      (match-define (Score-Section color-emitted y place-low place-high) score-section)
+      (parameterize ([current-emitted color-emitted])
+        (combine
+         (for/list : (Listof Pict3D)
+           ([ n (range 0.0 10) ])
+           (pipe (pos (* n 0.03) y 0.0) (dir 0.01 0.01 0.001)
+                 #:top-radii (interval 6/10 1)
+                 #:bottom-radii (interval 6/10 1)))
+         (for/list : (Listof Pict3D)
+           ([n (range 0.0 (get-number-place score place-low place-high))])
+           (sphere (pos (* n 0.03) y 0.0) 0.01)))))))
