@@ -54,6 +54,7 @@
   (define ball (State-Play-ball s))
   (define player (State-Play-player s))
   (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
+         (rs-play SOUND-SCORE)
          (define state-fresh (state-reset s (State-n s) (State-t s)))
          (struct-copy
           State-Play s

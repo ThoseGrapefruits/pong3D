@@ -6,6 +6,7 @@
   (require (prefix-in rs: rsound))
   (require (prefix-in rs: rsound))
   (provide
+   rs:andplay
    rs:default-sample-rate
    rs:ding
    rs:make-ding
@@ -15,6 +16,7 @@
    rs:rs-write
    rs:rsound
    rs:rsound?
+   rs:rs-scale
    rs:synth-note
    rs:stop))
 
@@ -27,7 +29,7 @@
  [rs:rs-append* (-> (Sequenceof RSound) RSound)]
  [rs:rs-overlay (-> RSound RSound RSound)]
  [rs:rs-write (-> RSound Path Void)]
-;  [rs:rsound any/c]
+ [rs:rs-scale (-> Real RSound RSound)]
  [rs:stop (-> Void)]
  [rs:synth-note (-> String Number Natural Natural RSound)])
 
@@ -39,6 +41,7 @@
  SOUND-DING
  SOUND-ENDGAME
  SOUND-MUSIC
+ SOUND-SCORE
  SOUNDS-BALL-BOUNCE-BUMPER
  SOUNDS-BALL-BOUNCE-WALL)
 
@@ -52,7 +55,7 @@
   ; TODO would be good to pull this over but it's an internal function in rsound
   ; (rs:check-below-threshold sound 2.0)
   (define cached-path (hash-ref path-cache sound #f))
-  (define path (if cached-path cached-path (make-temporary-file "pong3d-sound-~a.wav")))
+  (define path (or cached-path (make-temporary-file "pong3d-sound-~a.wav")))
   (hash-set! path-cache sound path)
   (rs:rs-write sound path)
   (: play (-> Boolean))
@@ -81,37 +84,48 @@
 (define SOUND-DING rs:ding)
 
 (: SOUNDS-BALL-BOUNCE-BUMPER (Listof RSound))
-(define SOUNDS-BALL-BOUNCE-BUMPER (for/list : (Listof RSound) ([n (in-range -5 5)])
-                                    (rs:make-ding (+ 523 (* n 1)))))
+(define SOUNDS-BALL-BOUNCE-BUMPER
+  (for/list : (Listof RSound)
+    ([n (in-range -5 5)])
+    (rs:rs-scale 0.5 (rs:make-ding (+ 523 (* n 1))))))
 
 (: SOUNDS-BALL-BOUNCE-WALL (Listof RSound))
-(define SOUNDS-BALL-BOUNCE-WALL (for/list ([n (in-range -5 5)])
-                                  (rs:make-ding (+ 587 (* n 1)))))
+(define SOUNDS-BALL-BOUNCE-WALL
+(for/list : (Listof RSound)
+  ([n (in-range -5 5)])
+  (rs:rs-scale 0.5 (rs:make-ding (+ 587 (* n 1))))))
 
 (: SOUND-ENDGAME RSound)
 (define SOUND-ENDGAME
   (rs:rs-append*
    (for*/list : (Listof RSound) ([note-dur (in-list '((8 0.5) (7 0.5) (1 0.5) (3 1)))])
-    (define note (first note-dur))
-    (define dur (second note-dur))
+     (define note (first note-dur))
+     (define dur (second note-dur))
      (rs:synth-note "vgame" 49 (+ 52 note)
                     (exact-round
                      (* (rs:default-sample-rate) dur))))))
-
-(rs-play SOUND-ENDGAME)
 
 (: SOUND-MUSIC RSound)
 (define SOUND-MUSIC
   (rs:rs-overlay
    (rs:rs-append*
     (for*/list : (Listof RSound) ([i (in-range 20)]
-                [j (in-list '(0 2 3 7))])
+                                  [j (in-list '(0 2 3 7))])
       (rs:synth-note "vgame" 49 (+ 60 j)
-                  (exact-round
-                   (* (rs:default-sample-rate) (/ dur 4))))))
+                     (exact-round
+                      (* (rs:default-sample-rate) (/ dur 4))))))
    (rs:rs-append*
     (for*/list : (Listof RSound) ([i (in-range 5)]
                                   [j (in-list '(8 3 4 3))])
       (rs:synth-note "vgame" 49 (+ 52 j)
-                  (exact-round
-                   (* (rs:default-sample-rate) dur)))))))
+                     (exact-round
+                      (* (rs:default-sample-rate) dur)))))))
+
+(: SOUND-SCORE RSound)
+(define SOUND-SCORE
+  (rs:rs-append*
+   (for*/list : (Listof RSound)
+     ([j (in-list '(2 3 7))])
+     (rs:synth-note "vgame" 49 (+ 68 j)
+                    (exact-round
+                     (* (rs:default-sample-rate) (/ dur 8)))))))

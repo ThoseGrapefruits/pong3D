@@ -130,14 +130,14 @@
     [(State-Game-Over? s)
      (combine
       (camera s)
-      (render-game-over-message s)
+      (render-game-over-background s)
       (render-game-over-score s))]
     [else empty-pict3d]))
 
-(: render-game-over-message : State-Game-Over -> Pict3D)
-(define (render-game-over-message s)
+(: render-game-over-background : State-Game-Over -> Pict3D)
+(define (render-game-over-background s)
   (transform (with-emitted (emitted "red" 2.0)
-                         (rotate-z (move-z (cube origin 0.5) 1.0) 45))
+               (rotate-z (move-z (cube origin 0.5) 1.0) 45))
              (position-screen-space-relative s 0.0 0.0)))
 
 (: render-game-over-score : State-Game-Over -> Pict3D)
@@ -218,22 +218,19 @@
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
-  (define ball-emitted (if (positive? (dir-dx (Ball-dir ball)))
-                           COLOR-OPPONENT-EMITTED
-                           COLOR-PLAYER-EMITTED))
   (combine
    ; predicted position
-   (for/list : (Listof Pict3D)
-     ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
-     (define is-player (positive? (pos-x predicted-pos)))
-     (cond [(null? predicted-pos) empty-pict3d]
-           [else (with-emitted
-                     (emitted "oldlace" 0.3)
-                   (transform
-                    (sphere origin BALL-RADIUS)
-                    (affine-compose
-                     (move (pos- predicted-pos origin))
-                     (rotate-y (if is-player 90.0 -90.0)))))]))
+   ; (for/list : (Listof Pict3D)
+   ;   ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
+   ;   (define is-player (positive? (pos-x predicted-pos)))
+   ;   (cond [(null? predicted-pos) empty-pict3d]
+   ;         [else (with-emitted
+   ;                   (emitted "oldlace" 0.3)
+   ;                 (transform
+   ;                  (sphere origin BALL-RADIUS)
+   ;                  (affine-compose
+   ;                   (move (pos- predicted-pos origin))
+   ;                   (rotate-y (if is-player 90.0 -90.0)))))]))
    (light
     (Ball-pos ball)
     (emitted "oldlace" 0.1)
@@ -300,16 +297,16 @@
 (: render-player-score : Nonnegative-Integer -> Pict3D)
 (define (render-player-score score)
   (combine
-    (for/list : (Listof Pict3D)
-      ([ score-section SCORE-SECTIONS ])
-      (match-define (Score-Section color-emitted y place-low place-high) score-section)
-      (parameterize ([current-emitted color-emitted])
-        (combine
-         (for/list : (Listof Pict3D)
-           ([ n (range 0.0 10) ])
-           (pipe (pos (* n 0.03) y 0.0) (dir 0.01 0.01 0.001)
-                 #:top-radii (interval 6/10 1)
-                 #:bottom-radii (interval 6/10 1)))
-         (for/list : (Listof Pict3D)
-           ([n (range 0.0 (get-number-place score place-low place-high))])
-           (sphere (pos (* n 0.03) y 0.0) 0.01)))))))
+   (for/list : (Listof Pict3D)
+     ([ score-section SCORE-SECTIONS ])
+     (match-define (Score-Section color-emitted y place-low place-high) score-section)
+     (parameterize ([current-emitted color-emitted])
+       (combine
+        (for/list : (Listof Pict3D)
+          ([ n (range 0.0 10) ])
+          (pipe (pos (* n 0.03) y 0.0) (dir 0.01 0.01 0.001)
+                #:top-radii (interval 6/10 1)
+                #:bottom-radii (interval 6/10 1)))
+        (for/list : (Listof Pict3D)
+          ([n (range 0.0 (get-number-place score place-low place-high))])
+          (sphere (pos (* n 0.03) y 0.0) 0.01)))))))
