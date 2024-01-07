@@ -25,7 +25,7 @@
 ;                               ╙───────╜                                   |
 ;                             ⊖ ——— y ——— ⊕                                 ⊖
 
-; (rs-play SOUND-MUSIC #t)
+(rs-play SOUND-STARTUP)
 
 (big-bang3d
  (state-start)

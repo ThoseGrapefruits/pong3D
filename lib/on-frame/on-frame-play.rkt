@@ -54,7 +54,7 @@
   (define ball (State-Play-ball s))
   (define player (State-Play-player s))
   (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
-         (rs-play SOUND-SCORE)
+         (rs-play SOUND-SCORE-ON-OPPONENT)
          (define state-fresh (state-reset s (State-n s) (State-t s)))
          (struct-copy
           State-Play s
@@ -70,6 +70,8 @@
             [score (get-new-player-score player 10)])])]
         [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
          (define state-fresh (state-reset s (State-n s) (State-t s)))
+         (define player-lives-next (max 0 (sub1 (Player-lives player))))
+         (if (positive? player-lives-next) (rs-play SOUND-SCORE-ON-PLAYER) null)
          (struct-copy
           State-Play s
           [ball (State-Play-ball state-fresh)]
@@ -77,5 +79,5 @@
           [player
            (struct-copy
             Player player
-            [lives (max 0 (sub1 (Player-lives player)))])])]
+            [lives player-lives-next])])]
         [else s]))

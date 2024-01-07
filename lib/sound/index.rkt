@@ -4,7 +4,6 @@
 
 (module wrapper racket
   (require (prefix-in rs: rsound))
-  (require (prefix-in rs: rsound))
   (provide
    rs:andplay
    rs:default-sample-rate
@@ -41,7 +40,9 @@
  SOUND-DING
  SOUND-ENDGAME
  SOUND-MUSIC
- SOUND-SCORE
+ SOUND-SCORE-ON-OPPONENT
+ SOUND-SCORE-ON-PLAYER
+ SOUND-STARTUP
  SOUNDS-BALL-BOUNCE-OPPONENT
  SOUNDS-BALL-BOUNCE-PLAYER
  SOUNDS-BALL-BOUNCE-WALL)
@@ -152,11 +153,29 @@
                      (exact-round
                       (* (rs:default-sample-rate) dur)))))))
 
-(: SOUND-SCORE RSound)
-(define SOUND-SCORE
+(: SOUND-SCORE-ON-OPPONENT RSound)
+(define SOUND-SCORE-ON-OPPONENT
   (rs:rs-append*
    (for*/list : (Listof RSound)
      ([j (in-list '(2 3 7))])
      (rs:synth-note "vgame" 49 (+ 68 j)
                     (exact-round
-                     (* (rs:default-sample-rate) (/ dur 8)))))))
+                     (* (rs:default-sample-rate) (/ dur 4)))))))
+
+(: SOUND-SCORE-ON-PLAYER RSound)
+(define SOUND-SCORE-ON-PLAYER
+  (rs:rs-append*
+   (for*/list : (Listof RSound)
+     ([j (in-list '(7 3 2))])
+     (rs:synth-note "vgame" 49 (+ 52 j)
+                    (exact-round
+                     (* (rs:default-sample-rate) (/ dur 4)))))))
+
+(: SOUND-STARTUP RSound)
+(define SOUND-STARTUP
+  (rs:rs-append*
+   (for*/list : (Listof RSound)
+     ([j (in-list '(2 3 7 6))])
+     (rs:synth-note "vgame" 49 (+ 68 j)
+                    (exact-round
+                     (* (rs:default-sample-rate) (/ dur 2)))))))
