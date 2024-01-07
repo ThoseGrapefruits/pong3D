@@ -51,7 +51,7 @@
              Ball ball
              [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
                              BALL-ACCELERATION-PADDLE)]))
-     (rs-play-random SOUNDS-BALL-BOUNCE-BUMPER)
+     (rs-play-random SOUNDS-BALL-BOUNCE-OPPONENT)
      (struct-copy
       State-Play s
       [ball ball-new]
@@ -73,7 +73,7 @@
         Ball ball
         [dir (dir-scale (dir-reflect (Ball-dir ball) reflection-axis)
                         BALL-ACCELERATION-PADDLE)]))
-     (rs-play-random SOUNDS-BALL-BOUNCE-BUMPER)
+     (rs-play-random SOUNDS-BALL-BOUNCE-PLAYER)
      (struct-copy
       State-Play s
       [ball ball-new]

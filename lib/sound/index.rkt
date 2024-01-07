@@ -42,7 +42,8 @@
  SOUND-ENDGAME
  SOUND-MUSIC
  SOUND-SCORE
- SOUNDS-BALL-BOUNCE-BUMPER
+ SOUNDS-BALL-BOUNCE-OPPONENT
+ SOUNDS-BALL-BOUNCE-PLAYER
  SOUNDS-BALL-BOUNCE-WALL)
 
 ;; PLAY/STOP
@@ -83,17 +84,47 @@
 (: SOUND-DING RSound)
 (define SOUND-DING rs:ding)
 
-(: SOUNDS-BALL-BOUNCE-BUMPER (Listof RSound))
-(define SOUNDS-BALL-BOUNCE-BUMPER
+; Frequencies based on note function w/ middle C @ 440Hz
+; y = 440 * 2^(x / 12)
+;
+;  C  C D D E  F  F G G A A B  C
+;     #   #       #   #   #
+;  0    2   4  5    7   9   11 12
+; -11  -9   -7 -6  -5  -3   -1  0
+; │  ┃ ┃ ┃ ┃  │  ┃ ┃ ┃ ┃ ┃ ┃  │  ┃ 
+; │  ┃ ┃ ┃ ┃  │  ┃ ┃ ┃ ┃ ┃ ┃  │  ┃ 
+; │  ┃ ┃ ┃ ┃  │  ┃ ┃ ┃ ┃ ┃ ┃  │  ┃ 
+; │  ┃ ┃ ┃ ┃  │  ┃ ┃ ┃ ┃ ┃ ┃  │  ┃ 
+; │  ┃ ┃ ┃ ┃  │  ┃ ┃ ┃ ┃ ┃ ┃  │  ┃ 
+; │  ┗┯┛ ┗┯┛  │  ┗┯┛ ┗┯┛ ┗┯┛  │  ┗┯
+; │   │   │   │   │   │   │   │   │
+; │   │   │   │   │   │   │   │   │
+; │   │   │   │   │   │   │   │   │
+; │   │   │   │   │   │   │   │   │
+; │   │   │   │   │   │   │   │   │
+; └───┘───┘───┘───┘───┘───┘───┘───┘
+
+(: note-to-frequency : Integer -> Nonnegative-Integer)
+(define (note-to-frequency n)
+  (exact-round (* 440 (expt 2 (/ (exact->inexact n) 12)))))
+
+(: SOUNDS-BALL-BOUNCE-OPPONENT (Listof RSound))
+(define SOUNDS-BALL-BOUNCE-OPPONENT
   (for/list : (Listof RSound)
     ([n (in-range -5 5)])
-    (rs:rs-scale 0.5 (rs:make-ding (+ 523 (* n 1))))))
+    (rs:rs-scale 0.5 (rs:make-ding (+ (note-to-frequency -1) (* n 1))))))
+
+(: SOUNDS-BALL-BOUNCE-PLAYER (Listof RSound))
+(define SOUNDS-BALL-BOUNCE-PLAYER
+  (for/list : (Listof RSound)
+    ([n (in-range -5 5)])
+    (rs:rs-scale 0.5 (rs:make-ding (+ (note-to-frequency 3) (* n 1))))))
 
 (: SOUNDS-BALL-BOUNCE-WALL (Listof RSound))
 (define SOUNDS-BALL-BOUNCE-WALL
 (for/list : (Listof RSound)
   ([n (in-range -5 5)])
-  (rs:rs-scale 0.5 (rs:make-ding (+ 587 (* n 1))))))
+  (rs:rs-scale 0.5 (rs:make-ding (+ (note-to-frequency 5) (* n 1))))))
 
 (: SOUND-ENDGAME RSound)
 (define SOUND-ENDGAME
