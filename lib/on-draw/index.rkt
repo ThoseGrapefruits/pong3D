@@ -2,6 +2,7 @@
 
 (require
   pict3d
+  "./text.rkt"
   "../config.rkt"
   "../state/state.rkt"
   "../util/number/index.rkt")
@@ -27,7 +28,7 @@
 (define (aspect-ratio) (/ SCREEN-WIDTH-INEXACT
                           SCREEN-HEIGHT-INEXACT))
 
-;; RENDER — CONSTANTS
+; RENDER — CONSTANTS
 
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))

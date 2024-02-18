@@ -74,7 +74,7 @@
 (: rs-stop (-> Void))
 (define rs-stop rs:stop)
 
-;; SOUND CONSTANTS
+; CONSTANTS — SOUND
 
 (: bpm Positive-Real)
 (define bpm 150)
