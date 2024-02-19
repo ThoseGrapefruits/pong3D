@@ -2,7 +2,10 @@
 
 (require
   pict3d
+  "./camera.rkt"
+  "./position-screen-space.rkt"
   "./text.rkt"
+  "./util.rkt"
   "../config.rkt"
   "../state/state.rkt"
   "../util/number/index.rkt")
@@ -23,10 +26,6 @@
 (define (on-draw s n t)
   (combine (render-game-play s)
            (render-game-over s)))
-
-(: aspect-ratio : -> Flonum)
-(define (aspect-ratio) (/ SCREEN-WIDTH-INEXACT
-                          SCREEN-HEIGHT-INEXACT))
 
 ; RENDER — CONSTANTS
 
@@ -49,79 +48,8 @@
            (with-emitted (emitted "yellow" 2)
              (arrow origin -z))))
 
-;; RENDER — CAMERA
 
-(: camera : State -> Pict3D)
-(define (camera s)
-  (basis 'camera (camera-transform s)))
-
-(: camera-dir : -> Dir)
-(define (camera-dir)
-  (define normalized (dir-normalize (pos- origin (camera-pos))))
-  (cond [normalized normalized]
-        [else (error "normalized not normal")]))
-
-(: camera-point-at : -> Affine)
-(define (camera-point-at) (point-at (camera-pos) CAMERA-LOOK-AT))
-
-(: camera-pos : -> Pos)
-(define (camera-pos)
-  (define ar (aspect-ratio))
-  (define fov (exact->inexact FOV))
-  (pos (+ 2.0 (* ar -0.3) (* fov 0.01))    ; distance
-       0.0                                 ; side-to-side
-       (+ 1.0 (* ar -0.2) (* fov 0.001)))) ; elevation
-
-(: camera-transform : State -> Affine)
-(define (camera-transform s)
-  (camera-point-at))
-
-
-; RENDER FUNCTIONS
-
-; Scale a [-1,1] value up to a range of the given width.
-(: scale--1-1 : Flonum Integer -> Flonum)
-(define (scale--1-1 n width)
-  (define half-width (/ (exact->inexact width) 2.0))
-  (+ (* n half-width) half-width))
-
-; wrap-within
-(: wrap-within : Flonum Flonum -> Flonum)
-(define (wrap-within n width)
-  (cond [(negative? width) (error "negative width")]
-        [(or (> n width) (< n (- width))) (error "n outside screen bounds")]
-        [(negative? n) (+ width n)]
-        [else n]))
-
-; Get a transformation that moves an object from the origin to the given (x,y,z)
-; coordinate in screen-space, where (0,0,1) is the top-left of the camera
-; viewport and (SCREEN-WIDTH,SCREEN-HEIGHT,1) is the bottom-right, placed in a
-; z-plane 1 unit away from the camera.
-(: position-screen-space-pixels : (->* (State Flonum Flonum) (Flonum) Affine))
-(define (position-screen-space-pixels s x y [z 1.0])
-  (define cam-t (camera-transform s))
-  (define z-near (* z CAMERA-SPACE-DISTANCE))
-  (define dir ((camera-ray-dir cam-t
-                               #:width SCREEN-WIDTH
-                               #:height SCREEN-HEIGHT
-                               #:z-near z-near)
-               (wrap-within x SCREEN-WIDTH-INEXACT)
-               (wrap-within y SCREEN-HEIGHT-INEXACT)))
-  (affine-compose (move dir)
-                  cam-t
-                  (scale z-near)))
-
-; Get a transformation that moves an object from the origin to the given (x,y,z)
-; coordinate in screen-space, where (-1,-1,1) is the top-left of the camera
-; viewport, and (1,1,1) is the bottom-right, placed in a z-plane 1 unit away
-; from the camera.
-(: position-screen-space-relative : (->* (State Flonum Flonum) (Flonum) Affine))
-(define (position-screen-space-relative s x y [z 1.0])
-  (position-screen-space-pixels
-   s
-   (scale--1-1 x SCREEN-WIDTH)
-   (scale--1-1 y SCREEN-HEIGHT)
-   z))
+; RENDER FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; RENDER FUNCTIONS — GAME OVER
 
@@ -156,6 +84,7 @@
   (cond
     [(State-Play? s)
      (combine
+      (render-quick-brown-fox s)
       (render-game-play-opponent s)
       (render-game-play-player s)
       (render-game-play-ball s)
@@ -164,6 +93,14 @@
       (render-game-play-arena s)
       (render-game-play-arena-bumpers s))]
     [else empty-pict3d]))
+
+(: render-quick-brown-fox : State-Play -> Pict3D)
+(define (render-quick-brown-fox s)
+ (transform
+  (text "The quick brown fox jumped over the lazy dog." #:wrap 15.0)
+  (affine-compose
+  ;  (scale 0.1)
+   (position-screen-space-pixels s 0.0 0.0))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
 (define (render-game-play-arena s)
@@ -216,28 +153,33 @@
                (move-y (- 0.0 WALL-Y BALL-RADIUS))
                (scale (dir 10 1/256 1/256))))))
 
+
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
   (combine
-   ; predicted position
-   ; (for/list : (Listof Pict3D)
-   ;   ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
-   ;   (define is-player (positive? (pos-x predicted-pos)))
-   ;   (cond [(null? predicted-pos) empty-pict3d]
-   ;         [else (with-emitted
-   ;                   (emitted "oldlace" 0.3)
-   ;                 (transform
-   ;                  (sphere origin BALL-RADIUS)
-   ;                  (affine-compose
-   ;                   (move (pos- predicted-pos origin))
-   ;                   (rotate-y (if is-player 90.0 -90.0)))))]))
+   (render-game-play-ball-predicted s)
    (light
     (Ball-pos ball)
     (emitted "oldlace" 0.1)
     #:range 1)
    (with-emitted (emitted "oldlace" 1.5)
      (sphere (Ball-pos ball) BALL-RADIUS))))
+
+
+(: render-game-play-ball-predicted : State-Play -> Pict3D)
+(define (render-game-play-ball-predicted s)
+  (combine (for/list : (Listof Pict3D)
+    ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
+    (define is-player (positive? (pos-x predicted-pos)))
+    (cond [(null? predicted-pos) empty-pict3d]
+          [else (with-emitted
+                    (emitted "oldlace" 0.3)
+                  (transform
+                   (sphere origin BALL-RADIUS)
+                   (affine-compose
+                    (move (pos- predicted-pos origin))
+                    (rotate-y (if is-player 90.0 -90.0)))))]))))
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
