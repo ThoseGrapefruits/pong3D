@@ -97,10 +97,12 @@
 (: render-quick-brown-fox : State-Play -> Pict3D)
 (define (render-quick-brown-fox s)
  (transform
-  (text "The quick brown fox jumped over the lazy dog." #:wrap 15.0)
+  (with-emitted
+      (emitted "oldlace" 1.0)
+    (text "the quick brown fox jumped over the lazy dog... i said THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG 012345 6789 10" #:wrap 15.0))
   (affine-compose
-  ;  (scale 0.1)
-   (position-screen-space-pixels s 0.0 0.0))))
+   (position-screen-space-relative s -0.6 -0.6 0.8)
+   (scale 0.03))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
 (define (render-game-play-arena s)

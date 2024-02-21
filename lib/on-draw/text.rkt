@@ -12,8 +12,77 @@
 (define text-map
   (make-immutable-hash
    (list
+    (cons #\0 font:num-0)
+    (cons #\1 font:num-1)
+    (cons #\2 font:num-2)
+    (cons #\3 font:num-3)
+    (cons #\4 font:num-4)
+    (cons #\5 font:num-5)
+    (cons #\6 font:num-6)
+    (cons #\7 font:num-7)
+    (cons #\8 font:num-8)
+    (cons #\9 font:num-9)
+
     (cons #\a font:a)
-    (cons #\space font:ws-space))))
+    (cons #\b font:b)
+    (cons #\c font:c)
+    (cons #\d font:d)
+    (cons #\e font:e)
+    (cons #\f font:f)
+    (cons #\g font:g)
+    (cons #\h font:h)
+    (cons #\i font:i)
+    (cons #\j font:j)
+    (cons #\k font:k)
+    (cons #\l font:l)
+    (cons #\m font:m)
+    (cons #\n font:n)
+    (cons #\o font:o)
+    (cons #\p font:p)
+    (cons #\q font:q)
+    (cons #\r font:r)
+    (cons #\s font:s)
+    (cons #\t font:t)
+    (cons #\u font:u)
+    (cons #\v font:v)
+    (cons #\w font:w)
+    (cons #\x font:x)
+    (cons #\y font:y)
+    (cons #\z font:z)
+
+    (cons #\A font:A)
+    (cons #\B font:B)
+    (cons #\C font:C)
+    (cons #\D font:D)
+    (cons #\E font:E)
+    (cons #\F font:F)
+    (cons #\G font:G)
+    (cons #\H font:H)
+    (cons #\I font:I)
+    (cons #\J font:J)
+    (cons #\K font:K)
+    (cons #\L font:L)
+    (cons #\M font:M)
+    (cons #\N font:N)
+    (cons #\O font:O)
+    (cons #\P font:P)
+    (cons #\Q font:Q)
+    (cons #\R font:R)
+    (cons #\S font:S)
+    (cons #\T font:T)
+    (cons #\U font:U)
+    (cons #\V font:V)
+    (cons #\W font:W)
+    (cons #\X font:X)
+    (cons #\Y font:Y)
+    (cons #\Z font:Z)
+
+    (cons #\space font:ws-space)
+
+    (cons #\? font:symbol-?)
+    (cons #\. font:symbol-dot)
+    )))
+
 
 ; TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -42,15 +111,17 @@
 (: WORD-SPACE/WIDTH Flonum)
 (define WORD-SPACE/WIDTH (Word-3D-width WORD-SPACE))
 
-(: text : String [#:line-height Flonum] [#:wrap Flonum] -> Pict3D)
+(: text : String [#:line-spacing Flonum] [#:wrap Flonum] -> Pict3D)
 (define (text s
-              #:line-height [line-height 1.2]
+              #:line-spacing [line-spacing 0.4]
               #:wrap [wrap 40.0])
+  (define line-height (+ line-spacing font:EM-HEIGHT))
   (define words (string-split s))
   (define words-rendered (map Word-3D-from-string words))
   (define lines (make-lines words-rendered #:wrap wrap))
   (combine
-   (for/list : (Listof Pict3D)
+   (for/fold : (Listof Pict3D)
+     ([lines empty])
      ([i (range 0 (length lines))]
       [line lines])
      (define line-y (* i line-height))
@@ -74,8 +145,8 @@
              (values (+ char-x (font:Char-3D-width char))
                      (cons char-positioned out))))
          (values word-x-new
-                 (cons (combine chars-rendered) out))))
-     (combine line-rendered))))
+                 (append chars-rendered out))))
+     (append line-rendered lines))))
 
 (: make-lines : (Listof Word-3D) [#:wrap Flonum] -> (Listof (Listof Word-3D)))
 (define (make-lines words #:wrap [wrap 40.0])
@@ -99,9 +170,11 @@
                    (cdr lines))))))
   lines)
 
+
 ; UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; typed racket chokes without this and I couldn't figure out why
+; typed racket chokes without this stuff and I couldn't figure out why
+
 (: reverse-line : (Listof Word-3D) -> (Listof Word-3D))
 (define (reverse-line l) (reverse l))
 
