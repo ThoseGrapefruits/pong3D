@@ -2,6 +2,7 @@
 
 (require pict3d)
 
+; TODO make explicit
 (provide (all-defined-out))
 
 ; This file contains a "font" made up of primitive 3D shapes. See text.rkt for rendering text.
@@ -15,24 +16,37 @@
 ; ╎       ╎        ╎      S  M  E
 ; ╎       ╎        ╎      ╎  ╎  ╎
 ; ╎       ╎        ╎      ╎  ╎  ╎
-; ╶══───┬────┬───╤╤╴ ╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  CAPLINE
-; ╎     ╰╮  ╭╯   ││       ╎  ╎  ╎                             ╎
+; ╶══───┬────┬───╤╤╴ ╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌      CAPLINE
+; ╎     ╰╮  ╭╯   ││       ╎  ╎  ╎                             ╎ HEIGHT-CAP
 ; ╎      ╰╮╭╯    ││       ╎  ╎  ╎                             ╎
-; ╎       ║║     ║║       ╎  ╎  ╎                             ╎ HEIGHT-CAP
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌╌┼╌╌┼╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  MIDLINE
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ MEANLINE
-; ╎       ║║     ║║     ║ ║     ║ ║     ║     ╎               ╎
-; ╎       ║║     ║║     ║ ╟─═══─╯ ║     ║     ╎ HEIGHT-MEAN   ╎
+; ╎       ║║     ║║       ╎  ╎  ╎                             ╎
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌   MIDCAPLINE
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     MEANLINE
+; ╎       ║║     ║║     ║ ║     ║ ║     ║     ╎ HEIGHT-X      ╎
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌ ║ ╟─═══─╯ ║ ╌╌╌ ║ ╌╌╌╌╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  MIDMEANLINE
 ; ╎      ╭╯╰╮   ╭╯╰╮   ╭╯ ╰╮   ╭  ╰───╮╭╯     ╎               ╎
-; ╎╌╌╌╌╌ ┴──┴ ╌ ┴──┴ ╌ ┴ ╌ ╰───┘ ╌╌╌╌ ╰╢ ╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ BASELINE
+; ╎╌╌╌╌╌ ┴──┴ ╌ ┴──┴ ╌ ┴ ╌ ╰───┘ ╌╌╌╌ ╰╢ ╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     BASELINE
 ; ╎                                ╮   ║
-; ╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ └───╯ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ DESCLINE
+; ╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ └───╯ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     DESCLINE
 
 
-; CONSTANTS — RELATIVE MEASUREMENTS
+; CONSTANTS — RELATIVE MEASUREMENTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: X-HEIGHT : Flonum)
-(define X-HEIGHT 0.45)
+; How far curved bottoms go past their linear counterparts. For example, on "d",
+; how much further does the bottom of the circular-ish part go than the end of
+; the straight line on the right. As hooman, we perceive these curves as not
+; going as far as the sharply-terminating things next to them so we
+; overcompensate and push them down until they feel right. This is meant to be
+; blindly used with MIDMEANLINE constants to push both the curved-MEANLINE up
+; and the curved-BASELINE down relative to their flat counterparts.
+(: CURVE-OVERSCALE-FACTOR : Flonum)
+(define CURVE-OVERSCALE-FACTOR 1.05)
+
+(: HEIGHT-X : Flonum)
+(define HEIGHT-X 0.45)
+
+(: HEIGHT-X-1/2 : Flonum)
+(define HEIGHT-X-1/2 (/ HEIGHT-X 2.0))
 
 (: EM-HEIGHT : Flonum)
 (define EM-HEIGHT 1.0)
@@ -45,6 +59,9 @@
 
 (: EM-WIDTH : Flonum)
 (define EM-WIDTH 1.0)
+
+(: EM-WIDTH-1/16 : Flonum)
+(define EM-WIDTH-1/16 (* 1.0 (/ EM-WIDTH 16.0)))
 
 (: EM-WIDTH-1/8 : Flonum)
 (define EM-WIDTH-1/8 (* 1.0 (/ EM-WIDTH 8.0)))
@@ -67,12 +84,15 @@
 (: EM-WIDTH-7/8 : Flonum)
 (define EM-WIDTH-7/8 (* 7.0 (/ EM-WIDTH 8.0)))
 
-; CONSTANTS — GUIDE LINES
+; CONSTANTS — GUIDE LINES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; These are some maybe-helpful constants of different positions relative to the
-; *LINE things in the diagram above. We define the intersections between { START, MIDDLE, END } and
-; { CAPLINE, MIDLINE, MEANLINE, BASELINE, DESCLINE } for common character widths.
+; *LINE things in the diagram above. We define the intersections between
+; { START, MIDDLE, END } and
+; { CAPLINE, MIDCAPLINE, MEANLINE, MIDMEANLINE, BASELINE, DESCLINE }
+; for common character widths.
 
-; CAPLINE (top)
+; CAPLINE
+; Top of most characters. We might support a RISELINE at some point but not now.
 (: CAPLINE/START : Pos)
 (define CAPLINE/START origin)
 
@@ -100,7 +120,8 @@
 (: CAPLINE/END-3/4 : Pos)
 (define CAPLINE/END-3/4 (pos+ CAPLINE/START +x EM-WIDTH-3/4))
 
-; BASELINE (bottom of most characters)
+; BASELINE
+; Bottom of most characters, or at least bottom of some part of them.
 (: BASELINE/START : Pos)
 (define BASELINE/START (pos+ origin +y EM-HEIGHT))
 
@@ -128,9 +149,10 @@
 (: BASELINE/END-3/4 : Pos)
 (define BASELINE/END-3/4 (pos+ BASELINE/START +x EM-WIDTH-3/4))
 
-; MEANLINE (top of most lowercase characters)
+; MEANLINE
+; Top of many lowercase characters, or at least top of some part of them.
 (: MEANLINE/START : Pos)
-(define MEANLINE/START (pos+ BASELINE/START -y X-HEIGHT))
+(define MEANLINE/START (pos+ BASELINE/START -y HEIGHT-X))
 
 (: MEANLINE/CENTER : Pos)
 (define MEANLINE/CENTER (pos+ MEANLINE/START +x EM-WIDTH-1/2))
@@ -156,35 +178,67 @@
 (: MEANLINE/END-3/4 : Pos)
 (define MEANLINE/END-3/4 (pos+ MEANLINE/START +x EM-WIDTH-3/4))
 
-; MIDLINE (midway between CAPLINE and BASELINE, useful for positioning shapes that use a center pos)
-(: MIDLINE/START : Pos)
-(define MIDLINE/START (pos+ origin +y EM-HEIGHT-1/2))
+; MIDCAPLINE
+; Midway between CAPLINE and BASELINE. Useful for positioning shapes that use a
+; center pos.
+(: MIDCAPLINE/START : Pos)
+(define MIDCAPLINE/START (pos+ origin +y EM-HEIGHT-1/2))
 
-(: MIDLINE/CENTER : Pos)
-(define MIDLINE/CENTER (pos+ MIDLINE/START +x EM-WIDTH-1/2))
+(: MIDCAPLINE/CENTER : Pos)
+(define MIDCAPLINE/CENTER (pos+ MIDCAPLINE/START +x EM-WIDTH-1/2))
 
-(: MIDLINE/CENTER-1/4 : Pos)
-(define MIDLINE/CENTER-1/4 (pos+ MIDLINE/START +x EM-WIDTH-1/8))
+(: MIDCAPLINE/CENTER-1/4 : Pos)
+(define MIDCAPLINE/CENTER-1/4 (pos+ MIDCAPLINE/START +x EM-WIDTH-1/8))
 
-(: MIDLINE/CENTER-1/2 : Pos)
-(define MIDLINE/CENTER-1/2 (pos+ MIDLINE/START +x EM-WIDTH-1/4))
+(: MIDCAPLINE/CENTER-1/2 : Pos)
+(define MIDCAPLINE/CENTER-1/2 (pos+ MIDCAPLINE/START +x EM-WIDTH-1/4))
 
-(: MIDLINE/CENTER-3/4 : Pos)
-(define MIDLINE/CENTER-3/4 (pos+ MIDLINE/START +x EM-WIDTH-3/8))
+(: MIDCAPLINE/CENTER-3/4 : Pos)
+(define MIDCAPLINE/CENTER-3/4 (pos+ MIDCAPLINE/START +x EM-WIDTH-3/8))
 
-(: MIDLINE/END : Pos)
-(define MIDLINE/END (pos+ MIDLINE/START +x EM-WIDTH))
+(: MIDCAPLINE/END : Pos)
+(define MIDCAPLINE/END (pos+ MIDCAPLINE/START +x EM-WIDTH))
 
-(: MIDLINE/END-1/4 : Pos)
-(define MIDLINE/END-1/4 (pos+ MIDLINE/START +x EM-WIDTH-1/4))
+(: MIDCAPLINE/END-1/4 : Pos)
+(define MIDCAPLINE/END-1/4 (pos+ MIDCAPLINE/START +x EM-WIDTH-1/4))
 
-(: MIDLINE/END-1/2 : Pos)
-(define MIDLINE/END-1/2 (pos+ MIDLINE/START +x EM-WIDTH-1/2))
+(: MIDCAPLINE/END-1/2 : Pos)
+(define MIDCAPLINE/END-1/2 (pos+ MIDCAPLINE/START +x EM-WIDTH-1/2))
 
-(: MIDLINE/END-3/4 : Pos)
-(define MIDLINE/END-3/4 (pos+ MIDLINE/START +x EM-WIDTH-3/4))
+(: MIDCAPLINE/END-3/4 : Pos)
+(define MIDCAPLINE/END-3/4 (pos+ MIDCAPLINE/START +x EM-WIDTH-3/4))
 
-; DESCLINE (bottom of characters like "y" that go below the BASELINE)
+; MIDMEANLINE
+; Midway between MEANLINE and BASELINE. Useful for positioning lowercase shapes that use a center pos
+(: MIDMEANLINE/START : Pos)
+(define MIDMEANLINE/START (pos+ BASELINE/START -y HEIGHT-X-1/2))
+
+(: MIDMEANLINE/CENTER : Pos)
+(define MIDMEANLINE/CENTER (pos+ MIDMEANLINE/START +x EM-WIDTH-1/2))
+
+(: MIDMEANLINE/CENTER-1/4 : Pos)
+(define MIDMEANLINE/CENTER-1/4 (pos+ MIDMEANLINE/START +x EM-WIDTH-1/8))
+
+(: MIDMEANLINE/CENTER-1/2 : Pos)
+(define MIDMEANLINE/CENTER-1/2 (pos+ MIDMEANLINE/START +x EM-WIDTH-1/4))
+
+(: MIDMEANLINE/CENTER-3/4 : Pos)
+(define MIDMEANLINE/CENTER-3/4 (pos+ MIDMEANLINE/START +x EM-WIDTH-3/8))
+
+(: MIDMEANLINE/END : Pos)
+(define MIDMEANLINE/END (pos+ MIDMEANLINE/START +x EM-WIDTH))
+
+(: MIDMEANLINE/END-1/4 : Pos)
+(define MIDMEANLINE/END-1/4 (pos+ MIDMEANLINE/START +x EM-WIDTH-1/4))
+
+(: MIDMEANLINE/END-1/2 : Pos)
+(define MIDMEANLINE/END-1/2 (pos+ MIDMEANLINE/START +x EM-WIDTH-1/2))
+
+(: MIDMEANLINE/END-3/4 : Pos)
+(define MIDMEANLINE/END-3/4 (pos+ MIDMEANLINE/START +x EM-WIDTH-3/4))
+
+; DESCLINE
+; Bottom of characters (e.g. "y") that go below the BASELINE,
 (: DESCLINE/START : Pos)
 (define DESCLINE/START (pos+ BASELINE/START +y EM-HEIGHT-3/8))
 
@@ -212,98 +266,106 @@
 (: DESCLINE/END-3/4 : Pos)
 (define DESCLINE/END-3/4 (pos+ DESCLINE/START +x EM-WIDTH-3/4))
 
-; MISC
 
-(define unknown (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
+; FONT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; SHARED SHAPES
+(define lowercase-shape-circle-1/2
+  (let ([CURVE-SCALE (* CURVE-OVERSCALE-FACTOR EM-WIDTH-1/4)])
+    (scale-x (pipe MIDMEANLINE/CENTER-1/2 CURVE-SCALE) 0.8)))
 
 ; WHITESPACE
-
-(define ws-space (Char-3D EM-WIDTH-1/2 empty-pict3d))
+(define ws:space (Char-3D EM-WIDTH-1/2 empty-pict3d))
 
 ; NUMBERS
-
-(define num-0 (Char-3D EM-WIDTH
-                         (scale-x (cylinder MIDLINE/CENTER EM-WIDTH-1/2) 0.8)))
-(define num-1 (Char-3D EM-WIDTH-3/4
-                         (scale-x (cube MIDLINE/CENTER EM-WIDTH-1/2) 0.4)))
-(define num-2 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-3 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-4 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-5 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-6 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-7 (Char-3D EM-WIDTH
-                         (scale-x (cylinder MIDLINE/CENTER EM-WIDTH-1/2) 0.8)))
-(define num-8 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define num-9 (Char-3D EM-WIDTH
-                         (cube MIDLINE/CENTER EM-WIDTH-1/2)))
+(define num:0 (Char-3D EM-WIDTH
+                         (scale-x (pipe MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8)))
+(define num:1 (Char-3D EM-WIDTH-3/4
+                         (scale-x (cube MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.4)))
+(define num:2 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:3 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:4 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:5 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:6 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:7 (Char-3D EM-WIDTH
+                         (scale-x (cylinder MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8)))
+(define num:8 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define num:9 (Char-3D EM-WIDTH
+                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
 
 ; ALPHA LOWER
-
-(define a (Char-3D EM-WIDTH-3/4
-                   (rotate-x (cone (pos+ BASELINE/END +z EM-WIDTH-1/4)
-                                   (pos+ MEANLINE/START -z EM-WIDTH-1/4)) -90.0)))
-(define b (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define c (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define d (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define e (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define f (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define g (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define h (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define i (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define j (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define k (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define l (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define m (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define n (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define o (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define p (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define q (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define r (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define s (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define t (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define u (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define v (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define w (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define x (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define y (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define z (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
+(define char:a (Char-3D EM-WIDTH-5/8 (rotate-x/center
+                                 (cone MIDMEANLINE/CENTER EM-WIDTH-1/4)
+                                 90.0)))
+(define char:b (Char-3D EM-WIDTH-5/8 (combine lowercase-shape-circle-1/2
+                                              (scale-x
+                                               (cube (pos+ MEANLINE/START +x EM-WIDTH-1/8) EM-HEIGHT-1/2)
+                                               1/8))))
+(define char:c (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:d (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:e (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:f (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:g (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:h (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:i (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:j (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:k (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:l (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:m (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:n (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:o (Char-3D EM-WIDTH-5/8 lowercase-shape-circle-1/2))
+(define char:p (Char-3D EM-WIDTH-5/8 (combine lowercase-shape-circle-1/2
+                                              (scale-x
+                                               (cube (pos+ BASELINE/START +x EM-WIDTH-1/4) EM-WIDTH-1/4)
+                                               0.2))))
+(define char:q (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:r (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:s (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:t (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:u (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:v (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:w (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:x (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:y (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+(define char:z (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
 
 ; ALPHA UPPER
-
-(define A (Char-3D EM-WIDTH (cone MIDLINE/CENTER EM-WIDTH-1/2)))
-(define B (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define C (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define D (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define E (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define F (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define G (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define H (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define I (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define J (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define K (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define L (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define M (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define N (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define O (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define P (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define Q (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define R (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define S (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define T (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define U (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define V (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define W (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define X (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define Y (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define Z (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
+(define char:A (Char-3D EM-WIDTH (cone MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:B (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:C (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:D (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:E (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:F (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:G (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:H (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:I (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:J (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:K (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:L (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:M (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:N (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:O (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:P (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:Q (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:R (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:S (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:T (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:U (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:V (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:W (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:X (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:Y (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:Z (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
 
 ; SYMBOLS
+(define symbol:? (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define symbol:dot (Char-3D EM-WIDTH-1/4 (sphere BASELINE/CENTER-1/4 EM-WIDTH-1/16)))
 
-(define symbol-? (Char-3D EM-WIDTH (cube MIDLINE/CENTER EM-WIDTH-1/2)))
-(define symbol-dot (Char-3D EM-WIDTH (sphere BASELINE/CENTER-1/4 EM-WIDTH-1/4)))
+; MISC
+(define misc:unknown (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
