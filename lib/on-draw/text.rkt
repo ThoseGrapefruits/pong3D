@@ -100,7 +100,7 @@
   (define chars (string->list s))
   (: chars-mapped (Listof font:Char-3D))
   (define chars-mapped
-    (map (lambda (c) (hash-ref text-map c (lambda () font:misc:unknown)))
+    (map (λ (c) (hash-ref text-map c (λ () font:misc:unknown)))
          chars))
   (define width : Flonum (foldl + 0.0 (map font:Char-3D-width chars-mapped)))
   (Word-3D width chars-mapped))

@@ -62,8 +62,8 @@
   (rs:rs-write sound path)
   (: play (-> Boolean))
   (define play (if loop
-                   (lambda () (play-sound path #f) (play))
-                   (lambda () (play-sound path #f))))
+                   (λ () (play-sound path #f) (play))
+                   (λ () (play-sound path #f))))
   (thread play))
 
 (: rs-play-random (->* ((Listof RSound)) (Boolean) Thread))
