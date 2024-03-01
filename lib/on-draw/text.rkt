@@ -138,7 +138,7 @@
              ([char (Word-3D-chars word)])
              (define char-positioned
                (transform
-                (font:Char-3D-drawn char)
+                ((font:Char-3D-draw char))
                 (affine-compose
                  (move-x char-x)
                  (move-y line-y))))
@@ -160,7 +160,7 @@
               ([word words])
       (define word-width (Word-3D-width word))
       (if (> (+ line-length word-width) wrap)
-          (values 0.0
+          (values word-width
                   (cons
                    (list word)
                    lines))

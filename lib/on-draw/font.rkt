@@ -9,7 +9,7 @@
 
 (define-struct Char-3D
   ([width : Flonum]
-   [drawn : Pict3D]))
+   [draw : (-> Pict3D)]))
 
 
 ; START   MIDDLE   END
@@ -29,6 +29,7 @@
 ; ╎                                ╮   ║
 ; ╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ └───╯ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     DESCLINE
 
+(define current-emitted (emitted "oldlace" 1.0))
 
 ; CONSTANTS — RELATIVE MEASUREMENTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -270,102 +271,104 @@
 ; FONT ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; SHARED SHAPES
-(define lowercase-shape-circle-1/2
+(define (lowercase-shape-circle-1/2)
   (let ([CURVE-SCALE (* CURVE-OVERSCALE-FACTOR EM-WIDTH-1/4)])
     (scale-x (pipe MIDMEANLINE/CENTER-1/2 CURVE-SCALE) 0.8)))
 
 ; WHITESPACE
-(define ws:space (Char-3D EM-WIDTH-1/2 empty-pict3d))
+(define ws:space (Char-3D EM-WIDTH-1/2 (lambda () empty-pict3d)))
 
 ; NUMBERS
 (define num:0 (Char-3D EM-WIDTH
-                         (scale-x (pipe MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8)))
+                         (lambda () (scale-x (pipe MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8))))
 (define num:1 (Char-3D EM-WIDTH-3/4
-                         (scale-x (cube MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.4)))
+                         (lambda () (scale-x (cube MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.4))))
 (define num:2 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:3 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:4 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:5 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:6 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:7 (Char-3D EM-WIDTH
-                         (scale-x (cylinder MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8)))
+                         (lambda () (scale-x (cylinder MIDCAPLINE/CENTER EM-WIDTH-1/2) 0.8))))
 (define num:8 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 (define num:9 (Char-3D EM-WIDTH
-                         (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+                         (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 
 ; ALPHA LOWER
-(define char:a (Char-3D EM-WIDTH-5/8 (rotate-x/center
-                                 (cone MIDMEANLINE/CENTER EM-WIDTH-1/4)
-                                 90.0)))
-(define char:b (Char-3D EM-WIDTH-5/8 (combine lowercase-shape-circle-1/2
-                                              (scale-x
-                                               (cube (pos+ MEANLINE/START +x EM-WIDTH-1/8) EM-HEIGHT-1/2)
-                                               1/8))))
-(define char:c (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:d (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:e (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:f (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:g (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:h (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:i (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:j (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:k (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:l (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:m (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:n (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:o (Char-3D EM-WIDTH-5/8 lowercase-shape-circle-1/2))
-(define char:p (Char-3D EM-WIDTH-5/8 (combine lowercase-shape-circle-1/2
+(define char:a (Char-3D EM-WIDTH-5/8 (lambda () (rotate-x/center
+                                 (cone MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)
+                                 90.0))))
+(define char:b (Char-3D EM-WIDTH-5/8
+                        (lambda () (with-emitted (emitted "oldlace" 1.0)
+                          (combine (lowercase-shape-circle-1/2)
+                                   (scale-x
+                                    (cube (pos+ MEANLINE/START +x EM-WIDTH-1/8) EM-HEIGHT-1/2)
+                                    1/8))))))
+(define char:c (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:d (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:e (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:f (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:g (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:h (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:i (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:j (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:k (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:l (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:m (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:n (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:o (Char-3D EM-WIDTH-5/8 (lambda () (lowercase-shape-circle-1/2))))
+(define char:p (Char-3D EM-WIDTH-5/8 (lambda () (combine (lowercase-shape-circle-1/2)
                                               (scale-x
                                                (cube (pos+ BASELINE/START +x EM-WIDTH-1/4) EM-WIDTH-1/4)
-                                               0.2))))
-(define char:q (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:r (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:s (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:t (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:u (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:v (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:w (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:x (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:y (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
-(define char:z (Char-3D EM-WIDTH-5/8 (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4)))
+                                               0.2)))))
+(define char:q (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:r (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:s (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:t (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:u (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:v (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:w (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:x (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:y (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
+(define char:z (Char-3D EM-WIDTH-5/8 (lambda () (cube MIDMEANLINE/CENTER-1/2 EM-WIDTH-1/4))))
 
 ; ALPHA UPPER
-(define char:A (Char-3D EM-WIDTH (cone MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:B (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:C (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:D (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:E (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:F (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:G (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:H (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:I (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:J (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:K (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:L (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:M (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:N (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:O (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:P (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:Q (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:R (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:S (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:T (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:U (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:V (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:W (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:X (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:Y (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define char:Z (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define char:A (Char-3D EM-WIDTH (lambda () (cone MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:B (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:C (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:D (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:E (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:F (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:G (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:H (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:I (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:J (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:K (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:L (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:M (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:N (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:O (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:P (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:Q (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:R (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:S (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:T (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:U (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:V (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:W (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:X (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:Y (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define char:Z (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
 
 ; SYMBOLS
-(define symbol:? (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
-(define symbol:dot (Char-3D EM-WIDTH-1/4 (sphere BASELINE/CENTER-1/4 EM-WIDTH-1/16)))
+(define symbol:? (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
+(define symbol:dot (Char-3D EM-WIDTH-1/4 (lambda () (sphere BASELINE/CENTER-1/4 EM-WIDTH-1/16))))
 
 ; MISC
-(define misc:unknown (Char-3D EM-WIDTH (cube MIDCAPLINE/CENTER EM-WIDTH-1/2)))
+(define misc:unknown (Char-3D EM-WIDTH (lambda () (cube MIDCAPLINE/CENTER EM-WIDTH-1/2))))
