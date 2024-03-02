@@ -115,7 +115,7 @@
 (define (text s
               #:line-spacing [line-spacing 0.4]
               #:wrap [wrap 40.0])
-  (define line-height (+ line-spacing font:EM-HEIGHT))
+  (define line-height (+ line-spacing font:HEIGHT-CAP))
   (define words (string-split s))
   (define words-rendered (map Word-3D-from-string words))
   (define lines (make-lines words-rendered #:wrap wrap))
