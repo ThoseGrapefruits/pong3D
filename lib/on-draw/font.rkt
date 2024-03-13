@@ -156,7 +156,7 @@
 ; Heights defining the space below and above the LINE/MEAN.
 
 (: HEIGHT-X : Flonum)
-(define HEIGHT-X 0.45)
+(define HEIGHT-X 0.4)
 
 (: HEIGHT-X-1/4 : Flonum)
 (define HEIGHT-X-1/4 (/ HEIGHT-X 4.0))
@@ -567,7 +567,7 @@
                         (λ () (combine (arc-x-1/2)
                                        (rectangle (pos+ LINE/MEAN/START +x WIDTH-EM-1/16)
                                                   (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z))))))
-(define char:c (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:c (Char-3D WIDTH-EM-5/8 (λ () (arc-x-1/2 #:arc (arc 40.0 -40.0)))))
 (define char:d (Char-3D WIDTH-EM-1/2
                         (λ () (combine
                                (arc-x-1/2)
@@ -581,7 +581,7 @@
 (define char:f (Char-3D WIDTH-EM-5/8 
                         (λ () (combine
                                ; curve
-                               (move-x (arc-y-1/2 #:arc (arc -180 -60))
+                               (move-x (arc-y-1/2 #:arc (arc -180.0 -60.0))
                                        WIDTH-EM-1/8)
                                ; ascender upper
                                (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y HEIGHT-Y-1/4)
