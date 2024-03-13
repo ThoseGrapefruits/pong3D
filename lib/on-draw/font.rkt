@@ -21,19 +21,19 @@
 ; ╎       ╎        ╎      S  M  E
 ; ╎       ╎        ╎      ╎  ╎  ╎
 ; ╎       ╎        ╎      ╎  ╎  ╎
-; ╶══───┬────┬───╤╤╴ ╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     LINE/CAP
+; ╶══───┬────┬───╤╤╴ ╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/CAP
 ; ╎     ╰╮  ╭╯   ││       ╎  ╎  ╎             ╎ HEIGHT-Y      ╎ HEIGHT-CAP
 ; ╎      ╰╮╭╯    ││       ╎  ╎  ╎             ╎               ╎
-; ╎╌╌╌╌╌╌ ││ ╌╌╌ ││ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌   LINE/MID-Y
+; ╎╌╌╌╌╌╌ ││ ╌╌╌ ││ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-Y
 ; ╎       ║║     ║║       ╎  ╎  ╎             ╎               ╎
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌     LINE/MID
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌    LINE/MEAN
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MEAN
 ; ╎       ║║     ║║     ║ ║     ║ ║     ║     ╎ HEIGHT-X      ╎
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌ ║ ╟─═══─╯ ║ ╌╌╌ ║ ╌╌╌╌╎  ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  LINE/MID-X
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌ ║ ╟─═══─╯ ║ ╌╌╌ ║ ╌╌╌╌╎  ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-X
 ; ╎      ╭╯╰╮   ╭╯╰╮   ╭╯ ╰╮   ╭  ╰───╮╭╯     ╎               ╎
-; ╎╌╌╌╌╌ ┴──┴ ╌ ┴──┴ ╌ ┴ ╌ ╰───┘ ╌╌╌╌ ╰╢ ╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌    LINE/BASE
-; ╎       ├┘    ├──┘               ╮   ║
-; ╎╌╌╌╌╌╌╌│╌╌╌╌╌│╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ └───╯ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌    LINE/DESC
+; ╎╌╌╌╌╌ ┴──┴ ╌ ┴──┴ ╌ ┴ ╌ ╰───┘ ╌╌╌╌ ╰╢ ╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/BASE
+; ╎╌╌╌╌╌╌ ├┘ ╌╌ ├──┘ ╌╌╌╌╌╌╌╌╌╌╌╌╌ ╮ ╌ ║ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-DESC
+; ╎╌╌╌╌╌╌╌│╌╌╌╌╌│╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ └───╯ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/DESC
 ;         │     │                  ├───┘
 ;         │                        │
 ;         │     WIDTH-BASE/NARROW  │
@@ -142,7 +142,7 @@
 ; Depth of characters on the z-axis
 
 (: DEPTH-Z : Flonum)
-(define DEPTH-Z WIDTH-STROKE)
+(define DEPTH-Z (* WIDTH-STROKE 3/4))
 
 ; greater-than-EM widths for sizing the boxes in which to place EM-width characters
 
@@ -158,6 +158,9 @@
 (: HEIGHT-X : Flonum)
 (define HEIGHT-X 0.45)
 
+(: HEIGHT-X-1/4 : Flonum)
+(define HEIGHT-X-1/4 (/ HEIGHT-X 4.0))
+
 (: HEIGHT-X-7/16 : Flonum)
 (define HEIGHT-X-7/16 (* 7 (/ HEIGHT-X 16.0)))
 
@@ -170,6 +173,14 @@
 (: HEIGHT-Y-1/2 : Flonum)
 (define HEIGHT-Y-1/2 (/ HEIGHT-Y 2.0))
 
+; HEIGHT-DESC
+; Height of descender reach below the LINE/BASE
+
+(: HEIGHT-DESC : Flonum)
+(define HEIGHT-DESC 0.45)
+
+(: HEIGHT-DESC-1/2 : Flonum)
+(define HEIGHT-DESC-1/2 (/ HEIGHT-DESC 2.0))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CONSTANTS — GUIDE LINES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -293,9 +304,9 @@
 (define LINE/MEAN/END-3/4 (pos+ LINE/MEAN/START +x WIDTH-EM-3/4))
 
 
-; LINE/MID ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Midway between LINE/CAP and LINE/BASE. Useful for positioning shapes that use a
-; center pos.
+; LINE/MID ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Midway between LINE/CAP and LINE/BASE. Useful for positioning shapes that use
+; a center pos.
 
 (: LINE/MID/START : Pos)
 (define LINE/MID/START (pos+ origin +y HEIGHT-CAP-1/2))
@@ -331,9 +342,9 @@
 (define LINE/MID/END-3/4 (pos+ LINE/MID/START +x WIDTH-EM-3/4))
 
 
-; LINE/MID-X ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Midway between LINE/MEAN and LINE/BASE. Useful for positioning lowercase shapes
-; that use a center pos.
+; LINE/MID-X ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Midway between LINE/MEAN and LINE/BASE. Useful for positioning lowercase
+; shapes that use a center pos.
 
 (: LINE/MID-X/START : Pos)
 (define LINE/MID-X/START (pos+ LINE/BASE/START -y HEIGHT-X-1/2))
@@ -375,9 +386,9 @@
 (define LINE/MID-X/END-3/4 (pos+ LINE/MID-X/START +x WIDTH-EM-3/4))
 
 
-; LINE/MID-Y ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Midway between LINE/MEAN and LINE/BASE. Useful for positioning lowercase shapes
-; that use a center pos.
+; LINE/MID-Y ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Midway between LINE/MEAN and LINE/BASE. Useful for positioning lowercase
+; shapes that use a center pos.
 
 (: LINE/MID-Y/START : Pos)
 (define LINE/MID-Y/START (pos+ LINE/BASE/START -y (+ HEIGHT-X HEIGHT-Y-1/2)))
@@ -412,10 +423,47 @@
 (: LINE/MID-Y/END-3/4 : Pos)
 (define LINE/MID-Y/END-3/4 (pos+ LINE/MID-Y/START +x WIDTH-EM-3/4))
 
-; LINE/DESC
-; Bottom of characters (e.g. "y") that go below the LINE/BASE,
+; LINE/MID-DESC ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Middle of descender area of characters that go below LINE/BASE.
+
+(: LINE/MID-DESC/START : Pos)
+(define LINE/MID-DESC/START (pos+ LINE/BASE/START +y (/ HEIGHT-DESC 2.0)))
+
+(: LINE/MID-DESC/CENTER : Pos)
+(define LINE/MID-DESC/CENTER (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/2))
+
+(: LINE/MID-DESC/CENTER-1/4 : Pos)
+(define LINE/MID-DESC/CENTER-1/4 (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/8))
+
+(: LINE/MID-DESC/CENTER-1/2 : Pos)
+(define LINE/MID-DESC/CENTER-1/2 (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/4))
+
+(: LINE/MID-DESC/CENTER-5/8 : Pos)
+(define LINE/MID-DESC/CENTER-5/8 (pos+ LINE/MID-DESC/START +x WIDTH-EM-5/16))
+
+(: LINE/MID-DESC/CENTER-3/4 : Pos)
+(define LINE/MID-DESC/CENTER-3/4 (pos+ LINE/MID-DESC/START +x WIDTH-EM-3/8))
+
+(: LINE/MID-DESC/END : Pos)
+(define LINE/MID-DESC/END (pos+ LINE/MID-DESC/START +x WIDTH-EM))
+
+(: LINE/MID-DESC/END-1/4 : Pos)
+(define LINE/MID-DESC/END-1/4 (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/4))
+
+(: LINE/MID-DESC/END-1/2 : Pos)
+(define LINE/MID-DESC/END-1/2 (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/2))
+
+(: LINE/MID-DESC/END-5/8 : Pos)
+(define LINE/MID-DESC/END-5/8 (pos+ LINE/MID-DESC/START +x WIDTH-EM-5/8))
+
+(: LINE/MID-DESC/END-3/4 : Pos)
+(define LINE/MID-DESC/END-3/4 (pos+ LINE/MID-DESC/START +x WIDTH-EM-3/4))
+
+; LINE/DESC ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Bottom of characters (e.g. "y") that go below LINE/BASE.
+
 (: LINE/DESC/START : Pos)
-(define LINE/DESC/START (pos+ LINE/BASE/START +y HEIGHT-CAP-3/8))
+(define LINE/DESC/START (pos+ LINE/BASE/START +y HEIGHT-DESC))
 
 (: LINE/DESC/CENTER : Pos)
 (define LINE/DESC/CENTER (pos+ LINE/DESC/START +x WIDTH-EM-1/2))
@@ -455,8 +503,17 @@
 
 ; SHARED SHAPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: arc-lower-1/2 : [#:arc Arc] -> Pict3D)
-(define (arc-lower-1/2 #:arc [arc circle-arc])
+(: arc-y-1/2 : [#:arc Arc] -> Pict3D)
+(define (arc-y-1/2 #:arc [arc circle-arc])
+  (pipe LINE/MID-Y/CENTER-1/2
+        (dir (* WIDTH-EM-3/16)
+             (* CURVE-OVERSCALE-FACTOR WIDTH-EM-1/4)
+             DEPTH-Z)
+        #:arc arc
+        #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
+
+(: arc-x-1/2 : [#:arc Arc] -> Pict3D)
+(define (arc-x-1/2 #:arc [arc circle-arc])
     (pipe LINE/MID-X/CENTER-1/2
           (dir (* WIDTH-EM-3/16)
                (* CURVE-OVERSCALE-FACTOR WIDTH-EM-1/4)
@@ -464,14 +521,14 @@
           #:arc arc
           #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
 
-(: arc-upper-1/2 : [#:arc Arc] -> Pict3D)
-(define (arc-upper-1/2 #:arc [arc circle-arc])
-  (pipe LINE/MID-Y/CENTER-1/2
-        (dir (* WIDTH-EM-3/16)
-             (* CURVE-OVERSCALE-FACTOR WIDTH-EM-1/4)
-             DEPTH-Z)
-        #:arc arc
-        #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
+(: arc-desc-1/2 : [#:arc Arc] -> Pict3D)
+(define (arc-desc-1/2 #:arc [arc circle-arc])
+    (pipe LINE/MID-DESC/CENTER-1/2
+          (dir (* WIDTH-EM-3/16)
+               WIDTH-EM-1/4
+               DEPTH-Z)
+          #:arc arc
+          #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
 
 
 ; WHITESPACE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -507,22 +564,22 @@
 
 (define char:a (Char-3D WIDTH-EM-5/8
                         (λ () (combine
-                               (arc-lower-1/2)
+                               (arc-x-1/2)
                                (rectangle (pos+ LINE/MID-X/START +x WIDTH-EM-7/16)
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-7/16 DEPTH-Z))))))
 (define char:b (Char-3D WIDTH-EM-1/2
-                        (λ () (combine (arc-lower-1/2)
+                        (λ () (combine (arc-x-1/2)
                                        (rectangle (pos+ LINE/MEAN/START +x WIDTH-EM-1/16)
                                                   (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z))))))
 (define char:c (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:d (Char-3D WIDTH-EM-1/2
                         (λ () (combine
-                               (arc-lower-1/2)
+                               (arc-x-1/2)
                                (rectangle (pos+ LINE/MEAN/START +x WIDTH-EM-7/16)
                                           (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z))))))
 (define char:e (Char-3D WIDTH-EM-5/8
                         (λ () (combine
-                               (arc-lower-1/2 #:arc (arc 60.0 0.0))
+                               (arc-x-1/2 #:arc (arc 60.0 0.0))
                                (rectangle LINE/MID-X/CENTER-1/2
                                           (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z))))))
 (define char:f (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
@@ -542,7 +599,22 @@
                                ; base
                                (rectangle LINE/BASE/CENTER-1/2
                                           (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z))))))
-(define char:j (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:j (Char-3D WIDTH-EM-5/8
+                        (λ () (combine
+                               ; dot
+                               (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* 2.0 WIDTH-STROKE))
+                                          (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
+                               ; cap
+                               (rectangle (pos+ LINE/MEAN/CENTER-1/2 -x WIDTH-BASE/NARROW-1/2)
+                                          (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
+                               ; ascender
+                               (rectangle LINE/MID-X/CENTER-1/2
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))
+                               (rectangle LINE/BASE/CENTER-1/2
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-DESC-1/2 DEPTH-Z))
+                               ; descender
+                               (move-x (arc-desc-1/2 #:arc (arc 0 90))
+                                       (- WIDTH-STROKE WIDTH-EM-1/4))))))
 (define char:k (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:l (Char-3D WIDTH-EM-9/16
                         (λ () (combine
@@ -557,15 +629,26 @@
                                           (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z))))))
 (define char:m (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:n (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
-(define char:o (Char-3D WIDTH-EM-5/8 (λ () (arc-lower-1/2))))
-(define char:p (Char-3D WIDTH-EM-5/8 (λ () (combine (arc-lower-1/2)
-                                               (rectangle (pos+ LINE/BASE/START +x WIDTH-EM-1/16)
-                                                          (dir WIDTH-STROKE-1/2 WIDTH-EM-1/4 DEPTH-Z))))))
+(define char:o (Char-3D WIDTH-EM-5/8 (λ () (arc-x-1/2))))
+(define char:p (Char-3D WIDTH-EM-5/8
+                        (λ () (combine (arc-x-1/2)
+                                       (rectangle (pos+ LINE/BASE/START +x WIDTH-EM-1/16)
+                                                  (dir WIDTH-STROKE-1/2 WIDTH-EM-1/4 DEPTH-Z))))))
 (define char:q (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:r (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:s (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:t (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
-(define char:u (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:u (Char-3D WIDTH-EM-5/8
+                        (λ () (combine
+                               (rectangle (pos+ LINE/MID-X/START
+                                                (dir WIDTH-EM-1/8 (- HEIGHT-X-1/4) 0.0))
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))
+                               (rectangle (pos+ LINE/MID-X/END-5/8
+                                                (dir (- (+ WIDTH-EM-3/16 WIDTH-STROKE-1/2))
+                                                     (- HEIGHT-X-1/4)
+                                                     0.0))
+                                          (dir WIDTH-STROKE-1/2 WIDTH-EM-1/4 DEPTH-Z))
+                               (arc-x-1/2 #:arc (arc 0 180))))))
 (define char:v (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:w (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:x (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))

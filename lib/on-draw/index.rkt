@@ -106,7 +106,6 @@
            #:wrap 15.0)
      (affine-compose
       (position-screen-space-relative s -0.6 -0.6 0.8)
-      (scale-z 0.5)
       (scale 0.05)))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
