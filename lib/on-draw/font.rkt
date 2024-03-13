@@ -133,7 +133,7 @@
 (define WIDTH-BASE/NARROW-1/2 (/ WIDTH-BASE/NARROW 2.0))
 
 (: WIDTH-BASE/WIDE : Flonum)
-(define WIDTH-BASE/WIDE (* WIDTH-STROKE 4.0))
+(define WIDTH-BASE/WIDE (* WIDTH-STROKE 3.0))
 
 (: WIDTH-BASE/WIDE-1/2 : Flonum)
 (define WIDTH-BASE/WIDE-1/2 (/ WIDTH-BASE/WIDE 2.0))
@@ -172,6 +172,9 @@
 
 (: HEIGHT-Y-1/2 : Flonum)
 (define HEIGHT-Y-1/2 (/ HEIGHT-Y 2.0))
+
+(: HEIGHT-Y-1/4 : Flonum)
+(define HEIGHT-Y-1/4 (/ HEIGHT-Y 4.0))
 
 ; HEIGHT-DESC
 ; Height of descender reach below the LINE/BASE
@@ -503,33 +506,26 @@
 
 ; SHARED SHAPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: arc-y-1/2 : [#:arc Arc] -> Pict3D)
-(define (arc-y-1/2 #:arc [arc circle-arc])
-  (pipe LINE/MID-Y/CENTER-1/2
-        (dir (* WIDTH-EM-3/16)
+(: arc-1/2 : Pos [#:arc Arc] -> Pict3D)
+(define (arc-1/2 p #:arc [arc circle-arc])
+  (pipe p
+        (dir WIDTH-EM-3/16
              (* CURVE-OVERSCALE-FACTOR WIDTH-EM-1/4)
              DEPTH-Z)
         #:arc arc
-        #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
+        #:bottom-radii (interval (/ (- WIDTH-EM-3/16 WIDTH-STROKE) WIDTH-EM-3/16) 1.0)))
+
+(: arc-y-1/2 : [#:arc Arc] -> Pict3D)
+(define (arc-y-1/2 #:arc [arc circle-arc])
+  (arc-1/2 LINE/MID-Y/CENTER-1/2 #:arc arc))
 
 (: arc-x-1/2 : [#:arc Arc] -> Pict3D)
 (define (arc-x-1/2 #:arc [arc circle-arc])
-    (pipe LINE/MID-X/CENTER-1/2
-          (dir (* WIDTH-EM-3/16)
-               (* CURVE-OVERSCALE-FACTOR WIDTH-EM-1/4)
-               DEPTH-Z)
-          #:arc arc
-          #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
+  (arc-1/2 LINE/MID-X/CENTER-1/2 #:arc arc))
 
 (: arc-desc-1/2 : [#:arc Arc] -> Pict3D)
 (define (arc-desc-1/2 #:arc [arc circle-arc])
-    (pipe LINE/MID-DESC/CENTER-1/2
-          (dir (* WIDTH-EM-3/16)
-               WIDTH-EM-1/4
-               DEPTH-Z)
-          #:arc arc
-          #:bottom-radii (interval (/ (- WIDTH-EM-1/4 WIDTH-STROKE) WIDTH-EM-1/4) 1.0)))
-
+  (arc-1/2 LINE/MID-DESC/CENTER-1/2 #:arc arc))
 
 ; WHITESPACE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -582,7 +578,20 @@
                                (arc-x-1/2 #:arc (arc 60.0 0.0))
                                (rectangle LINE/MID-X/CENTER-1/2
                                           (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z))))))
-(define char:f (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:f (Char-3D WIDTH-EM-5/8 
+                        (λ () (combine
+                               ; curve
+                               (move-x (arc-y-1/2 #:arc (arc -180 -60))
+                                       WIDTH-EM-1/8)
+                               ; ascender upper
+                               (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y HEIGHT-Y-1/4)
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z))
+                               ; cross
+                               (rectangle LINE/MEAN/CENTER-1/2
+                                          (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
+                               ; ascender lower
+                               (rectangle LINE/MID-X/CENTER-1/2
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))))))
 (define char:g (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:h (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:i (Char-3D WIDTH-EM-9/16
