@@ -21,15 +21,15 @@
 ; ╎       ╎        ╎      S  M  E
 ; ╎       ╎        ╎      ╎  ╎  ╎
 ; ╎       ╎        ╎      ╎  ╎  ╎
-; ╶══───┬────┬───╤╤╴ ╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/CAP
+; ╶══───┬────┬───╤╤╴ ╌╌╌╌ ╎  ╎  ╎ ╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/CAP
 ; ╎     ╰╮  ╭╯   ││       ╎  ╎  ╎             ╎ HEIGHT-Y      ╎ HEIGHT-CAP
 ; ╎      ╰╮╭╯    ││       ╎  ╎  ╎             ╎               ╎
-; ╎╌╌╌╌╌╌ ││ ╌╌╌ ││ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-Y
+; ╎╌╌╌╌╌╌ ││ ╌╌╌ ││ ╌╌╌╌╌ ╎  ╎  ╎ ╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-Y
 ; ╎       ║║     ║║       ╎  ╎  ╎             ╎               ╎
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌╌╎╌╌╎╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MEAN
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌╌╌ ╎  ╎  ╎ ╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║╠═════╮ ╭═════╮ ╥ ╌╌╌ ╥ ╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MEAN
 ; ╎       ║║     ║║     ║ ║     ║ ║     ║     ╎ HEIGHT-X      ╎
-; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌ ║ ╟─═══─╯ ║ ╌╌╌ ║ ╌╌╌╌╎  ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╎╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-X
+; ╎╌╌╌╌╌╌ ║║ ╌╌╌ ║║ ╌╌╌ ║ ╟─═══─╯ ║ ╌╌╌ ║ ╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌ ╎ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-X
 ; ╎      ╭╯╰╮   ╭╯╰╮   ╭╯ ╰╮   ╭  ╰───╮╭╯     ╎               ╎
 ; ╎╌╌╌╌╌ ┴──┴ ╌ ┴──┴ ╌ ┴ ╌ ╰───┘ ╌╌╌╌ ╰╢ ╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/BASE
 ; ╎╌╌╌╌╌╌ ├┘ ╌╌ ├──┘ ╌╌╌╌╌╌╌╌╌╌╌╌╌ ╮ ╌ ║ ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌ LINE/MID-DESC
@@ -123,6 +123,9 @@
 (: WIDTH-STROKE-1/2 : Flonum)
 (define WIDTH-STROKE-1/2 (/ WIDTH-STROKE 2.0))
 
+(: WIDTH-STROKE-1/4 : Flonum)
+(define WIDTH-STROKE-1/4 (/ WIDTH-STROKE 4.0))
+
 ; WIDTH-BASE
 ; The width of the base of characters that have extended bases / serif marks
 
@@ -161,6 +164,9 @@
 (: HEIGHT-X-1/4 : Flonum)
 (define HEIGHT-X-1/4 (/ HEIGHT-X 4.0))
 
+(: HEIGHT-X-3/8 : Flonum)
+(define HEIGHT-X-3/8 (* 3.0 (/ HEIGHT-X 8.0)))
+
 (: HEIGHT-X-7/16 : Flonum)
 (define HEIGHT-X-7/16 (* 7 (/ HEIGHT-X 16.0)))
 
@@ -181,6 +187,15 @@
 
 (: HEIGHT-DESC : Flonum)
 (define HEIGHT-DESC 0.45)
+
+(: HEIGHT-DESC-1/4 : Flonum)
+(define HEIGHT-DESC-1/4 (/ HEIGHT-DESC 4.0))
+
+(: HEIGHT-DESC-5/16 : Flonum)
+(define HEIGHT-DESC-5/16 (* 5.0 (/ HEIGHT-DESC 16.0)))
+
+(: HEIGHT-DESC-3/8 : Flonum)
+(define HEIGHT-DESC-3/8 (* 3.0 (/ HEIGHT-DESC 8.0)))
 
 (: HEIGHT-DESC-1/2 : Flonum)
 (define HEIGHT-DESC-1/2 (/ HEIGHT-DESC 2.0))
@@ -603,7 +618,7 @@
                         (λ () (combine
                                (arc-x-1/2)
                                (rectangle (pos+ LINE/MID-X/START +x WIDTH-EM-7/16)
-                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-7/16 DEPTH-Z))))))
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))))))
 (define char:b (Char-3D WIDTH-EM-1/2
                         (λ () (combine (arc-x-1/2)
                                        (rectangle (pos+ LINE/MID/START +x WIDTH-EM-1/16)
@@ -633,7 +648,18 @@
                                ; ascender lower
                                (rectangle LINE/MID-X/CENTER-3/8
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))))))
-(define char:g (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:g (Char-3D WIDTH-EM-1/2
+                        (λ () (combine
+                               ; top accent
+                               (rectangle (pos+ LINE/MEAN/CENTER-1/2
+                                                (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
+                                          (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
+                               ; top curve
+                               (arc-x-1/2)
+                               ; connector
+                               (arc-1/2 LINE/BASE/CENTER-1/2 HEIGHT-DESC-3/8 #:arc (arc 135.0 225.0))
+                               ; bottom curve
+                               (arc-1/2 LINE/MID-DESC/CENTER-1/2 HEIGHT-DESC-5/16)))))
 (define char:h (Char-3D WIDTH-EM-3/8
                         (λ () (combine
                                ; ascender
@@ -738,14 +764,41 @@
                                                      (- HEIGHT-X-1/4)
                                                      0.0))
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z))))))
-(define char:o (Char-3D WIDTH-EM-5/8 (λ () (arc-x-1/2))))
+(define char:o (Char-3D WIDTH-EM-1/2 (λ () (arc-x-1/2))))
 (define char:p (Char-3D WIDTH-EM-5/8
                         (λ () (combine (arc-x-1/2)
-                                       (rectangle (pos+ LINE/BASE/START +x WIDTH-EM-1/16)
-                                                  (dir WIDTH-STROKE-1/2 WIDTH-EM-1/4 DEPTH-Z))))))
+                                       (rectangle (pos+ LINE/BASE/START +x WIDTH-STROKE-1/2)
+                                                  (dir WIDTH-STROKE-1/2 HEIGHT-X DEPTH-Z))))))
 (define char:q (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
-(define char:r (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
-(define char:s (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+(define char:r (Char-3D WIDTH-EM-1/2
+                        (λ () (combine
+                               ; ascender
+                               (rectangle (pos+ LINE/MID-X/START +x WIDTH-EM-1/16)
+                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z))
+                               ; curve
+                               (cirque (pos+ LINE/BASE/CENTER-1/2 -x WIDTH-STROKE-1/2)
+                                       WIDTH-EM-3/16
+                                       HEIGHT-X
+                                       #:arc (arc -180.0 -90.0))))))
+                                       
+(define char:s (Char-3D WIDTH-EM-1/2
+                        (λ ()
+                        (define arc-radius-y HEIGHT-X-3/8)
+                        (define top
+                          (cirque (pos+ LINE/MID-X/CENTER-1/2
+                                        -y
+                                        (- arc-radius-y WIDTH-STROKE-1/2))
+                                  WIDTH-EM-3/16
+                                  arc-radius-y
+                                  #:arc (arc  90.0  270.0)))
+                        (define bottom
+                          (cirque (pos+ LINE/MID-X/CENTER-1/2
+                                        +y
+                                        arc-radius-y)
+                                  WIDTH-EM-3/16
+                                  arc-radius-y
+                                  #:arc (arc -90.0 -270.0)))
+                          (rotate-z/center (combine top bottom) 45.0))))
 (define char:t (Char-3D WIDTH-EM-5/8
                         (λ () (combine
                                ; ascender upper
@@ -770,8 +823,19 @@
                                                      HEIGHT-X-1/4
                                                      0.0))
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z))
-                               (arc-x-1/2 #:arc (arc 0 180))))))
-(define char:v (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
+                               (arc-x-1/2 #:arc (arc 0.0 180.0))))))
+(define char:v (Char-3D WIDTH-EM-1/2
+                        (λ () (combine
+                               (move-x (cirque LINE/BASE/CENTER-1/2
+                                               WIDTH-EM-3/16
+                                               HEIGHT-X
+                                               #:arc (arc  -90.0   0.0))
+                                       (- WIDTH-STROKE-1/2 WIDTH-EM-3/16))
+                               (move-x (cirque LINE/BASE/CENTER-1/2
+                                               WIDTH-EM-3/16
+                                               HEIGHT-X
+                                               #:arc (arc -180.0 -90.0))
+                                       (- WIDTH-EM-3/16 WIDTH-STROKE-1/2))))))
 (define char:w (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:x (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:y (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
@@ -816,8 +880,12 @@
                         (λ () (cube LINE/MID/CENTER WIDTH-EM-1/2))))
 (define char:R (Char-3D WIDTH-EM
                         (λ () (cube LINE/MID/CENTER WIDTH-EM-1/2))))
+; TODO this needs (arc-x-5/8) and/or to just use a custom thing so it can add
+; WIDTH-STROKE-1/4 to both arc radii.
 (define char:S (Char-3D WIDTH-EM
-                        (λ () (cube LINE/MID/CENTER WIDTH-EM-1/2))))
+                        (λ () (combine
+                               (arc-y-1/2 #:arc (arc  90.0 270.0))
+                               (arc-x-1/2 #:arc (arc -90.0 -270.0))))))
 (define char:T (Char-3D WIDTH-EM
                         (λ () (cube LINE/MID/CENTER WIDTH-EM-1/2))))
 (define char:U (Char-3D WIDTH-EM

@@ -100,8 +100,8 @@
       ([current-emitted (emitted "oldlace" 1.0)])
     (transform
      (text (string-append
-            "the quick brown fox jumped over the lazy dog... "
-            "i said THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG "
+            "the quick brown fox jumps over the lazy dog... "
+            "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
             "012345 6789 10 poop POOP")
            #:wrap 15.0)
      (affine-compose
