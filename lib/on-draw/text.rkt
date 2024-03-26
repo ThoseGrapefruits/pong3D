@@ -2,7 +2,8 @@
 
 (require pict3d)
 
-(require (prefix-in font: "font.rkt"))
+(require (prefix-in font: "font.rkt")
+         (prefix-in font: "./font/measurements.rkt"))
 
 (provide text)
 
