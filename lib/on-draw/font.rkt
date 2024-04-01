@@ -147,9 +147,9 @@
                                ; top curve
                                (arc-x-3/8)
                                ; connector
-                               (arc-1/2 LINE/BASE/CENTER-1/2 HEIGHT-DESC-3/8 #:arc (arc 135.0 225.0))
+                               (arc-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 135.0 225.0))
                                ; bottom curve
-                               (arc-1/2 LINE/MID-DESC/CENTER-1/2 HEIGHT-DESC-5/16)))))
+                               (arc-1/2 LINE/MID-DESC/START HEIGHT-DESC-5/16)))))
 (define char:h (Char-3D WIDTH-EM-3/8
                         (λ () (combine
                                ; ascender
@@ -314,18 +314,18 @@
                                                      0.0))
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z))
                                (arc-x-3/8 #:arc (arc 0.0 180.0))))))
-(define char:v (Char-3D WIDTH-EM-3/8
+(define char:v (Char-3D WIDTH-EM-1/2
                         (λ () (combine
-                               (move-x (cirque LINE/BASE/CENTER-1/2
+                               (move-x (cirque LINE/BASE/START
                                                WIDTH-EM-3/16
                                                HEIGHT-X
                                                #:arc (arc  -90.0   0.0))
-                                       (- WIDTH-STROKE-1/2 WIDTH-EM-3/16))
-                               (move-x (cirque LINE/BASE/CENTER-1/2
+                                       0.0)
+                               (move-x (cirque LINE/BASE/START
                                                WIDTH-EM-3/16
                                                HEIGHT-X
                                                #:arc (arc -180.0 -90.0))
-                                       (- WIDTH-EM-3/16 WIDTH-STROKE-1/2))))))
+                                       (- WIDTH-EM-3/8 WIDTH-STROKE-1/2))))))
 (define char:w (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:x (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
 (define char:y (Char-3D WIDTH-EM-5/8 (λ () (cube LINE/MID-X/CENTER-1/2 WIDTH-EM-1/4))))
