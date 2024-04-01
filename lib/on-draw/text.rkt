@@ -5,7 +5,7 @@
 (require (prefix-in font: "font.rkt")
          (prefix-in font: "./font/measurements.rkt"))
 
-(provide text)
+(provide text On-Char-Handler)
 
 ; TODO it would be nice to use something like parser-tools/lex to 
 ; pull out multi-character things and allow for e.g. ligatures.
@@ -81,8 +81,7 @@
     (cons #\space font:ws:space)
 
     (cons #\? font:symbol:?)
-    (cons #\. font:symbol:dot)
-    )))
+    (cons #\. font:symbol:dot))))
 
 
 ; TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -112,9 +111,16 @@
 (: WORD-SPACE/WIDTH Flonum)
 (define WORD-SPACE/WIDTH (Word-3D-width WORD-SPACE))
 
-(: text : String [#:line-spacing Flonum] [#:wrap Flonum] -> Pict3D)
+(define-type On-Char-Handler (-> Pict3D Char Integer Pict3D))
+
+(: text : String
+   [#:line-spacing Flonum]
+   [#:onchar On-Char-Handler]
+   [#:wrap Flonum]
+   -> Pict3D)
 (define (text s
               #:line-spacing [line-spacing 0.4]
+              #:onchar [onchar (λ (pict c i) pict)]
               #:wrap [wrap 40.0])
   (define line-height (+ line-spacing font:HEIGHT-CAP))
   (define words (string-split s))
@@ -132,18 +138,20 @@
          ([word-x : Flonum 0.0]
           [out empty-list/Pict3D])
          ([word line])
-         (define-values (word-x-new chars-rendered)
-           (for/fold : (Values Flonum (Listof Pict3D))
-             ([char-x word-x]
+         (define-values (_ word-x-new chars-rendered)
+           (for/fold : (Values Integer Flonum (Listof Pict3D))
+             ([char-i : Integer 0]
+              [char-x word-x]
               [out empty-list/Pict3D])
              ([char (Word-3D-chars word)])
              (define char-positioned
-               (transform
+               (onchar (transform
                 ((font:Char-3D-draw char))
                 (affine-compose
                  (move-x char-x)
-                 (move-y line-y))))
-             (values (+ char-x (font:Char-3D-width char))
+                 (move-y line-y))) (font:Char-3D-char char) char-i))
+             (values (+ 1 char-i)
+                     (+ char-x (font:Char-3D-width char))
                      (cons char-positioned out))))
          (values word-x-new
                  (append chars-rendered out))))

@@ -94,6 +94,27 @@
       (render-game-play-arena-bumpers s))]
     [else empty-pict3d]))
 
+; Get an approximately [50, 100] range integer that can be used as a consistent
+; factor for the rotation speed of a given character.
+(: hash-char : Char Integer -> Integer)
+(define (hash-char char index)
+  (define charint (modulo (* 677 (+ 13 (char->integer char))) 1259))
+  (define indexmod (modulo (* 827 (+ 7 index)) 587))
+  (+ 50 (modulo (* 677 charint indexmod) 53)))
+
+(: get-on-char : State -> On-Char-Handler)
+(define (get-on-char s)
+  (define t (State-t s))
+  (define ts (* 0.00001 t))
+  (λ (pict char index)
+    (define hash-x (hash-char char (- index)))
+    (define hash-y (hash-char char index))
+    ; purposefully flip the intensity and time factors to give some more
+    ; character without having to generate 4 values
+    (define rot-x (* hash-y (cos (* hash-x ts)) 0.2))
+    (define rot-y (* hash-x (sin (* hash-y ts)) 0.2))
+    (rotate-y/center (rotate-x/center pict rot-x) rot-y)))
+
 (: render-quick-brown-fox : State-Play -> Pict3D)
 (define (render-quick-brown-fox s)
   (parameterize
@@ -103,7 +124,8 @@
             "the quick brown fox jumps over the lazy dog... "
             "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
             "012345 6789 10 poop POOP")
-           #:wrap 15.0)
+           #:wrap 15.0
+           #:onchar (get-on-char s))
      (affine-compose
       (position-screen-space-relative s -0.6 -0.6 0.8)
       (scale 0.05)))))
