@@ -121,6 +121,19 @@
 (: WIDTH-STROKE-1/4 : Flonum)
 (define WIDTH-STROKE-1/4 (/ WIDTH-STROKE 4.0))
 
+; WIDTH-DIAGONAL-BASE
+; The width of the base of any diagonal strokes. This is slightly larger than
+; WIDTH-STROKE to give the diagonal about the same weight as WIDTH-STROKE.
+
+(: WIDTH-DIAGONAL-BASE : Flonum)
+(define WIDTH-DIAGONAL-BASE (* WIDTH-STROKE (sqrt 2.0)))
+
+(: WIDTH-DIAGONAL-BASE-1/2 : Flonum)
+(define WIDTH-DIAGONAL-BASE-1/2 (/ WIDTH-DIAGONAL-BASE 2.0))
+
+(: WIDTH-DIAGONAL-BASE-1/4 : Flonum)
+(define WIDTH-DIAGONAL-BASE-1/4 (/ WIDTH-DIAGONAL-BASE 4.0))
+
 ; WIDTH-BASE
 ; The width of the base of characters that have extended bases / serif marks
 
