@@ -140,7 +140,10 @@
 ; Depth of characters on the z-axis
 
 (: DEPTH-Z : Flonum)
-(define DEPTH-Z (* WIDTH-STROKE 3/4))
+(define DEPTH-Z (* WIDTH-STROKE 0.75))
+
+(: DEPTH-Z-1/2 : Flonum)
+(define DEPTH-Z-1/2 (/ DEPTH-Z 2.0))
 
 ; greater-than-EM widths for sizing the boxes in which to place EM-width characters
 
