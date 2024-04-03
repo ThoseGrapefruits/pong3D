@@ -128,7 +128,7 @@
   (define lines (make-lines words-rendered #:wrap wrap))
   (combine
    (for/fold : (Listof Pict3D)
-     ([lines empty])
+     ([lines empty-list/Pict3D])
      ([i (range 0 (length lines))]
       [line lines])
      (define line-y (* i line-height))
