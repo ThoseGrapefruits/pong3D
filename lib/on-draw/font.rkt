@@ -195,6 +195,9 @@
 
 ; NUMBERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: NUM-ARC-OFFSET : Flonum)
+(define NUM-ARC-OFFSET 15.0)
+
 (define num:0
   (Char-3D #\0
            WIDTH-EM-7/8
@@ -228,7 +231,7 @@
            WIDTH-EM-3/4
            (λ () (combine
                   ; top arc
-                  (cirque-y-1/2 #:arc (arc -180.0 90.0))
+                  (cirque-y-1/2 #:arc (arc -165.0 90.0))
                   ; mid arc
                   (cirque-x-link-1/2 #:arc (arc -180.0 -90.0))
                   ; lower arc connector
@@ -243,9 +246,9 @@
            WIDTH-EM-3/4
            (λ () (combine
                   ; top arc
-                  (cirque-y-1/2 #:arc (arc -180.0 90.0))
+                  (cirque-y-1/2 #:arc (arc (- NUM-ARC-OFFSET 180.0) 90.0))
                   ; mid arc
-                  (cirque-x-link-1/2 #:arc (arc -90.0 180.0))))))
+                  (cirque-x-link-1/2 #:arc (arc -90.0 (- 180.0 NUM-ARC-OFFSET)))))))
 (define num:4
   (Char-3D #\4
            WIDTH-EM-3/4
@@ -275,8 +278,9 @@
            WIDTH-EM-3/4
            (λ () (combine
                   ; top bar
-                  (rectangle (pos+ LINE/CAP/CENTER-1/2 +y WIDTH-STROKE-1/2)
-                             (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z))
+                  (rectangle (pos+ LINE/CAP/CENTER-1/2
+                                   (dir (- WIDTH-STROKE-1/4) WIDTH-STROKE-1/2 0.0))
+                             (dir (- WIDTH-EM-1/4 WIDTH-STROKE-1/4) WIDTH-STROKE-1/2 DEPTH-Z))
                   ; ascender
                   (rectangle (pos+ LINE/MID-Y/START
                                    (dir WIDTH-STROKE-1/2 0.0 0.0))
@@ -286,23 +290,55 @@
                                    (dir WIDTH-BASE/NARROW (- WIDTH-STROKE-1/2) 0.0))
                              (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
                   ; bottom arc
-                  (cirque-x-link-1/2 #:arc (arc -90.0 180.0))))))
+                  (cirque-x-link-1/2 #:arc (arc -90.0 (- 180.0 NUM-ARC-OFFSET)))))))
 (define num:6
   (Char-3D #\6
-           WIDTH-EM
-           (λ () (placeholder-tall WIDTH-EM-3/8))))
+           WIDTH-EM-3/4
+           (λ () (combine
+                  ; top arc
+                  (cirque-y-1/2 #:arc (arc -180.0 (- NUM-ARC-OFFSET)))
+                  ; ascender
+                  (quad-thicc LINE/MID-X/START
+                              (pos+ LINE/MID-X/START +x WIDTH-STROKE)
+                              (pos+ LINE/MID-Y/START +x WIDTH-STROKE)
+                              LINE/MID-Y/START)
+                  ; base
+                  (cirque-x-link-1/2)))))
 (define num:7
   (Char-3D #\7
-           WIDTH-EM
-           (λ () (placeholder-tall WIDTH-EM-3/8))))
+           WIDTH-EM-3/4
+           (λ () (combine
+                  ; top bar
+                  (rectangle (pos+ LINE/CAP/CENTER-1/2
+                                   (dir WIDTH-STROKE-1/4 WIDTH-STROKE-1/2 0.0))
+                             (dir (- WIDTH-EM-1/4 WIDTH-STROKE-1/4) WIDTH-STROKE-1/2 DEPTH-Z))
+                  ; ascender
+                  (quad-thicc
+                    (pos+ LINE/BASE/CENTER-1/2 -x WIDTH-STROKE)
+                    (pos+ LINE/BASE/CENTER-1/2 +x 0.0)
+                    (pos+ LINE/CAP/END-1/2 (dir 0.0 WIDTH-STROKE 0.0))
+                    (pos+ LINE/CAP/END-1/2 (dir (- WIDTH-STROKE) WIDTH-STROKE 0.0)))))))
 (define num:8
   (Char-3D #\8
-           WIDTH-EM
-           (λ () (placeholder-tall WIDTH-EM-3/8))))
+           WIDTH-EM-3/4
+           (λ () (combine
+                  ; top arc
+                  (cirque-y-1/2)
+                  ; base
+                  (cirque-x-link-1/2)))))
 (define num:9
   (Char-3D #\9
-           WIDTH-EM
-           (λ () (placeholder-tall WIDTH-EM-3/8))))
+           WIDTH-EM-3/4
+           (λ () (combine
+                  ; top arc
+                  (cirque-y-1/2)
+                  ; ascender
+                  (quad-thicc LINE/MID-Y/END-1/2
+                              (pos+ LINE/MID-Y/END-1/2 -x WIDTH-STROKE)
+                              (pos+ LINE/MID-X/END-1/2 -x WIDTH-STROKE)
+                              LINE/MID-X/END-1/2)
+                  ; base
+                  (cirque-x-link-1/2 #:arc (arc 0.0 (- 180.0 NUM-ARC-OFFSET)))))))
 
 
 ; ALPHA LOWER ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
