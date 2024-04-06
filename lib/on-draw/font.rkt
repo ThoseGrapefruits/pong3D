@@ -253,7 +253,7 @@
   (Char-3D #\4
            WIDTH-EM-3/4
            (λ ()
-             (define riser-pos (pos+ LINE/MID/END-5/8 -x (+ WIDTH-STROKE WIDTH-STROKE-1/2)))
+             (define riser-pos (pos+ LINE/MID/END-5/8 -x (* WIDTH-STROKE 2.0)))
              (define riser-pos-connect (pos (- (pos-x riser-pos) WIDTH-STROKE-1/2)
                                             (pos-y LINE/CAP/START)
                                             (pos-z riser-pos)))
@@ -268,8 +268,8 @@
                           (pos+ riser-pos-connect
                                 (dir 0.0 0.0 0.0)))
               ; crossbar
-              (rectangle LINE/MEAN/CENTER-5/8
-                         (dir WIDTH-EM-5/16 WIDTH-STROKE-1/2 DEPTH-Z))
+              (rectangle (pos+ LINE/MEAN/CENTER-5/8 -x WIDTH-STROKE-1/2)
+                         (dir (- WIDTH-EM-5/16 WIDTH-STROKE-1/2) WIDTH-STROKE-1/2 DEPTH-Z))
               ; ascender
               (rectangle riser-pos
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z))))))
@@ -447,7 +447,7 @@
                              (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
                   ; cap
                   (rectangle (pos+ LINE/MEAN/CENTER-1/2
-                                   (dir (- WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2)
+                                   (dir (- WIDTH-STROKE-1/2 WIDTH-BASE/NARROW-1/2)
                                         WIDTH-STROKE-1/2
                                         0.0))
                              (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z))
@@ -545,7 +545,7 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-X DEPTH-Z))))))
 (define char:r
   (Char-3D #\r
-           WIDTH-EM-7/16
+           WIDTH-EM-3/8
            (λ ()
              (combine
               ; ascender
@@ -607,25 +607,65 @@
   (Char-3D #\v
            WIDTH-EM-1/2
            (λ () (combine
-                  (move-x (cirque LINE/BASE/START
-                                  WIDTH-EM-3/16
-                                  HEIGHT-X
-                                  #:arc (arc  -90.0   0.0))
-                          0.0)
-                  (move-x (cirque LINE/BASE/START
-                                  WIDTH-EM-3/16
-                                  HEIGHT-X
-                                  #:arc (arc -180.0 -90.0))
-                          (- WIDTH-EM-3/8 WIDTH-STROKE-1/2))))))
+                  ; left
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/START      +x WIDTH-STROKE)
+                              (pos+ LINE/MEAN/START      +x 0.0))
+                  ; right
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/END-3/8    -x 0.0)
+                              (pos+ LINE/MEAN/END-3/8    -x WIDTH-STROKE))))))
 (define char:w
   (Char-3D #\w
-           WIDTH-EM-5/8 (λ () (placeholder-x WIDTH-EM-1/4))))
+           WIDTH-EM-3/4
+           (λ ()
+            (define v (combine
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/START      +x WIDTH-STROKE)
+                              (pos+ LINE/MEAN/START      +x 0.0))
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/END-3/8    -x 0.0)
+                              (pos+ LINE/MEAN/END-3/8    -x WIDTH-STROKE))))
+            (combine
+              ; left
+              v
+              ; right
+              (move-x v (- WIDTH-EM-3/8 WIDTH-STROKE))))))
 (define char:x
   (Char-3D #\x
-           WIDTH-EM-5/8 (λ () (placeholder-x WIDTH-EM-1/4))))
+           WIDTH-EM-5/8
+           (λ () (combine
+                  ; bottom-left to top-right
+                  (quad-thicc (pos+ LINE/BASE/START   +x 0.0)
+                              (pos+ LINE/BASE/START   +x WIDTH-STROKE)
+                              (pos+ LINE/MEAN/END-3/8 -x 0.0)
+                              (pos+ LINE/MEAN/END-3/8 -x WIDTH-STROKE))
+                  ; bottom-right to top-left
+                  (quad-thicc (pos+ LINE/BASE/END-3/8 -x WIDTH-STROKE)
+                              (pos+ LINE/BASE/END-3/8 -x 0.0)
+                              (pos+ LINE/MEAN/START +x WIDTH-STROKE)
+                              (pos+ LINE/MEAN/START +x 0.0))))))
 (define char:y
   (Char-3D #\y
-           WIDTH-EM-5/8 (λ () (placeholder-x WIDTH-EM-1/4))))
+           WIDTH-EM-5/8
+           (λ () (combine
+                  ; left
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/START      +x WIDTH-STROKE)
+                              (pos+ LINE/MEAN/START      +x 0.0))
+                  ; right
+                  (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/BASE/CENTER-3/8 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/END-3/8    -x 0.0)
+                              (pos+ LINE/MEAN/END-3/8    -x WIDTH-STROKE))
+                  ; descender
+                  (move (cirque-desc-3/8 #:arc (arc 0.0 90.0))
+                        (dir (- WIDTH-STROKE-1/2 WIDTH-EM-3/16) (- HEIGHT-DESC-1/2) 0.0))))))
 (define char:z
   (Char-3D #\z
            WIDTH-EM-1/2
@@ -658,19 +698,36 @@
 
 (define char:A
   (Char-3D #\A
-           WIDTH-EM
-           (λ () (placeholder-tall WIDTH-EM-3/8))))
+           WIDTH-EM-3/4
+           (λ ()
+            (define half-width (- WIDTH-EM-5/8 WIDTH-STROKE-1/2))
+            (define cross-inset (* (- HEIGHT-X WIDTH-STROKE-1/2) (/ half-width HEIGHT-CAP)))
+            (define cross-radius (- WIDTH-EM-5/16 cross-inset))
+            (combine
+             ; left ascender
+             (quad-thicc (pos+ LINE/CAP/CENTER-5/8 +x WIDTH-STROKE-1/2)
+                         (pos+ LINE/CAP/CENTER-5/8 -x WIDTH-STROKE-1/2)
+                         (pos+ LINE/BASE/START     +x 0.0)
+                         (pos+ LINE/BASE/START     +x WIDTH-STROKE))
+             ; right ascender
+             (quad-thicc (pos+ LINE/CAP/CENTER-5/8 +x WIDTH-STROKE-1/2)
+                         (pos+ LINE/CAP/CENTER-5/8 -x WIDTH-STROKE-1/2)
+                         (pos+ LINE/BASE/END-5/8   -x WIDTH-STROKE)
+                         (pos+ LINE/BASE/END-5/8   +x 0.0))
+             ; cross
+             (rectangle (pos+ LINE/MEAN/CENTER-5/8 +y WIDTH-STROKE-1/2)
+                        (dir cross-radius WIDTH-STROKE-1/2 DEPTH-Z))))))
 (define char:B
   (Char-3D #\B
-           WIDTH-EM
+           WIDTH-EM-3/4
            (λ () (placeholder-tall WIDTH-EM-3/8))))
 (define char:C
   (Char-3D #\C
-           WIDTH-EM
+           WIDTH-EM-3/4
            (λ () (placeholder-tall WIDTH-EM-3/8))))
 (define char:D
   (Char-3D #\D
-           WIDTH-EM
+           WIDTH-EM-3/4
            (λ () (placeholder-tall WIDTH-EM-3/8))))
 (define char:E
   (Char-3D #\E
@@ -728,14 +785,14 @@
   (Char-3D #\R
            WIDTH-EM
            (λ () (placeholder-tall WIDTH-EM-3/8))))
-; TODO this needs (arc-x-5/8) and/or to just use a custom thing so it can add
-; WIDTH-STROKE-1/4 to both arc radii.
 (define char:S
   (Char-3D #\S
            WIDTH-EM-3/4
            (λ () (combine
-                  (cirque-y-1/2 #:arc (arc  90.0 270.0))
-                  (cirque-x-link-1/2 #:arc (arc -90.0 -270.0))))))
+                  ; upper
+                  (cirque-y-1/2 #:arc (arc  90.0 330.0))
+                  ; lower
+                  (cirque-x-link-1/2 #:arc (arc -90.0 -210.0))))))
 (define char:T
   (Char-3D #\T
            WIDTH-EM
