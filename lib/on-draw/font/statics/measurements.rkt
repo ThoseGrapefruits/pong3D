@@ -1,16 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
-(require pict3d
-         "./types.rkt")
+(require pict3d)
 
 (provide (all-defined-out))
-
-(define-struct Char-3D
-  ([char : Char]
-   [width : Flonum]
-   ; This has to be a function so that we can parameterize color, material,
-   ; emitted, etc when drawing.
-   [draw : (-> Pict3D)]))
 
 ; START   MIDDLE   END
 ; ╎       ╎        ╎      S  M  E
@@ -109,6 +101,18 @@
 (: WIDTH-EM-7/8 : Flonum)
 (define WIDTH-EM-7/8 (* 7.0 WIDTH-EM-1/8))
 
+; greater-than-EM widths for sizing the boxes in which to place EM-width
+; characters, extra-wide characters (e.g. tab), etc
+
+(: WIDTH-EM-17/16 : Flonum)
+(define WIDTH-EM-17/16 (* 17.0 (/ WIDTH-EM 16.0)))
+
+(: WIDTH-EM-9/8 : Flonum)
+(define WIDTH-EM-9/8 (* 9.0 (/ WIDTH-EM 8.0)))
+
+(: WIDTH-EM-2 : Flonum)
+(define WIDTH-EM-2 (* 2.0 WIDTH-EM))
+
 ; WIDTH-STROKE
 ; The width of the standard stroke
 
@@ -157,14 +161,6 @@
 
 (: DEPTH-Z-1/2 : Flonum)
 (define DEPTH-Z-1/2 (/ DEPTH-Z 2.0))
-
-; greater-than-EM widths for sizing the boxes in which to place EM-width characters
-
-(: WIDTH-EM-17/16 : Flonum)
-(define WIDTH-EM-17/16 (* 17.0 (/ WIDTH-EM 16.0)))
-
-(: WIDTH-EM-9/8 : Flonum)
-(define WIDTH-EM-9/8 (* 9.0 (/ WIDTH-EM 8.0)))
 
 ; HEIGHT-X & HEIGHT-Y
 ; Heights defining the space below and above the LINE/MEAN.

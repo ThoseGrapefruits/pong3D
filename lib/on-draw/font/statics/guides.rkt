@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require pict3d
          "./measurements.rkt")

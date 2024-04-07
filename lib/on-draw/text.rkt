@@ -3,7 +3,7 @@
 (require pict3d)
 
 (require (prefix-in font: "font.rkt")
-         (prefix-in font: "./font/measurements.rkt"))
+         (prefix-in font: "./font/statics/measurements.rkt"))
 
 (provide text On-Char-Handler)
 
