@@ -14,7 +14,7 @@
   (pipe center
         (dir radius-x
              radius-y
-             DEPTH-Z)
+             DEPTH-Z-1/2)
         #:arc arc
         #:bottom-radii (interval (/ (- radius-x WIDTH-STROKE) radius-x) 1.0)))
 
