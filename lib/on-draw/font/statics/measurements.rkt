@@ -119,8 +119,14 @@
 (: WIDTH-STROKE : Flonum)
 (define WIDTH-STROKE (/ WIDTH-EM 10.0))
 
+(: WIDTH-STROKE-1/8 : Flonum)
+(define WIDTH-STROKE-1/8 (/ WIDTH-STROKE 8.0))
+
 (: WIDTH-STROKE-1/4 : Flonum)
 (define WIDTH-STROKE-1/4 (/ WIDTH-STROKE 4.0))
+
+(: WIDTH-STROKE-3/8 : Flonum)
+(define WIDTH-STROKE-3/8 (* 3.0 WIDTH-STROKE-1/8))
 
 (: WIDTH-STROKE-1/2 : Flonum)
 (define WIDTH-STROKE-1/2 (/ WIDTH-STROKE 2.0))

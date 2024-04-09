@@ -100,7 +100,7 @@
 (define (hash-char char index)
   (define charint (modulo (* 677 (+ 13 (char->integer char))) 1259))
   (define indexmod (modulo (* 827 (+ 7 index)) 587))
-  (+ 50 (modulo (* 677 charint indexmod) 53)))
+  (+ 100 (modulo (* 677 charint indexmod) 53)))
 
 (: get-on-char : State -> On-Char-Handler)
 (define (get-on-char s)
@@ -123,7 +123,7 @@
      (text (string-append
             "the quick brown fox jumps over the lazy dog... "
             "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
-            "0123456789 10 poop POOP")
+            "0123456789 10 +=!@$#$%^&* ()[]{} -_? /\\| :;., '\"")
            #:wrap 15.0
            #:onchar (get-on-char s))
      (affine-compose

@@ -151,7 +151,7 @@
 
 (define char:H
   (Char-3D #\H
-           WIDTH-EM-3/4
+           WIDTH-EM-5/8
            (λ ()
              (combine
               ; left ascender
@@ -238,23 +238,23 @@
 
 (define char:M
   (Char-3D #\M
-           WIDTH-EM-9/8
+           WIDTH-EM-7/8
            (λ () (combine
                   ; ascender left
                   (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                              (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
                   ; left diagonal
-                  (quad-thicc (pos+ LINE/MEAN/CENTER -x WIDTH-STROKE-1/2)
-                              (pos+ LINE/MEAN/CENTER +x WIDTH-STROKE-1/2)
+                  (quad-thicc (pos+ LINE/MEAN/CENTER-3/4 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/CENTER-3/4 +x WIDTH-STROKE-1/2)
                               (pos+ LINE/CAP/START   +x WIDTH-STROKE)
                               (pos+ LINE/CAP/START   +x 0.0))
                   ; right diagonal
-                  (quad-thicc (pos+ LINE/MEAN/CENTER -x WIDTH-STROKE-1/2)
-                              (pos+ LINE/MEAN/CENTER +x WIDTH-STROKE-1/2)
-                              (pos+ LINE/CAP/END     -x 0.0)
-                              (pos+ LINE/CAP/END     -x WIDTH-STROKE))
+                  (quad-thicc (pos+ LINE/MEAN/CENTER-3/4 -x WIDTH-STROKE-1/2)
+                              (pos+ LINE/MEAN/CENTER-3/4 +x WIDTH-STROKE-1/2)
+                              (pos+ LINE/CAP/END-3/4     -x 0.0)
+                              (pos+ LINE/CAP/END-3/4     -x WIDTH-STROKE))
                   ; ascender right
-                  (rectangle (pos+ LINE/MID/END -x WIDTH-STROKE-1/2)
+                  (rectangle (pos+ LINE/MID/END-3/4 -x WIDTH-STROKE-1/2)
                              (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:N
@@ -425,20 +425,33 @@
 
 (define char:W
   (Char-3D #\W
-           WIDTH-EM
+           WIDTH-EM-7/8
            (λ ()
-            (define V (combine
-                       ; left
-                       (quad-thicc (pos+ LINE/BASE/CENTER-1/2 -x WIDTH-STROKE-1/2)
-                                   (pos+ LINE/BASE/CENTER-1/2 +x WIDTH-STROKE-1/2)
-                                   (pos+ LINE/CAP/START       +x WIDTH-STROKE)
-                                   (pos+ LINE/CAP/START       +x 0.0))
-                       ; right
-                       (quad-thicc (pos+ LINE/BASE/CENTER-1/2 -x WIDTH-STROKE-1/2)
-                                   (pos+ LINE/BASE/CENTER-1/2 +x WIDTH-STROKE-1/2)
-                                   (pos+ LINE/CAP/END-1/2     -x 0.0)
-                                   (pos+ LINE/CAP/END-1/2     -x WIDTH-STROKE))))
-           (combine V (move-x V (- WIDTH-EM-1/2 WIDTH-STROKE))))))
+             (define center-offset WIDTH-EM-3/8)
+             (define bottom-offset WIDTH-BASE/NARROW)
+             (define far (+ center-offset center-offset))
+             (define farbottom (- far bottom-offset))
+             (combine
+              ; left
+              (quad-thicc (pos+ LINE/CAP/START  +x WIDTH-STROKE)
+                          (pos+ LINE/CAP/START  +x 0.0)
+                          (pos+ LINE/BASE/START +x (- bottom-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/BASE/START +x (+ bottom-offset WIDTH-STROKE-1/2)))
+              ; center left
+              (quad-thicc (pos+ LINE/BASE/START +x (- bottom-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/BASE/START +x (+ bottom-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/MEAN/START +x (+ center-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/MEAN/START +x (- center-offset WIDTH-STROKE-1/2)))
+              ; center right
+              (quad-thicc (pos+ LINE/MEAN/START +x (+ center-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/MEAN/START +x (- center-offset WIDTH-STROKE-1/2))
+                          (pos+ LINE/BASE/START +x (- farbottom WIDTH-STROKE-1/2))
+                          (pos+ LINE/BASE/START +x (+ farbottom WIDTH-STROKE-1/2)))
+              ; right
+              (quad-thicc (pos+ LINE/BASE/START +x (- farbottom WIDTH-STROKE-1/2))
+                          (pos+ LINE/BASE/START +x (+ farbottom WIDTH-STROKE-1/2))
+                          (pos+ LINE/CAP/START  +x far)
+                          (pos+ LINE/CAP/START  +x (- far WIDTH-STROKE)))))))
 
 (define char:X
   (Char-3D #\X

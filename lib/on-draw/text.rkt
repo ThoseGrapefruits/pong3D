@@ -7,81 +7,86 @@
 
 (provide text On-Char-Handler)
 
+(: char-list : (Listof font:Char-3D))
+(define char-list
+  (list font:num:0
+        font:num:1
+        font:num:2
+        font:num:3
+        font:num:4
+        font:num:5
+        font:num:6
+        font:num:7
+        font:num:8
+        font:num:9
+
+        font:char:a
+        font:char:b
+        font:char:c
+        font:char:d
+        font:char:e
+        font:char:f
+        font:char:g
+        font:char:h
+        font:char:i
+        font:char:j
+        font:char:k
+        font:char:l
+        font:char:m
+        font:char:n
+        font:char:o
+        font:char:p
+        font:char:q
+        font:char:r
+        font:char:s
+        font:char:t
+        font:char:u
+        font:char:v
+        font:char:w
+        font:char:x
+        font:char:y
+        font:char:z
+
+        font:char:A
+        font:char:B
+        font:char:C
+        font:char:D
+        font:char:E
+        font:char:F
+        font:char:G
+        font:char:H
+        font:char:I
+        font:char:J
+        font:char:K
+        font:char:L
+        font:char:M
+        font:char:N
+        font:char:O
+        font:char:P
+        font:char:Q
+        font:char:R
+        font:char:S
+        font:char:T
+        font:char:U
+        font:char:V
+        font:char:W
+        font:char:X
+        font:char:Y
+        font:char:Z
+
+        font:ws:space
+
+        font:symbol:?
+        font:symbol:comma
+        font:symbol:dot))
+
+(: char-to-pair : font:Char-3D -> (Pairof Char font:Char-3D))
+(define (char-to-pair char) (cons (font:Char-3D-char char) char))
+
 ; TODO it would be nice to use something like parser-tools/lex to 
 ; pull out multi-character things and allow for e.g. ligatures.
-(: text-map : (Immutable-HashTable Char font:Char-3D))
-(define text-map
-  (make-immutable-hash
-   (list
-    (cons #\0 font:num:0)
-    (cons #\1 font:num:1)
-    (cons #\2 font:num:2)
-    (cons #\3 font:num:3)
-    (cons #\4 font:num:4)
-    (cons #\5 font:num:5)
-    (cons #\6 font:num:6)
-    (cons #\7 font:num:7)
-    (cons #\8 font:num:8)
-    (cons #\9 font:num:9)
-
-    (cons #\a font:char:a)
-    (cons #\b font:char:b)
-    (cons #\c font:char:c)
-    (cons #\d font:char:d)
-    (cons #\e font:char:e)
-    (cons #\f font:char:f)
-    (cons #\g font:char:g)
-    (cons #\h font:char:h)
-    (cons #\i font:char:i)
-    (cons #\j font:char:j)
-    (cons #\k font:char:k)
-    (cons #\l font:char:l)
-    (cons #\m font:char:m)
-    (cons #\n font:char:n)
-    (cons #\o font:char:o)
-    (cons #\p font:char:p)
-    (cons #\q font:char:q)
-    (cons #\r font:char:r)
-    (cons #\s font:char:s)
-    (cons #\t font:char:t)
-    (cons #\u font:char:u)
-    (cons #\v font:char:v)
-    (cons #\w font:char:w)
-    (cons #\x font:char:x)
-    (cons #\y font:char:y)
-    (cons #\z font:char:z)
-
-    (cons #\A font:char:A)
-    (cons #\B font:char:B)
-    (cons #\C font:char:C)
-    (cons #\D font:char:D)
-    (cons #\E font:char:E)
-    (cons #\F font:char:F)
-    (cons #\G font:char:G)
-    (cons #\H font:char:H)
-    (cons #\I font:char:I)
-    (cons #\J font:char:J)
-    (cons #\K font:char:K)
-    (cons #\L font:char:L)
-    (cons #\M font:char:M)
-    (cons #\N font:char:N)
-    (cons #\O font:char:O)
-    (cons #\P font:char:P)
-    (cons #\Q font:char:Q)
-    (cons #\R font:char:R)
-    (cons #\S font:char:S)
-    (cons #\T font:char:T)
-    (cons #\U font:char:U)
-    (cons #\V font:char:V)
-    (cons #\W font:char:W)
-    (cons #\X font:char:X)
-    (cons #\Y font:char:Y)
-    (cons #\Z font:char:Z)
-
-    (cons #\space font:ws:space)
-
-    (cons #\? font:symbol:?)
-    (cons #\. font:symbol:dot))))
+(: char-map : (Immutable-HashTable Char font:Char-3D))
+(define char-map (make-immutable-hash (map char-to-pair char-list)))
 
 
 ; TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,7 +105,7 @@
   (define chars (string->list s))
   (: chars-mapped (Listof font:Char-3D))
   (define chars-mapped
-    (map (λ (c) (hash-ref text-map c (λ () font:misc:unknown)))
+    (map (λ (c) (hash-ref char-map c (λ () font:misc:unknown)))
          chars))
   (define width : Flonum (foldl + 0.0 (map font:Char-3D-width chars-mapped)))
   (Word-3D width chars-mapped))

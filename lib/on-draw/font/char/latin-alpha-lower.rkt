@@ -47,7 +47,7 @@
 
 (define char:f
   (Char-3D #\f
-           WIDTH-EM-3/8
+           WIDTH-EM-5/16
            (λ () (combine
                   ; curve
                   (cirque-y-3/8 #:arc (arc -180.0 -60.0))
@@ -56,7 +56,7 @@
                                    (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
                              (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
                   ; cross
-                  (rectangle (pos+ LINE/MEAN/START +x WIDTH-BASE/NARROW-1/2)
+                  (rectangle (pos+ LINE/MEAN/START (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
                              (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
                   ; ascender lower
                   (rectangle (pos+ LINE/MID-X/START +x WIDTH-STROKE-1/2)
@@ -73,7 +73,7 @@
                   ; curve x
                   (cirque-x-3/8)
                   ; connector
-                  (cirque-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 135.0 225.0))
+                  (cirque-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 125.0 225.0))
                   ; curve desc
                   (cirque-3/8 LINE/MID-DESC/START HEIGHT-DESC-5/16)))))
 
@@ -133,7 +133,7 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-DESC-1/2 DEPTH-Z-1/2))
                   ; descender
                   (move-x (cirque-desc-3/8 #:arc (arc 0.0 90.0))
-                          (- WIDTH-STROKE))))))
+                          (+ (- WIDTH-EM-1/8) WIDTH-STROKE-1/2))))))
 
 (define char:k
   (Char-3D #\k
@@ -166,7 +166,7 @@
 
 (define char:m
   (Char-3D #\m
-           WIDTH-EM-7/8
+           WIDTH-EM-13/16
            (λ () (combine
                   ; ascender left
                   (rectangle (pos+ LINE/BASE/START
@@ -175,15 +175,15 @@
                   ; curve left
                   (cirque-x-3/8 #:arc (arc 180.0 0))
                   ; ascender middle
-                  (rectangle (pos+ LINE/BASE/CENTER-3/4
-                                   (dir (- WIDTH-STROKE-1/2) (- HEIGHT-X-1/4) 0.0))
+                  (rectangle (pos+ LINE/BASE/START
+                                   (dir (- WIDTH-EM-3/8 WIDTH-STROKE-1/2) (- HEIGHT-X-1/4) 0.0))
                              (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
                   ; curve right
                   (move-x (cirque-x-3/8 #:arc (arc 180.0 0))
-                          WIDTH-EM-1/4)
+                          (- WIDTH-EM-3/8 WIDTH-STROKE))
                   ; ascender end
                   (rectangle (pos+ LINE/BASE/START
-                                   (dir (- WIDTH-EM-3/4 WIDTH-STROKE WIDTH-STROKE-1/2)
+                                   (dir (- (+ WIDTH-EM-3/8 WIDTH-EM-3/8) WIDTH-STROKE WIDTH-STROKE-1/2)
                                         (- HEIGHT-X-1/4)
                                         0.0))
                              (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))))))
@@ -239,24 +239,19 @@
                       HEIGHT-X
                       #:arc (arc -180.0 -90.0))))))
 
+; TODO link up ends of `s`
 (define char:s
   (Char-3D #\s
            WIDTH-EM-5/16
            (λ ()
-             (define arc-radius-y HEIGHT-X-3/8)
-             (define top
-               (cirque (pos+ LINE/MID-X/START
-                             (dir WIDTH-EM-1/8 (- WIDTH-STROKE-1/2 arc-radius-y) 0.0))
-                       WIDTH-EM-3/16
-                       arc-radius-y
-                       #:arc (arc  90.0  270.0)))
-             (define bottom
-               (cirque (pos+ LINE/MID-X/START
-                             (dir WIDTH-EM-1/8 arc-radius-y 0.0))
-                       WIDTH-EM-3/16
-                       arc-radius-y
-                       #:arc (arc -90.0 -270.0)))
-             (rotate-z/center (combine top bottom) 45.0))))
+              (define diff-x 0.0)
+             (combine
+              (cirque-3/8 (pos+ LINE/MID-X/START -y (- HEIGHT-X-3/8 WIDTH-STROKE-1/4))
+                          HEIGHT-X-3/8
+                          #:arc (arc 110.0 300.0))
+              (cirque-3/8 (pos+ LINE/MID-X/START +y (- HEIGHT-X-3/8 WIDTH-STROKE-1/4))
+                          HEIGHT-X-3/8
+                          #:arc (arc -70.0 135.0))))))
 
 (define char:t
   (Char-3D #\t
@@ -266,7 +261,8 @@
                   (rectangle LINE/MID-Y/CENTER-3/8
                              (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/2 DEPTH-Z-1/2))
                   ; cross
-                  (rectangle (pos+ LINE/MEAN/CENTER-3/8 +x WIDTH-BASE/NARROW-1/2)
+                  (rectangle (pos+ LINE/MEAN/CENTER-3/8
+                                  (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
                              (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
                   ; ascender lower
                   (rectangle (pos+ LINE/MEAN/CENTER-3/8 +y HEIGHT-X-1/4)

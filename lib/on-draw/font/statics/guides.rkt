@@ -37,6 +37,9 @@
 (: LINE/CAP/CENTER-3/4 : Pos)
 (define LINE/CAP/CENTER-3/4 (pos+ LINE/CAP/START +x WIDTH-EM-3/8))
 
+(: LINE/CAP/CENTER-7/8 : Pos)
+(define LINE/CAP/CENTER-7/8 (pos+ LINE/CAP/START +x WIDTH-EM-7/16))
+
 (: LINE/CAP/END : Pos)
 (define LINE/CAP/END (pos+ LINE/CAP/START +x WIDTH-EM))
 
@@ -54,6 +57,9 @@
 
 (: LINE/CAP/END-3/4 : Pos)
 (define LINE/CAP/END-3/4 (pos+ LINE/CAP/START +x WIDTH-EM-3/4))
+
+(: LINE/CAP/END-7/8 : Pos)
+(define LINE/CAP/END-7/8 (pos+ LINE/CAP/START +x WIDTH-EM-7/8))
 
 
 ; LINE/BASE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,6 +132,9 @@
 (: LINE/MEAN/CENTER-3/4 : Pos)
 (define LINE/MEAN/CENTER-3/4 (pos+ LINE/MEAN/START +x WIDTH-EM-3/8))
 
+(: LINE/MEAN/CENTER-7/8 : Pos)
+(define LINE/MEAN/CENTER-7/8 (pos+ LINE/MEAN/START +x WIDTH-EM-7/16))
+
 (: LINE/MEAN/END : Pos)
 (define LINE/MEAN/END (pos+ LINE/MEAN/START +x WIDTH-EM))
 
@@ -143,6 +152,9 @@
 
 (: LINE/MEAN/END-3/4 : Pos)
 (define LINE/MEAN/END-3/4 (pos+ LINE/MEAN/START +x WIDTH-EM-3/4))
+
+(: LINE/MEAN/END-7/8 : Pos)
+(define LINE/MEAN/END-7/8 (pos+ LINE/MEAN/START +x WIDTH-EM-7/8))
 
 
 ; LINE/MID ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -167,6 +179,9 @@
 (: LINE/MID/CENTER-3/4 : Pos)
 (define LINE/MID/CENTER-3/4 (pos+ LINE/MID/START +x WIDTH-EM-3/8))
 
+(: LINE/MID/CENTER-7/8 : Pos)
+(define LINE/MID/CENTER-7/8 (pos+ LINE/MID/START +x WIDTH-EM-7/16))
+
 (: LINE/MID/END : Pos)
 (define LINE/MID/END (pos+ LINE/MID/START +x WIDTH-EM))
 
@@ -181,6 +196,9 @@
 
 (: LINE/MID/END-3/4 : Pos)
 (define LINE/MID/END-3/4 (pos+ LINE/MID/START +x WIDTH-EM-3/4))
+
+(: LINE/MID/END-7/8 : Pos)
+(define LINE/MID/END-7/8 (pos+ LINE/MID/START +x WIDTH-EM-7/8))
 
 
 ; LINE/MID-X ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
