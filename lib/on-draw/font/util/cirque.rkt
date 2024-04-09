@@ -11,14 +11,29 @@
 
 (: cirque : Pos Flonum Flonum [#:arc Arc] -> Pict3D)
 (define (cirque center radius-x radius-y #:arc [arc circle-arc])
+  (define radius-average (/ (+ radius-x radius-y) 2.0))
   (pipe center
         (dir radius-x
              radius-y
              DEPTH-Z-1/2)
         #:arc arc
-        #:bottom-radii (interval (/ (- radius-x WIDTH-STROKE) radius-x) 1.0)))
+        #:bottom-radii (interval (/ (- radius-average WIDTH-STROKE) radius-average) 1.0)))
 
-; width-based cirque constructors (help simplify calls below)
+; width-based cirque constructors (help to simplify calls below)
+
+(: cirque-1/4 : Pos Flonum [#:arc Arc] -> Pict3D)
+(define (cirque-1/4 left radius-y #:arc [arc circle-arc])
+  (cirque (pos+ left +x WIDTH-EM-1/8)
+          WIDTH-EM-1/8
+          radius-y
+          #:arc arc))
+
+(: cirque-5/16 : Pos Flonum [#:arc Arc] -> Pict3D)
+(define (cirque-5/16 left radius-y #:arc [arc circle-arc])
+  (cirque (pos+ left +x WIDTH-EM-5/32)
+          WIDTH-EM-5/32
+          radius-y
+          #:arc arc))
 
 (: cirque-3/8 : Pos Flonum [#:arc Arc] -> Pict3D)
 (define (cirque-3/8 left radius-y #:arc [arc circle-arc])

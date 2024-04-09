@@ -122,7 +122,7 @@
      (text (string-append
             "the quick brown fox jumps over the lazy dog... "
             "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
-            "0123456789 10 +=!@$#$%^&* ()[]{} -_? /\\| :;., '\" 2+2=5")
+            "0123456789 10 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5")
            #:wrap 15.0
            #:onchar (get-on-char s))
      (affine-compose

@@ -53,6 +53,9 @@
 (: HEIGHT-CAP-1/2 : Flonum)
 (define HEIGHT-CAP-1/2 (/ HEIGHT-CAP 2.0))
 
+(: HEIGHT-CAP-1/4 : Flonum)
+(define HEIGHT-CAP-1/4 (/ HEIGHT-CAP 4.0))
+
 (: HEIGHT-CAP-3/8 : Flonum)
 (define HEIGHT-CAP-3/8 (* 3.0 (/ HEIGHT-CAP 8.0)))
 
@@ -62,8 +65,14 @@
 (: WIDTH-EM-1/16 : Flonum)
 (define WIDTH-EM-1/16 (/ WIDTH-EM 16.0))
 
+(: WIDTH-EM-1/32 : Flonum)
+(define WIDTH-EM-1/32 (/ WIDTH-EM 32.0))
+
 (: WIDTH-EM-1/8 : Flonum)
 (define WIDTH-EM-1/8 (/ WIDTH-EM 8.0))
+
+(: WIDTH-EM-5/32 : Flonum)
+(define WIDTH-EM-5/32 (* 5.0 WIDTH-EM-1/32))
 
 (: WIDTH-EM-3/16 : Flonum)
 (define WIDTH-EM-3/16 (* 3.0 WIDTH-EM-1/16))
@@ -100,9 +109,6 @@
 
 (: WIDTH-EM-7/8 : Flonum)
 (define WIDTH-EM-7/8 (* 7.0 WIDTH-EM-1/8))
-
-; greater-than-EM widths for sizing the boxes in which to place EM-width
-; characters, extra-wide characters (e.g. tab), etc
 
 (: WIDTH-EM-17/16 : Flonum)
 (define WIDTH-EM-17/16 (* 17.0 (/ WIDTH-EM 16.0)))
@@ -197,6 +203,9 @@
 
 (: HEIGHT-Y-1/4 : Flonum)
 (define HEIGHT-Y-1/4 (/ HEIGHT-Y 4.0))
+
+(: HEIGHT-Y-1/8 : Flonum)
+(define HEIGHT-Y-1/8 (/ HEIGHT-Y 8.0))
 
 ; HEIGHT-DESC
 ; Height of descender reach below the LINE/BASE
