@@ -77,6 +77,9 @@
         font:ws:space
 
         font:symbol:?
+        font:symbol:!
+        font:symbol:+
+        font:symbol:=
         font:symbol:comma
         font:symbol:dot))
 
