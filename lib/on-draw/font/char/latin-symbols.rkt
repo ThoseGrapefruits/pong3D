@@ -9,6 +9,10 @@
 
 (provide (all-defined-out))
 
+; Safety thing to make sure we aren't accidentally using a character in the name
+; that doesn't actually work.
+(define symbol: #f)
+
 (define symbol:?
   (Char-3D #\?
            WIDTH-EM-3/4
@@ -105,7 +109,6 @@
           ; lower
           (cirque-x-link-1/2 #:arc (arc -90.0 -210.0))))))
 
-
 (define symbol:#
   (Char-3D
    #\#
@@ -124,45 +127,204 @@
           (rectangle (pos+ LINE/MEAN/CENTER-1/2 +y HEIGHT-X-1/2)
                      (dir WIDTH-EM-1/4 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
-; %
+(define symbol:%
+  (Char-3D
+   #\%
+   WIDTH-EM-5/8
+   (λ () (combine
+          ; cross
+          (quad-thicc (pos+ LINE/MEAN/START
+                            (dir 0.0 (- HEIGHT-X-1/2 WIDTH-DIAGONAL-BASE)     0.0))
+                      (pos+ LINE/MEAN/START
+                            (dir 0.0 HEIGHT-X-1/2                             0.0))
+                      (pos+ LINE/MEAN/END-1/2
+                            (dir 0.0 (- HEIGHT-X-1/2)                         0.0))
+                      (pos+ LINE/MEAN/END-1/2
+                            (dir 0.0 (- (+ HEIGHT-X-1/2 WIDTH-DIAGONAL-BASE)) 0.0)))
+          ; upper cirque
+          (cirque-5/16 (pos+ LINE/CAP/START
+                             (dir 0.0 (+ WIDTH-EM-3/16 WIDTH-STROKE-1/2) 0.0))
+                       WIDTH-EM-3/16)
+          ; lower cirque
+          (cirque-5/16 (pos+ LINE/BASE/START
+                            (dir WIDTH-EM-3/16 (- WIDTH-EM-3/16) 0.0))
+                      WIDTH-EM-3/16)))))
 
-; ^
+(define symbol:^
+  (Char-3D
+   #\^
+   WIDTH-EM-5/8
+   (λ () (combine
+          (quad-thicc LINE/MEAN/START
+                      (pos+ LINE/MEAN/START +x WIDTH-DIAGONAL-SLIGHT-BASE)
+                      (pos+ LINE/CAP/CENTER-1/2 +x WIDTH-DIAGONAL-SLIGHT-BASE-1/2)
+                      (pos+ LINE/CAP/CENTER-1/2 -x WIDTH-DIAGONAL-SLIGHT-BASE-1/2))
+          (quad-thicc (pos+ LINE/CAP/CENTER-1/2 +x WIDTH-DIAGONAL-SLIGHT-BASE-1/2)
+                      (pos+ LINE/CAP/CENTER-1/2 -x WIDTH-DIAGONAL-SLIGHT-BASE-1/2)
+                      (pos+ LINE/MEAN/END-1/2 -x WIDTH-DIAGONAL-SLIGHT-BASE)
+                      LINE/MEAN/END-1/2)))))
 
-; &
+(define symbol:&
+  (Char-3D
+   #\&
+   WIDTH-EM-3/4
+   (λ ()
+   (define top-arc-angle-left -240.0)
+   (define top-arc-angle-left-r (degrees->radians top-arc-angle-left))
+   (define top-arc-radius-x WIDTH-EM-3/16)
+   (define top-arc-radius-y HEIGHT-Y-3/8)
+   (define top-arc-pos-left (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-3/8) 0.0)))
+   (define top-arc-pos-center (pos+ top-arc-pos-left +x top-arc-radius-x))
+   (define bottom-arc-angle-right 40.0)
+   (define bottom-arc-angle-right-r (degrees->radians bottom-arc-angle-right))
+   (define bottom-arc-radius-x WIDTH-EM-1/4)
+   (define bottom-arc-radius-y (+ HEIGHT-X-1/2 WIDTH-STROKE-1/2))
+   (define bottom-arc-pos-left (pos+ LINE/MID-X/START -y WIDTH-STROKE-1/2)) ; from cirque-x-link
+   (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x bottom-arc-radius-x))
+   (combine
+          ; top cirque
+          (cirque-3/8 top-arc-pos-left top-arc-radius-y #:arc (arc top-arc-angle-left -30.0))
+          ; ascender
+          (quad-thicc (pos+ top-arc-pos-center
+                            (dir (* (- top-arc-radius-x WIDTH-STROKE) (cos top-arc-angle-left-r))
+                                 (* (- top-arc-radius-y WIDTH-STROKE) (sin top-arc-angle-left-r))
+                                    0.0))
+                      (pos+ top-arc-pos-center
+                            (dir (* top-arc-radius-x (cos top-arc-angle-left-r))
+                                 (* top-arc-radius-y (sin top-arc-angle-left-r))
+                                 0.0))
+                      (pos+ LINE/BASE/END-5/8 -y 0.0)
+                      (pos+ LINE/BASE/END-5/8 -y WIDTH-DIAGONAL-SLIGHT-BASE))
+          ; bottom tail
+          (quad-thicc (pos+ bottom-arc-pos-center
+                            (dir (* (- bottom-arc-radius-x WIDTH-STROKE)
+                                    (cos bottom-arc-angle-right-r))
+                                 (* (- bottom-arc-radius-y WIDTH-STROKE)
+                                    (sin bottom-arc-angle-right-r))
+                                    0.0))
+                      (pos+ bottom-arc-pos-center
+                            (dir (* bottom-arc-radius-x
+                                    (cos bottom-arc-angle-right-r))
+                                 (* bottom-arc-radius-y
+                                    (sin bottom-arc-angle-right-r))
+                                 0.0))
+                      (pos+ LINE/MEAN/END-5/8 -y 0.0)
+                      (pos+ LINE/MEAN/END-5/8 -x WIDTH-DIAGONAL-SLIGHT-BASE))
+          ; bottom cirque
+          (cirque-x-link-1/2 #:arc (arc bottom-arc-angle-right -110.0))))))
 
-; *
+(define symbol:*
+  (Char-3D
+   #\*
+   WIDTH-EM-3/8
+   (λ ()
+     (define center LINE/MID-Y/CENTER-1/4)
+     (define radius WIDTH-EM-1/4)
+     (define cross (combine
+                    ; left arm
+                    (quad-thicc (pos+ center (dir 0.0        WIDTH-STROKE-1/4     0.0))
+                                (pos+ center (dir 0.0        (- WIDTH-STROKE-1/4) 0.0))
+                                (pos+ center (dir (- radius) (- WIDTH-STROKE-1/2) 0.0))
+                                (pos+ center (dir (- radius) WIDTH-STROKE-1/2     0.0)))
+                    ; right arm
+                    (quad-thicc (pos+ center (dir 0.0        (- WIDTH-STROKE-1/4) 0.0))
+                                (pos+ center (dir 0.0        WIDTH-STROKE-1/4     0.0))
+                                (pos+ center (dir (+ radius) WIDTH-STROKE-1/2     0.0))
+                                (pos+ center (dir (+ radius) (- WIDTH-STROKE-1/2) 0.0)))))
+     (combine
+      cross
+      (rotate-z/center cross 60.0)
+      (rotate-z/center cross 120.0)))))
 
-; (
+(define symbol:paren-left
+  (Char-3D
+   #\u0028
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; )
+(define symbol:paren-right
+  (Char-3D
+   #\u0029
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; [
+(define symbol:bracket-square-left
+  (Char-3D
+   #\u005b
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; ]
+(define symbol:bracket-square-right
+  (Char-3D
+   #\u005d
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; {
+(define symbol:bracket-curly-left
+  (Char-3D
+   #\u007b
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; }
+(define symbol:bracket-curly-right
+  (Char-3D
+   #\u007d
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
+(define symbol:-
+  (Char-3D
+   #\-
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; -
+(define symbol:_
+  (Char-3D
+   #\_
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; _
+(define symbol:/
+  (Char-3D
+   #\/
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; /
+(define symbol:\
+  (Char-3D
+   #\\
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; \
+(define symbol:vertical-line
+  (Char-3D
+   #\u007c
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; |
+(define symbol:quote-single
+  (Char-3D
+   #\'
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
+(define symbol:quote-double
+  (Char-3D
+   #\"
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; '
+(define symbol::
+  (Char-3D
+   #\:
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
-; "
-
-; :
-
-; ;
+(define symbol:semicolon
+  (Char-3D
+   #\;
+   WIDTH-EM-3/8
+   (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:comma
   (Char-3D #\,

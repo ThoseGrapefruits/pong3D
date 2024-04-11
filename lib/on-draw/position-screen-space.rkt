@@ -14,16 +14,16 @@ position-screen-space-relative)
 ; coordinate in screen-space, where (0,0,1) is the top-left of the camera
 ; viewport and (SCREEN-WIDTH,SCREEN-HEIGHT,1) is the bottom-right, placed in a
 ; z-plane 1 unit away from the camera.
-(: position-screen-space-pixels : (->* (State Flonum Flonum) (Flonum) Affine))
-(define (position-screen-space-pixels s x y [z 1.0])
+(: position-screen-space-pixels : State Flonum Flonum Flonum [#:wrap? Boolean] -> Affine)
+(define (position-screen-space-pixels s x y [z 1.0] #:wrap? [wrap? #f])
   (define cam-t (camera-transform-pong s))
   (define z-near (* z CAMERA-SPACE-DISTANCE))
   (define dir ((camera-ray-dir cam-t
                                #:width SCREEN-WIDTH
                                #:height SCREEN-HEIGHT
                                #:z-near z-near)
-               (wrap-within x SCREEN-WIDTH-INEXACT)
-               (wrap-within y SCREEN-HEIGHT-INEXACT)))
+               (if wrap? (wrap-within x SCREEN-WIDTH-INEXACT) x)
+               (if wrap? (wrap-within y SCREEN-HEIGHT-INEXACT) y)))
   (affine-compose (move dir)
                   cam-t
                   (scale z-near)))
@@ -32,10 +32,11 @@ position-screen-space-relative)
 ; coordinate in screen-space, where (-1,-1,1) is the top-left of the camera
 ; viewport, and (1,1,1) is the bottom-right, placed in a z-plane 1 unit away
 ; from the camera.
-(: position-screen-space-relative : (->* (State Flonum Flonum) (Flonum) Affine))
-(define (position-screen-space-relative s x y [z 1.0])
+(: position-screen-space-relative : State Flonum Flonum Flonum [#:wrap? Boolean] -> Affine)
+(define (position-screen-space-relative s x y z #:wrap? [wrap? #f])
   (position-screen-space-pixels
    s
    (scale--1-1 x SCREEN-WIDTH)
    (scale--1-1 y SCREEN-HEIGHT)
-   z))
+   z
+   #:wrap? wrap?))

@@ -141,7 +141,7 @@
 (define WIDTH-STROKE-3/4 (* 3.0 WIDTH-STROKE-1/4))
 
 ; WIDTH-DIAGONAL-BASE
-; The width of the base of any diagonal strokes. This is slightly larger than
+; The width of the base of any diagonal strokes close to 45º. This is slightly larger than
 ; WIDTH-STROKE to give the diagonal about the same weight as WIDTH-STROKE.
 
 (: WIDTH-DIAGONAL-BASE : Flonum)
@@ -152,6 +152,17 @@
 
 (: WIDTH-DIAGONAL-BASE-1/4 : Flonum)
 (define WIDTH-DIAGONAL-BASE-1/4 (/ WIDTH-DIAGONAL-BASE 4.0))
+
+; The width of the base of any diagonal strokes close to 60º.
+
+(: WIDTH-DIAGONAL-SLIGHT-BASE : Flonum)
+(define WIDTH-DIAGONAL-SLIGHT-BASE (* WIDTH-STROKE (sqrt 1.6)))
+
+(: WIDTH-DIAGONAL-SLIGHT-BASE-1/2 : Flonum)
+(define WIDTH-DIAGONAL-SLIGHT-BASE-1/2 (/ WIDTH-DIAGONAL-SLIGHT-BASE 2.0))
+
+(: WIDTH-DIAGONAL-SLIGHT-BASE-1/4 : Flonum)
+(define WIDTH-DIAGONAL-SLIGHT-BASE-1/4 (/ WIDTH-DIAGONAL-SLIGHT-BASE 4.0))
 
 ; WIDTH-BASE
 ; The width of the base of characters that have extended bases / serif marks
@@ -198,14 +209,17 @@
 (: HEIGHT-Y : Flonum)
 (define HEIGHT-Y (- HEIGHT-CAP HEIGHT-X))
 
-(: HEIGHT-Y-1/2 : Flonum)
-(define HEIGHT-Y-1/2 (/ HEIGHT-Y 2.0))
+(: HEIGHT-Y-1/8 : Flonum)
+(define HEIGHT-Y-1/8 (/ HEIGHT-Y 8.0))
 
 (: HEIGHT-Y-1/4 : Flonum)
 (define HEIGHT-Y-1/4 (/ HEIGHT-Y 4.0))
 
-(: HEIGHT-Y-1/8 : Flonum)
-(define HEIGHT-Y-1/8 (/ HEIGHT-Y 8.0))
+(: HEIGHT-Y-3/8 : Flonum)
+(define HEIGHT-Y-3/8 (* 3.0 HEIGHT-Y-1/8))
+
+(: HEIGHT-Y-1/2 : Flonum)
+(define HEIGHT-Y-1/2 (/ HEIGHT-Y 2.0))
 
 ; HEIGHT-DESC
 ; Height of descender reach below the LINE/BASE

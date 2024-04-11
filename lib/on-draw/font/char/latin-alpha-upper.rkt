@@ -125,7 +125,7 @@
 
 (define char:G
   (Char-3D #\G
-           WIDTH-EM
+           WIDTH-EM-5/8
            (λ ()
              (combine
               ; top arc

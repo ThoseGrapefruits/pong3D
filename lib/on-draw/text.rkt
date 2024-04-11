@@ -83,6 +83,25 @@
         font:symbol:@
         font:symbol:$
         font:symbol:#
+        font:symbol:%
+        font:symbol:^
+        font:symbol:&
+        font:symbol:*
+        font:symbol:paren-left
+        font:symbol:paren-right
+        font:symbol:bracket-square-left
+        font:symbol:bracket-square-right
+        font:symbol:bracket-curly-left
+        font:symbol:bracket-curly-right
+        font:symbol:-
+        font:symbol:_
+        font:symbol:/
+        font:symbol:\
+        font:symbol:vertical-line
+        font:symbol:quote-single
+        font:symbol:quote-double
+        font:symbol::
+        font:symbol:semicolon
         font:symbol:comma
         font:symbol:dot))
 

@@ -14,6 +14,5 @@
 (: wrap-within : Flonum Flonum -> Flonum)
 (define (wrap-within n width)
   (cond [(negative? width) (error "negative width")]
-        [(or (> n width) (< n (- width))) (error "n outside screen bounds")]
         [(negative? n) (+ width n)]
         [else n]))

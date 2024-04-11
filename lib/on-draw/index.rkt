@@ -66,7 +66,7 @@
 (define (render-game-over-background s)
   (transform (with-emitted (emitted "red" 2.0)
                (rotate-z (move-z (cube origin 0.5) 1.0) 45))
-             (position-screen-space-relative s 0.0 0.0)))
+             (position-screen-space-relative s 0.0 0.0 1.0)))
 
 (: render-game-over-score : State-Game-Over -> Pict3D)
 (define (render-game-over-score s)
@@ -74,7 +74,7 @@
               (Player-score
                (State-Play-player
                 (State-Game-Over-end-state s))))
-             (position-screen-space-relative s 0.0 0.0)))
+             (position-screen-space-relative s 0.0 0.0 1.0)))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -83,7 +83,7 @@
   (cond
     [(State-Play? s)
      (combine
-      (render-quick-brown-fox s)
+      (render-sample-text s)
       (render-game-play-opponent s)
       (render-game-play-player s)
       (render-game-play-ball s)
@@ -110,23 +110,62 @@
     (define hash-y (hash-char char index))
     ; purposefully flip the intensity and time factors to give some more
     ; character without having to generate 4 values
-    (define rot-x (* hash-y (cos (* hash-x ts)) 0.2))
+    (define rot-x (* hash-y (cos (* hash-x ts)) 0.1))
     (define rot-y (* hash-x (sin (* hash-y ts)) 0.2))
     (rotate-y/center (rotate-x/center pict rot-x) rot-y)))
 
-(: render-quick-brown-fox : State-Play -> Pict3D)
-(define (render-quick-brown-fox s)
+(define tqbf (string-append
+              "the quick brown fox jumps over the lazy dog... "
+              "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
+              "0123456789 10 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5"))
+
+(define cor "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT.
+             ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING
+             THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY
+             MOVE AND I DO EVERY MOVE HARD. MAKIN WHOOSHING SOUNDS WHEN I SLAM
+             DOWN SOME NECRO BASTARDS OR EVEN WHEN I MESS UP TECHNIQUE. NOT MANY
+             CAN SAY THEY ESCAPED THE GALAXYS MOST DANGEROUS PRISON. I CAN. I
+             SAY IT & I SAY IT OUTLOUD EVERYDAY TO PEOPLE IN MY COLLEGE CLASS
+             AND ALL THEY DO IS PROVE PEOPLE IN COLLEGE CLASS CAN STILL BE
+             IMMATURE JEKRS. AND IVE LEARNED ALL THE LINES AND IVE LEARNED HOW
+             TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2
+             HOURS INCLUDING WIND DOWN EVERY MORNIng")
+
+(: render-sample-text : State-Play -> Pict3D)
+(define (render-sample-text s)
+  (combine
+  ;  (render-sample-text-cor s)
+   (render-sample-text-tqbf s)
+  ))
+
+(: render-sample-text-cor : State-Play -> Pict3D)
+(define (render-sample-text-cor s)
+  (define t (State-t s))
+  (parameterize
+      ([current-emitted (emitted 0.5 0.7 1.0 2.0)])
+    (rotate-y/center
+     (transform
+      (text cor
+            #:wrap 9.0
+            #:onchar (get-on-char s))
+      (affine-compose
+       (move-x (+ 9.0 (* t -0.0002)))
+       (move-z 6.35)
+       (move-y -0.8)
+       (rotate-x -90.0)
+       (rotate-y -90.0)
+       (scale 0.18))) -90.0)))
+
+(: render-sample-text-tqbf : State-Play -> Pict3D)
+(define (render-sample-text-tqbf s)
   (parameterize
       ([current-emitted (emitted "oldlace" 1.0)])
     (transform
-     (text (string-append
-            "the quick brown fox jumps over the lazy dog... "
-            "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
-            "0123456789 10 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5")
-           #:wrap 15.0
+     (text tqbf
+           #:wrap 13.0
            #:onchar (get-on-char s))
      (affine-compose
-      (position-screen-space-relative s -0.6 -0.6 0.8)
+      (position-screen-space-relative s -0.5 0.0 0.8)
       (scale 0.05)))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
@@ -214,7 +253,7 @@
   ; player score
   (combine
    (transform (render-player-score (Player-score player))
-              (position-screen-space-pixels s 100.0 100.0))
+              (position-screen-space-pixels s 100.0 100.0 1.0))
    ; player lives
    (transform
     (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
@@ -222,7 +261,7 @@
        (for/list : (Listof Pict3D)
          ([n (range 0 (Player-lives player))])
          (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
-    (position-screen-space-pixels s -100.0 100.0))))
+    (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t))))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
