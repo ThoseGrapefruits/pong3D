@@ -240,13 +240,36 @@
   (Char-3D
    #\u0028
    WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   (λ ()
+     (combine
+      ; curve top
+      (cirque-y-1/4 #:arc (arc -180.0 -90.0) #:basis 'x)
+      ; ascender y
+      (rectangle (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
+                 (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+      ; ascender x
+      (rectangle (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
+                 (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+      ; curve bottom
+      (cirque-x-1/4 #:arc (arc 90.0 180.0) #:basis 'x)))))
 
 (define symbol:paren-right
   (Char-3D
    #\u0029
    WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   (λ ()
+     (define curve-shift (- (- WIDTH-EM-1/4 WIDTH-STROKE)))
+     (combine
+      ; curve top
+      (move-x (cirque-y-1/4 #:arc (arc -90.0 0.0) #:basis 'x) curve-shift)
+      ; ascender y
+      (rectangle (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
+                 (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+      ; ascender x
+      (rectangle (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
+                 (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+      ; curve bottom
+      (move-x (cirque-x-1/4 #:arc (arc 0.0 90.0) #:basis 'x) curve-shift)))))
 
 (define symbol:bracket-square-left
   (Char-3D
