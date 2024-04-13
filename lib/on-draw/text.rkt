@@ -143,56 +143,91 @@
 
 (define-type On-Char-Handler (-> Pict3D Char Integer Pict3D))
 
-(: text : String
-   [#:line-spacing Flonum]
-   [#:onchar On-Char-Handler]
-   [#:wrap Flonum]
-   -> Pict3D)
+(: text (->* (String)
+             (#:spacing-line Flonum #:onchar On-Char-Handler #:wrap Flonum)
+             Pict3D))
 (define (text s
-              #:line-spacing [line-spacing 0.4]
+              #:spacing-line [spacing-line 0.4]
+              #:spacing-paragraph [spacing-paragraph 0.4]
               #:onchar [onchar (λ (pict c i) pict)]
               #:wrap [wrap 40.0])
-  (define line-height (+ line-spacing font:HEIGHT-CAP))
-  (define words (string-split s))
+  (define paragraphs (map string-trim (string-split s #px"(?:\r?\n)+")))
+  (define-values (_ paragraphs-rendered)
+    (for/fold : (Values Flonum (Listof Pict3D))
+      ([paragraph-y : Flonum 0.0]
+       [out empty-list/Pict3D])
+      ([i (range 0 (length paragraphs))]
+       [paragraph paragraphs])
+      (define paragraph-y-now (+ paragraph-y (* i spacing-paragraph)))
+      (define-values (paragraph-y-new paragraph-rendered)
+      (text-paragraph paragraph paragraph-y-now
+                      #:onchar onchar
+                      #:spacing-line spacing-line
+                      #:wrap wrap))
+      (values paragraph-y-new (append paragraph-rendered out))))
+  (combine paragraphs-rendered))
+
+(: text-paragraph (->* (String Flonum #:spacing-line Flonum #:onchar On-Char-Handler #:wrap Flonum)
+                       ()
+                       (Values Flonum (Listof Pict3D))))
+(define (text-paragraph paragraph
+                        y-start
+                        #:onchar onchar
+                        #:spacing-line spacing-line
+                        #:wrap wrap)
+  (define line-height (+ spacing-line font:HEIGHT-CAP))
+  (define words (string-split paragraph))
   (define words-rendered (map Word-3D-from-string words))
   (define lines (make-lines words-rendered #:wrap wrap))
-  (combine
-   (for/fold : (Listof Pict3D)
-     ([lines empty-list/Pict3D])
-     ([i (range 0 (length lines))]
-      [line lines])
-     (define line-y (* i line-height))
-     (: line-rendered (Listof Pict3D))
-     (define-values (_ line-rendered)
-       (for/fold : (Values Flonum (Listof Pict3D))
-         ([word-x : Flonum 0.0]
-          [out empty-list/Pict3D])
-         ([word line])
-         (define-values (_ word-x-new chars-rendered)
-           (for/fold : (Values Integer Flonum (Listof Pict3D))
-             ([char-i : Integer 0]
-              [char-x word-x]
-              [out empty-list/Pict3D])
-             ([char (Word-3D-chars word)])
-             (define char-positioned
-               (onchar (transform
-                ((font:Char-3D-draw char))
-                (affine-compose
-                 (move-x char-x)
-                 (move-y line-y))) (font:Char-3D-char char) char-i))
-             (values (+ 1 char-i)
-                     (+ char-x (font:Char-3D-width char))
-                     (cons char-positioned out))))
-         (values word-x-new
-                 (append chars-rendered out))))
-     (append line-rendered lines))))
+  (for/fold : (Values Flonum (Listof Pict3D))
+    ([line-y : Flonum y-start]
+     [out empty-list/Pict3D])
+    ([line lines])
+    (define line-y-now (+ line-y line-height))
+    (define-values (_ line-rendered)
+      (text-line line line-y-now #:onchar onchar))
+    (values line-y-now (append line-rendered out))))
 
-(: make-lines : (Listof Word-3D) [#:wrap Flonum] -> (Listof (Listof Word-3D)))
-(define (make-lines words #:wrap [wrap 40.0])
+(: text-line (->* ((Listof Word-3D) Flonum #:onchar On-Char-Handler)
+                  ()
+                  (Values Flonum (Listof Pict3D))))
+(define (text-line line line-y #:onchar onchar)
+  (for/fold : (Values Flonum (Listof Pict3D))
+    ([word-x : Flonum 0.0]
+     [out empty-list/Pict3D])
+    ([word line])
+    (define-values (word-x-new chars-rendered)
+      (text-word word line-y word-x #:onchar onchar))
+    (values word-x-new (append chars-rendered out))))
+
+(: text-word (->* (Word-3D Flonum Flonum #:onchar On-Char-Handler)
+                  ()
+                  (Values Flonum (Listof Pict3D))))
+(define (text-word word line-y word-x #:onchar onchar)
+  (define-values (_ word-x-new chars-rendered)
+    (for/fold : (Values Integer Flonum (Listof Pict3D))
+      ([char-i : Integer 0]
+       [char-x word-x]
+       [out empty-list/Pict3D])
+      ([char (Word-3D-chars word)])
+      (define char-rendered ((font:Char-3D-draw char)))
+      (define char-positioned
+        (onchar (transform char-rendered
+                           (affine-compose (move-x char-x)
+                                           (move-y line-y)))
+                (font:Char-3D-char char)
+                char-i))
+      (values (+ 1 char-i)
+              (+ char-x (font:Char-3D-width char))
+              (cons char-positioned out))))
+  (values word-x-new chars-rendered))
+
+(: make-lines (->* ((Listof Word-3D) #:wrap Flonum) () (Listof (Listof Word-3D))))
+(define (make-lines words #:wrap wrap)
   (map reverse-line (reverse (make-lines-reversed words #:wrap wrap))))
 
-(: make-lines-reversed : (Listof Word-3D) [#:wrap Flonum] -> (Listof (Listof Word-3D)))
-(define (make-lines-reversed words #:wrap [wrap 40.0])
+(: make-lines-reversed (->* ((Listof Word-3D) #:wrap Flonum) () (Listof (Listof Word-3D))))
+(define (make-lines-reversed words #:wrap wrap)
   (define-values (_ lines)
     (for/fold : (Values Flonum (Listof (Listof Word-3D))) ([line-length 0.0]
                [lines empty-list-list/Word-3D])

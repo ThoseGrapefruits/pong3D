@@ -117,7 +117,9 @@
 (define tqbf (string-append
               "the quick brown fox jumps over the lazy dog... "
               "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
+              "\n${test} $[test] $(test)\n"
               "0123456789 10 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5"))
+(displayln tqbf)
 
 (define cor "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT.
              ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING

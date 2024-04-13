@@ -45,8 +45,10 @@
               (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
               ; loops
-              (move-x (combine (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle)))
-                               (cirque-x-link-3/4 #:arc (arc -90.0 (+ 90.0 overangle))))
+              (move-x (combine (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle))
+                                             #:basis 'y)
+                               (cirque-x-link-3/4 #:arc (arc -90.0 (+ 90.0 overangle))
+                                                  #:basis 'y))
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:C
@@ -55,7 +57,7 @@
            (λ ()
              (combine
               ; top arc
-              (cirque-y-1/2 #:arc (arc -180.0 (- UPPER-ARC-OFFSET)))
+              (cirque-y-1/2 #:arc (arc -180.0 (- UPPER-ARC-OFFSET)) #:basis 'x)
               ; connector y
               (rectangle (pos+ LINE/MEAN/START
                                (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
@@ -65,7 +67,7 @@
                                (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
               ; bottom arc
-              (cirque-x-1/2 #:arc (arc 15.0 180.0))))))
+              (cirque-x-1/2 #:arc (arc 15.0 180.0) #:basis 'x)))))
 
 (define char:D
   (Char-3D #\D
@@ -75,17 +77,21 @@
               ; left ascender
               (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
-              (move-x (combine (cirque-y-3/4 #:arc (arc (- -90.0 UPPER-ARC-OFFSET) 0.0)) ; top arc
-                               ; right connector y
-                               (rectangle (pos+ LINE/MEAN/END-3/4
-                                                (dir (- WIDTH-STROKE-1/2) (- HEIGHT-Y-1/4) 0.0))
-                                          (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
-                               ; right connector x
-                               (rectangle (pos+ LINE/MEAN/END-3/4
-                                                (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
-                                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
-                               ; bottom arc
-                               (cirque-x-3/4 #:arc (arc 0.0 (+ 90.0 UPPER-ARC-OFFSET))))
+              (move-x (combine
+                       ; top arc
+                       (cirque-y-3/4 #:arc (arc (- -90.0 UPPER-ARC-OFFSET) 0.0)
+                                     #:basis 'x)
+                       ; right connector y
+                       (rectangle (pos+ LINE/MEAN/END-3/4
+                                        (dir (- WIDTH-STROKE-1/2) (- HEIGHT-Y-1/4) 0.0))
+                                  (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+                       ; right connector x
+                       (rectangle (pos+ LINE/MEAN/END-3/4
+                                        (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
+                                  (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+                       ; bottom arc
+                       (cirque-x-3/4 #:arc (arc 0.0 (+ 90.0 UPPER-ARC-OFFSET))
+                                     #:basis 'x))
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:E
@@ -129,7 +135,7 @@
            (λ ()
              (combine
               ; top arc
-              (cirque-y-1/2 #:arc (arc -180.0 (- UPPER-ARC-OFFSET)))
+              (cirque-y-1/2 #:arc (arc -180.0 (- UPPER-ARC-OFFSET)) #:basis 'x)
               ; left connector y
               (rectangle (pos+ LINE/MEAN/START
                                (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
@@ -139,7 +145,7 @@
                                (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
               ; bottom arc
-              (cirque-x-1/2 #:arc (arc 0.0 180.0))
+              (cirque-x-1/2 #:arc (arc 0.0 180.0) #:basis 'x)
               ; right connector x
               (rectangle (pos+ LINE/MEAN/START
                                (dir (- WIDTH-EM-1/2 WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
@@ -197,7 +203,7 @@
                               (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
                         (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
               ; bottom arc
-              (cirque-x-link-1/2 #:arc (arc 0.0 (- 180.0 UPPER-ARC-OFFSET)))))))
+              (cirque-x-link-1/2 #:arc (arc 0.0 (- 180.0 UPPER-ARC-OFFSET)) #:basis 'x)))))
 
 (define char:K
   (Char-3D #\K
@@ -217,7 +223,7 @@
                           (pos+ LINE/MEAN/START
                                 (dir (+ WIDTH-STROKE WIDTH-STROKE) WIDTH-STROKE-1/4 0.0)))
               ; leg
-              (move-x (combine (cirque-x-3/4 #:arc (arc -90.0 0.0))
+              (move-x (combine (cirque-x-3/4 #:arc (arc -90.0 0.0) #:basis 'x)
                                (rectangle (pos+ LINE/BASE/END-3/4
                                                 (dir (- WIDTH-STROKE-1/2) (- HEIGHT-X-1/4) 0.0))
                                           (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2)))
@@ -279,7 +285,7 @@
            (λ () 
             (combine 
              ; arc top
-             (cirque-y-1/2 #:arc (arc -180.0 0.0))
+             (cirque-y-1/2 #:arc (arc -180.0 0.0) #:basis 'x)
              ; connector left y
              (rectangle (pos+ LINE/MEAN/START
                               (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
@@ -289,7 +295,7 @@
                               (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
                         (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
              ; arc bottom
-             (cirque-x-1/2 #:arc (arc 0.0 180.0))
+             (cirque-x-1/2 #:arc (arc 0.0 180.0) #:basis 'x)
              ; connector right x
              (rectangle (pos+ LINE/MEAN/END-1/2
                               (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
@@ -308,38 +314,54 @@
               ; ascender
               (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
-              ; loops
-              (move-x (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle)))
+              ; loop
+              (move-x (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle))
+                                    #:basis 'y)
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:Q
   (Char-3D #\Q
            WIDTH-EM-3/4
            (λ ()
-           (combine
-            ; arc top
-            (cirque-y-1/2 #:arc (arc -180.0 0.0))
-            ; connector left y
-            (rectangle (pos+ LINE/MEAN/START
-                             (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
-                       (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
-            ; connector left x
-            (rectangle (pos+ LINE/MEAN/START
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
-                       (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
-            ; arc bottom
-            (cirque-x-1/2 #:arc (arc 0.0 180.0))
-            ; connector right x
-            (rectangle (pos+ LINE/MEAN/END-1/2
-                             (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
-                       (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
-            ; connector right y
-            (rectangle (pos+ LINE/MEAN/END-1/2
-                             (dir (- WIDTH-STROKE-1/2) (- HEIGHT-Y-1/4) 0.0))
-                       (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
-            ; tail
-            (move (cirque-desc-1/2 #:arc (arc 90.0 180.0))
-                  (dir (+ WIDTH-EM-1/4 WIDTH-STROKE) (- 0.0 HEIGHT-DESC-1/2 WIDTH-STROKE-1/2) 0.0))))))
+             (define arc-bottom-radius-x WIDTH-EM-1/4)
+             (define arc-bottom-radius-y HEIGHT-X-1/2)
+             (define arc-bottom-center (pos+ LINE/MID-X/START +x arc-bottom-radius-x))
+             (define tail-top-angle (degrees->radians 40.0))
+             (define tail-bottom-angle (degrees->radians 70.0))
+             (combine
+              ; arc top
+              (cirque-y-1/2 #:arc (arc -180.0 0.0) #:basis 'x)
+              ; connector left y
+              (rectangle (pos+ LINE/MEAN/START
+                               (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
+                         (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+              ; connector left x
+              (rectangle (pos+ LINE/MEAN/START
+                               (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
+                         (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+              ; arc bottom
+              (cirque-x-1/2 #:arc (arc 0.0 180.0) #:basis 'x)
+              ; connector right x
+              (rectangle (pos+ LINE/MEAN/END-1/2
+                               (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
+                         (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+              ; connector right y
+              (rectangle (pos+ LINE/MEAN/END-1/2
+                               (dir (- WIDTH-STROKE-1/2) (- HEIGHT-Y-1/4) 0.0))
+                         (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+              ; tail
+              (quad-thicc (pos+ arc-bottom-center
+                                (dir (* arc-bottom-radius-x (cos tail-top-angle))
+                                     (* arc-bottom-radius-y (sin tail-top-angle))
+                                     0.0))
+                          (pos+ arc-bottom-center
+                                (dir (* arc-bottom-radius-x (cos tail-bottom-angle))
+                                     (* arc-bottom-radius-y (sin tail-bottom-angle))
+                                     0.0))
+                          (pos+ LINE/BASE/CENTER-3/4
+                                (dir WIDTH-STROKE-1/2 (+ HEIGHT-DESC-1/4 WIDTH-STROKE-1/4) 0.0))
+                          (pos+ LINE/BASE/CENTER-3/4
+                                (dir WIDTH-STROKE     (- HEIGHT-DESC-1/4 WIDTH-STROKE-1/4) 0.0)))))))
 
 (define char:R
   (Char-3D #\R
@@ -351,7 +373,8 @@
               (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
               ; loop
-              (move-x (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle)))
+              (move-x (cirque-y-3/4 #:arc (arc (- -90.0 overangle) (+ 90.0 overangle))
+                                    #:basis 'y)
                       (- WIDTH-STROKE WIDTH-EM-3/8))
               ; leg
               (quad-thicc (pos+ LINE/MEAN/START
@@ -368,9 +391,9 @@
            WIDTH-EM-3/4
            (λ () (combine
                   ; upper
-                  (cirque-y-1/2 #:arc (arc  90.0 330.0))
+                  (cirque-y-1/2 #:arc (arc  90.0 330.0) #:basis 'y)
                   ; lower
-                  (cirque-x-link-1/2 #:arc (arc -90.0 -210.0))))))
+                  (cirque-x-link-1/2 #:arc (arc -90.0 -210.0) #:basis 'y)))))
 
 (define char:T
   (Char-3D #\T
@@ -398,7 +421,7 @@
                                (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 0.0))
                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
               ; arc bottom
-              (cirque-x-1/2 #:arc (arc 0.0 180.0))
+              (cirque-x-1/2 #:arc (arc 0.0 180.0) #:basis 'x)
               ; ascender right x
               (rectangle (pos+ LINE/MEAN/END-1/2
                                (dir (- WIDTH-STROKE-1/2) HEIGHT-X-1/4 0.0))
