@@ -148,7 +148,7 @@
              Pict3D))
 (define (text s
               #:spacing-line [spacing-line 0.4]
-              #:spacing-paragraph [spacing-paragraph 0.4]
+              #:spacing-paragraph [spacing-paragraph 0.2]
               #:onchar [onchar (λ (pict c i) pict)]
               #:wrap [wrap 40.0])
   (define paragraphs (map string-trim (string-split s #px"(?:\r?\n)+")))
@@ -158,12 +158,12 @@
        [out empty-list/Pict3D])
       ([i (range 0 (length paragraphs))]
        [paragraph paragraphs])
-      (define paragraph-y-now (+ paragraph-y (* i spacing-paragraph)))
+      (define paragraph-y-now (+ paragraph-y spacing-paragraph))
       (define-values (paragraph-y-new paragraph-rendered)
-      (text-paragraph paragraph paragraph-y-now
-                      #:onchar onchar
-                      #:spacing-line spacing-line
-                      #:wrap wrap))
+        (text-paragraph paragraph paragraph-y-now
+                        #:onchar onchar
+                        #:spacing-line spacing-line
+                        #:wrap wrap))
       (values paragraph-y-new (append paragraph-rendered out))))
   (combine paragraphs-rendered))
 

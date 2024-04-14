@@ -292,7 +292,7 @@
 ; Middle of descender area of characters that go below LINE/BASE.
 
 (: LINE/MID-DESC/START : Pos)
-(define LINE/MID-DESC/START (pos+ LINE/BASE/START +y (/ HEIGHT-DESC 2.0)))
+(define LINE/MID-DESC/START (pos+ LINE/BASE/START +y HEIGHT-DESC-1/2))
 
 (: LINE/MID-DESC/CENTER : Pos)
 (define LINE/MID-DESC/CENTER (pos+ LINE/MID-DESC/START +x WIDTH-EM-1/2))
@@ -362,3 +362,43 @@
 
 (: LINE/DESC/END-3/4 : Pos)
 (define LINE/DESC/END-3/4 (pos+ LINE/DESC/START +x WIDTH-EM-3/4))
+
+; LINE/MID-FULL ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Middle of full-height characters (e.g. brackets) which go from LINE/CAP to
+; LINE/DESC.
+
+(: LINE/MID-FULL/START : Pos)
+(define LINE/MID-FULL/START (pos+ LINE/DESC/START -y HEIGHT-FULL-1/2))
+
+(: LINE/MID-FULL/CENTER : Pos)
+(define LINE/MID-FULL/CENTER (pos+ LINE/MID-FULL/START +x WIDTH-EM-1/2))
+
+(: LINE/MID-FULL/CENTER-1/4 : Pos)
+(define LINE/MID-FULL/CENTER-1/4 (pos+ LINE/MID-FULL/START +x WIDTH-EM-1/8))
+
+(: LINE/MID-FULL/CENTER-3/8 : Pos)
+(define LINE/MID-FULL/CENTER-3/8 (pos+ LINE/MID-FULL/START +x WIDTH-EM-3/16))
+
+(: LINE/MID-FULL/CENTER-1/2 : Pos)
+(define LINE/MID-FULL/CENTER-1/2 (pos+ LINE/MID-FULL/START +x WIDTH-EM-1/4))
+
+(: LINE/MID-FULL/CENTER-5/8 : Pos)
+(define LINE/MID-FULL/CENTER-5/8 (pos+ LINE/MID-FULL/START +x WIDTH-EM-5/16))
+
+(: LINE/MID-FULL/CENTER-3/4 : Pos)
+(define LINE/MID-FULL/CENTER-3/4 (pos+ LINE/MID-FULL/START +x WIDTH-EM-3/8))
+
+(: LINE/MID-FULL/END : Pos)
+(define LINE/MID-FULL/END (pos+ LINE/MID-FULL/START +x WIDTH-EM))
+
+(: LINE/MID-FULL/END-1/4 : Pos)
+(define LINE/MID-FULL/END-1/4 (pos+ LINE/MID-FULL/START +x WIDTH-EM-1/4))
+
+(: LINE/MID-FULL/END-1/2 : Pos)
+(define LINE/MID-FULL/END-1/2 (pos+ LINE/MID-FULL/START +x WIDTH-EM-1/2))
+
+(: LINE/MID-FULL/END-5/8 : Pos)
+(define LINE/MID-FULL/END-5/8 (pos+ LINE/MID-FULL/START +x WIDTH-EM-5/8))
+
+(: LINE/MID-FULL/END-3/4 : Pos)
+(define LINE/MID-FULL/END-3/4 (pos+ LINE/MID-FULL/START +x WIDTH-EM-3/4))

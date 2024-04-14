@@ -10,160 +10,172 @@
 (provide (all-defined-out))
 
 (define char:a
-  (Char-3D #\a
-           WIDTH-EM-1/2
-           (λ () (combine
-                  ; loop
-                  (cirque-x-3/8 #:basis 'x)
-                  ; ascender
-                  (rectangle (pos+ LINE/MID-X/START +x (- WIDTH-EM-7/16 WIDTH-STROKE-1/2))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\a
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; loop
+          (cirque-x-3/8 #:basis 'x)
+          ; ascender
+          (rectangle (pos+ LINE/MID-X/START +x (- WIDTH-EM-3/8 WIDTH-STROKE-1/2))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))))))
 
 (define char:b
-  (Char-3D #\b
-           WIDTH-EM-1/2
-           (λ () (combine
-           ; loop
-           (cirque-x-3/8 #:basis 'x)
-           ; ascender
-           (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
-                      (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\b
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; loop
+          (cirque-x-3/8 #:basis 'x)
+          ; ascender
+          (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
+                     (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:c
-  (Char-3D #\c
-           WIDTH-EM-9/16
-           (λ () (cirque-x-3/8 #:arc (arc 40.0 -40.0)))))
+  (make-Char-3D-memoized
+   #\c
+   WIDTH-EM-9/16
+   (λ () (cirque-x-3/8 #:arc (arc 40.0 -40.0)))))
 
 (define char:d
-  (Char-3D #\d
-           WIDTH-EM-1/2
-           (λ () (combine
-                  (cirque-x-3/8 #:basis 'x)
-                  (rectangle (pos+ LINE/MID/START +x (- WIDTH-EM-3/8 WIDTH-STROKE-1/2))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\d
+   WIDTH-EM-1/2
+   (λ () (combine
+          (cirque-x-3/8 #:basis 'x)
+          (rectangle (pos+ LINE/MID/START +x (- WIDTH-EM-3/8 WIDTH-STROKE-1/2))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:e
-  (Char-3D #\e
-           WIDTH-EM-1/2
-           (λ () (combine
-                  (cirque-x-3/8 #:arc (arc 60.0 0.0) #:basis 'x)
-                  (rectangle LINE/MID-X/CENTER-3/8
-                             (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\e
+   WIDTH-EM-1/2
+   (λ () (combine
+          (cirque-x-3/8 #:arc (arc 60.0 0.0) #:basis 'x)
+          (rectangle LINE/MID-X/CENTER-3/8
+                     (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:f
-  (Char-3D #\f
-           WIDTH-EM-5/16
-           (λ () (combine
-                  ; curve
-                  (cirque-y-3/8 #:arc (arc -180.0 -60.0) #:basis 'x)
-                  ; ascender upper
-                  (rectangle (pos+ LINE/MEAN/START
-                                   (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
-                  ; cross
-                  (rectangle (pos+ LINE/MEAN/START (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
-                             (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; ascender lower
-                  (rectangle (pos+ LINE/MID-X/START +x WIDTH-STROKE-1/2)
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\f
+   WIDTH-EM-5/16
+   (λ () (combine
+          ; curve
+          (cirque-y-3/8 #:arc (arc -180.0 -60.0) #:basis 'x)
+          ; ascender upper
+          (rectangle (pos+ LINE/MEAN/START
+                           (dir WIDTH-STROKE-1/2 (- HEIGHT-Y-1/4) 0.0))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))
+          ; cross
+          (rectangle (pos+ LINE/MEAN/START (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
+                     (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; ascender lower
+          (rectangle (pos+ LINE/MID-X/START +x WIDTH-STROKE-1/2)
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))))))
 
 (define char:g
-  (Char-3D #\g
-           WIDTH-EM-1/2
-           (λ () (combine
-                  ; top accent
-                  (rectangle (pos+ LINE/MEAN/CENTER-1/2
-                                   (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
-                             (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; curve x
-                  (cirque-x-3/8 #:basis #f)
-                  ; connector
-                  (cirque-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 125.0 225.0) #:basis #f)
-                  ; curve desc
-                  (cirque-3/8 LINE/MID-DESC/START HEIGHT-DESC-5/16 #:arc circle-arc #:basis #f)))))
+  (make-Char-3D-memoized
+   #\g
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; top accent
+          (rectangle (pos+ LINE/MEAN/CENTER-1/2
+                           (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
+                     (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; curve x
+          (cirque-x-3/8 #:basis #f)
+          ; connector
+          (cirque-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 125.0 225.0) #:basis #f)
+          ; curve desc
+          (cirque-3/8 LINE/MID-DESC/START HEIGHT-DESC-5/16 #:arc circle-arc #:basis #f)))))
 
 (define char:h
-  (Char-3D #\h
-           WIDTH-EM-1/2
-           (λ () (combine
-                  ; ascender
-                  (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
-                             (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
-                  ; curve
-                  (cirque-x-3/8 #:arc (arc 180.0 0) #:basis 'x)
-                  ; end ascender
-                  (rectangle (pos+ LINE/BASE/END-3/8
-                                   (dir (- 0.0 WIDTH-STROKE-1/2)
-                                        (- HEIGHT-X-1/4)
-                                        0.0))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\h
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; ascender
+          (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
+                     (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
+          ; curve
+          (cirque-x-3/8 #:arc (arc 180.0 0) #:basis 'x)
+          ; end ascender
+          (rectangle (pos+ LINE/BASE/END-3/8
+                           (dir (- 0.0 WIDTH-STROKE-1/2)
+                                (- HEIGHT-X-1/4)
+                                0.0))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))))))
 
 (define char:i
-  (Char-3D #\i
-           WIDTH-EM-1/2
-           (λ () (combine
-                  ; dot
-                  (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* WIDTH-STROKE 1.5))
-                             (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; cap
-                  (rectangle (pos+ LINE/MEAN/CENTER-1/2
-                                   (dir (- WIDTH-STROKE-1/2 WIDTH-BASE/NARROW-1/2)
-                                        WIDTH-STROKE-1/2
-                                        0.0))
-                             (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; ascender
-                  (rectangle LINE/MID-X/CENTER-1/2
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
-                  ; base
-                  (rectangle (pos+ LINE/BASE/CENTER-1/2 -y WIDTH-STROKE-1/2)
-                             (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
+  (make-Char-3D-memoized
+   #\i
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; dot
+          (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* WIDTH-STROKE 1.5))
+                     (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; cap
+          (rectangle (pos+ LINE/MEAN/CENTER-1/2
+                           (dir (- WIDTH-STROKE-1/2 WIDTH-BASE/NARROW-1/2)
+                                WIDTH-STROKE-1/2
+                                0.0))
+                     (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; ascender
+          (rectangle LINE/MID-X/CENTER-1/2
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
+          ; base
+          (rectangle (pos+ LINE/BASE/CENTER-1/2 -y WIDTH-STROKE-1/2)
+                     (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:j
-  (Char-3D #\j
-           WIDTH-EM-3/8
-           (λ () (combine
-                  ; dot
-                  (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* WIDTH-STROKE 1.5))
-                             (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; cap
-                  (rectangle (pos+ LINE/MEAN/CENTER-1/2
-                                   (dir (- WIDTH-STROKE-1/2 WIDTH-BASE/NARROW-1/2)
-                                        WIDTH-STROKE-1/2
-                                        0.0))
-                             (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
-                  ; ascender
-                  (rectangle LINE/MID-X/CENTER-1/2
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
-                  (rectangle LINE/BASE/CENTER-1/2
-                             (dir WIDTH-STROKE-1/2 HEIGHT-DESC-1/2 DEPTH-Z-1/2))
-                  ; descender
-                  (move-x (cirque-desc-3/8 #:arc (arc 0.0 90.0) #:basis 'x)
-                          (+ (- WIDTH-EM-1/8) WIDTH-STROKE-1/2))))))
+  (make-Char-3D-memoized
+   #\j
+   WIDTH-EM-3/8
+   (λ () (combine
+          ; dot
+          (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* WIDTH-STROKE 1.5))
+                     (dir WIDTH-STROKE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; cap
+          (rectangle (pos+ LINE/MEAN/CENTER-1/2
+                           (dir (- WIDTH-STROKE-1/2 WIDTH-BASE/NARROW-1/2)
+                                WIDTH-STROKE-1/2
+                                0.0))
+                     (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+          ; ascender
+          (rectangle (pos+ LINE/MID-X/START +x (+ WIDTH-BASE/NARROW WIDTH-STROKE-1/2))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
+          (rectangle (pos+ LINE/BASE/START +x (+ WIDTH-BASE/NARROW WIDTH-STROKE-1/2))
+                     (dir WIDTH-STROKE-1/2 HEIGHT-DESC-1/2 DEPTH-Z-1/2))
+          ; descender
+          (move-x (cirque-desc WIDTH-BASE/NARROW #:arc (arc 0.0 90.0) #:basis 'x)
+                  WIDTH-STROKE)))))
 
 (define char:k
-  (Char-3D #\k
-           WIDTH-EM-5/8
-           (λ () (combine
-                  ; ascender
-                  (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
-                             (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
-                  ; diagonal lower
-                  (quad-thicc (pos+ LINE/MID-X/START
-                                    (dir WIDTH-STROKE (- WIDTH-STROKE-1/2) 0.0))
-                              (pos+ LINE/MID-X/START
-                                    (dir WIDTH-STROKE (- WIDTH-DIAGONAL-BASE WIDTH-STROKE-1/2) 0.0))
-                              (pos+ LINE/MEAN/START
-                                    (dir (+ WIDTH-STROKE WIDTH-EM-3/16) WIDTH-DIAGONAL-BASE 0.0))
-                              (pos+ LINE/MEAN/START
-                                    (dir (+ WIDTH-STROKE WIDTH-EM-3/16) 0.0 0.0)))
-                  (move-x
-                   (combine
-                    ; dialogal lower
-                    (move-y (cirque-x-3/8 #:arc (arc -90.0 0.0) #:basis 'y) HEIGHT-X-1/2))
-                   (- WIDTH-STROKE WIDTH-EM-3/16))))))
+  (make-Char-3D-memoized
+   #\k
+   WIDTH-EM-1/2
+   (λ () (combine
+          ; ascender
+          (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
+                     (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
+          ; diagonal lower
+          (quad-thicc (pos+ LINE/MID-X/START
+                            (dir WIDTH-STROKE (- WIDTH-STROKE-1/2) 0.0))
+                      (pos+ LINE/MID-X/START
+                            (dir WIDTH-STROKE (- WIDTH-DIAGONAL-BASE WIDTH-STROKE-1/2) 0.0))
+                      (pos+ LINE/MEAN/START
+                            (dir (+ WIDTH-STROKE WIDTH-EM-3/16) WIDTH-DIAGONAL-BASE 0.0))
+                      (pos+ LINE/MEAN/START
+                            (dir (+ WIDTH-STROKE WIDTH-EM-3/16) 0.0 0.0)))
+          (move-x
+           (combine
+            ; dialogal lower
+            (move-y (cirque-x-3/8 #:arc (arc -90.0 0.0) #:basis 'y) HEIGHT-X-1/2))
+           (- WIDTH-STROKE WIDTH-EM-3/16))))))
 
 (define char:l
-  (Char-3D #\l WIDTH-EM-9/16
+  (make-Char-3D-memoized
+#\l WIDTH-EM-9/16
            (λ () (combine
                   ; cap
                   (rectangle (pos+ LINE/CAP/CENTER-1/2 -x
@@ -177,13 +189,14 @@
                              (dir WIDTH-BASE/NARROW WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:m
-  (Char-3D #\m
+  (make-Char-3D-memoized
+#\m
            WIDTH-EM-13/16
            (λ () (combine
                   ; ascender left
-                  (rectangle (pos+ LINE/BASE/START
-                                   (dir WIDTH-STROKE-1/2 (- HEIGHT-X-1/4) 0.0))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
+                  (rectangle (pos+ LINE/MID-X/START
+                                   (dir WIDTH-STROKE-1/2 0.0 0.0))
+                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
                   ; curve left
                   (cirque-x-3/8 #:arc (arc 180.0 0) #:basis 'x)
                   ; ascender middle
@@ -201,15 +214,16 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))))))
 
 (define char:n
-  (Char-3D #\n
-           WIDTH-EM-3/8
+  (make-Char-3D-memoized
+   #\n
+           WIDTH-EM-1/2
            (λ () (combine
+                  ; ascender left
+                  (rectangle (pos+ LINE/MID-X/START
+                                   (dir WIDTH-STROKE-1/2 0.0 0.0))
+                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
                   ; curve
                   (cirque-x-3/8 #:arc (arc 180.0 0) #:basis 'x)
-                  ; ascender start
-                  (rectangle (pos+ LINE/BASE/START
-                                   (dir WIDTH-STROKE-1/2 (- HEIGHT-X-1/4) 0.0))
-                             (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))
                   ; ascender end
                   (rectangle (pos+ LINE/BASE/END-3/8
                                    (dir (- WIDTH-STROKE-1/2)
@@ -218,59 +232,80 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-X-1/4 DEPTH-Z-1/2))))))
 
 (define char:o
-  (Char-3D #\o
-           WIDTH-EM-1/2
-           (λ () (cirque-x-3/8 #:basis 'x))))
+  (make-Char-3D-memoized
+   #\o
+   WIDTH-EM-1/2
+   (λ () (cirque-x-3/8 #:basis 'x))))
 
 (define char:p
-  (Char-3D #\p
-           WIDTH-EM-1/2
-           (λ () (combine (cirque-x-3/8 #:basis 'x)
-                          (rectangle (pos+ LINE/BASE/START +x WIDTH-STROKE-1/2)
-                                     (dir WIDTH-STROKE-1/2 HEIGHT-X DEPTH-Z-1/2))))))
-
-(define char:q
-  (Char-3D #\q
-           WIDTH-EM-1/2
-           (λ () (combine
-                  (cirque-x-3/8 #:basis 'x)
-                  (rectangle (pos+ LINE/BASE/END-3/8 -x WIDTH-STROKE-1/2)
+  (make-Char-3D-memoized
+   #\p
+   WIDTH-EM-1/2
+   (λ () (combine (cirque-x-3/8 #:basis 'x)
+                  (rectangle (pos+ LINE/BASE/START +x WIDTH-STROKE-1/2)
                              (dir WIDTH-STROKE-1/2 HEIGHT-X DEPTH-Z-1/2))))))
 
+(define char:q
+  (make-Char-3D-memoized
+   #\q
+   WIDTH-EM-1/2
+   (λ () (combine
+          (cirque-x-3/8 #:basis 'x)
+          (rectangle (pos+ LINE/BASE/END-3/8 -x WIDTH-STROKE-1/2)
+                     (dir WIDTH-STROKE-1/2 HEIGHT-X DEPTH-Z-1/2))))))
+
 (define char:r
-  (Char-3D #\r
+  (make-Char-3D-memoized
+  #\r
            WIDTH-EM-3/8
            (λ ()
              (combine
-              ; ascender
               (rectangle (pos+ LINE/MID-X/START +x WIDTH-STROKE-1/2)
                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))
-              ; curve
               (cirque (pos+ LINE/BASE/START +x WIDTH-EM-1/4)
                       WIDTH-EM-1/4
                       HEIGHT-X
                       #:arc (arc -180.0 -90.0)
                       #:basis 'x)))))
 
-; TODO link up ends of `s`
 (define char:s
-  (Char-3D #\s
-           WIDTH-EM-5/16
-           (λ ()
-              (define diff-x 0.0)
+  (make-Char-3D-memoized
+   #\s
+   WIDTH-EM-3/8
+   (λ ()
+              (define meeting-angle-bot -40.0)
+              (define meeting-angle-bot-r (degrees->radians meeting-angle-bot))
+              (define meeting-angle-top (+ 180.0 meeting-angle-bot))
+              (define meeting-angle-top-r (degrees->radians meeting-angle-top))
+              (define radius-x WIDTH-EM-3/16)
+              (define radius-y (+ HEIGHT-X-1/4 WIDTH-STROKE-1/4))
+
+              (define radius-x-mid (- radius-x WIDTH-STROKE-1/2))
+              (define radius-y-mid (- radius-y WIDTH-STROKE-1/2))
+
+              (define offset-x-bot (+ (* -1.0 radius-x-mid (cos meeting-angle-bot-r))
+                                      (*  1.0 radius-x-mid (cos meeting-angle-top-r))))
+              (define offset-y-bot (* radius-y-mid (sin meeting-angle-bot-r)))
+              (define offset-y-top (* radius-y-mid (sin meeting-angle-top-r)))
+
              (combine
-              (cirque-3/8 (pos+ LINE/MID-X/START -y (- HEIGHT-X-3/8 WIDTH-STROKE-1/4))
-                          HEIGHT-X-3/8
-                          #:arc (arc 90.0 300.0)
-                          #:basis 'y)
-              (cirque-3/8 (pos+ LINE/MID-X/START +y (- HEIGHT-X-3/8 WIDTH-STROKE-1/4))
-                          HEIGHT-X-3/8
-                          #:arc (arc -90.0 135.0)
-                          #:basis 'y)))))
+              ; top curve
+              (cirque-3/8 (pos+ LINE/MID-X/START
+                                (dir 0.0 (+ (- radius-y) offset-y-top) 0.0))
+                          radius-y
+                          #:arc (arc meeting-angle-top 300.0)
+                          #:basis #f)
+              ; bottom curve
+              (cirque-3/8 (pos+ LINE/MID-X/START
+                                (dir offset-x-bot (+ radius-y offset-y-bot) 0.0))
+                          radius-y
+                          #:arc (arc meeting-angle-bot 120.0)
+                          #:basis #f)))))
 
 (define char:t
-  (Char-3D #\t
-           WIDTH-EM-5/8
+  (make-Char-3D-memoized
+#\t
+           WIDTH-EM-1/2
            (λ () (combine
                   ; ascender upper
                   (rectangle LINE/MID-Y/CENTER-3/8
@@ -287,7 +322,8 @@
                           (- WIDTH-EM-3/16 WIDTH-STROKE-1/2))))))
 
 (define char:u
-  (Char-3D #\u
+  (make-Char-3D-memoized
+#\u
            WIDTH-EM-1/2
            (λ () (combine
                   (rectangle (pos+ LINE/MEAN/START
@@ -301,7 +337,8 @@
                   (cirque-x-3/8 #:arc (arc 0.0 180.0) #:basis 'x)))))
 
 (define char:v
-  (Char-3D #\v
+  (make-Char-3D-memoized
+#\v
            WIDTH-EM-1/2
            (λ () (combine
                   ; left
@@ -316,7 +353,8 @@
                               (pos+ LINE/MEAN/END-3/8    -x WIDTH-STROKE))))))
 
 (define char:w
-  (Char-3D #\w
+  (make-Char-3D-memoized
+#\w
            WIDTH-EM-3/4
            (λ ()
             (define v (combine
@@ -331,8 +369,9 @@
             (combine v (move-x v (- WIDTH-EM-3/8 WIDTH-STROKE))))))
 
 (define char:x
-  (Char-3D #\x
-           WIDTH-EM-5/8
+  (make-Char-3D-memoized
+#\x
+           WIDTH-EM-7/16
            (λ () (combine
                   ; bottom-left to top-right
                   (quad-thicc (pos+ LINE/BASE/START   +x 0.0)
@@ -346,7 +385,8 @@
                               (pos+ LINE/MEAN/START   +x 0.0))))))
 
 (define char:y
-  (Char-3D #\y
+  (make-Char-3D-memoized
+#\y
            WIDTH-EM-5/8
            (λ () (combine
                   ; left
@@ -364,7 +404,8 @@
                         (dir (- WIDTH-STROKE-1/2 WIDTH-EM-3/16) (- HEIGHT-DESC-1/2) 0.0))))))
 
 (define char:z
-  (Char-3D #\z
+  (make-Char-3D-memoized
+#\z
            WIDTH-EM-1/2
            (λ ()
              (define cf-top-inner (pos+ LINE/MEAN/END-3/8

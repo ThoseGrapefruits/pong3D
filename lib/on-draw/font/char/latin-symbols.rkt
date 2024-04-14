@@ -14,7 +14,8 @@
 (define symbol: #f)
 
 (define symbol:?
-  (Char-3D #\?
+  (make-Char-3D-memoized
+#\?
            WIDTH-EM-3/4
            (λ () (combine
                   ; arc
@@ -31,7 +32,8 @@
                             (dir WIDTH-STROKE-3/4 WIDTH-STROKE-3/4 DEPTH-Z-1/2))))))
 
 (define symbol:!
-  (Char-3D #\!
+  (make-Char-3D-memoized
+#\!
            WIDTH-EM-3/4
            (λ () (combine
                   ; ascender top
@@ -48,7 +50,8 @@
 
 
 (define symbol:+
-  (Char-3D #\+
+  (make-Char-3D-memoized
+#\+
            WIDTH-EM-1/2
            (λ () (combine
                   ; ascender
@@ -59,7 +62,8 @@
                              (dir HEIGHT-X-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define symbol:=
-  (Char-3D #\=
+  (make-Char-3D-memoized
+#\=
            WIDTH-EM-1/2
            (λ () (combine
                   ; top
@@ -70,7 +74,7 @@
                              (dir HEIGHT-X-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define symbol:@
-  (Char-3D
+  (make-Char-3D-memoized
    #\@
    WIDTH-EM-5/8
    (λ () (combine
@@ -97,7 +101,7 @@
                       #:basis 'x)))))
 
 (define symbol:$
-  (Char-3D
+  (make-Char-3D-memoized
    #\$
    WIDTH-EM-5/8
    (λ () (combine
@@ -113,7 +117,7 @@
           (cirque-x-link-1/2 #:arc (arc -90.0 -210.0))))))
 
 (define symbol:#
-  (Char-3D
+  (make-Char-3D-memoized
    #\#
    WIDTH-EM-5/8
    (λ () (combine
@@ -131,7 +135,7 @@
                      (dir WIDTH-EM-1/4 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define symbol:%
-  (Char-3D
+  (make-Char-3D-memoized
    #\%
    WIDTH-EM-5/8
    (λ () (combine
@@ -158,7 +162,7 @@
                       #:basis #f)))))
 
 (define symbol:^
-  (Char-3D
+  (make-Char-3D-memoized
    #\^
    WIDTH-EM-5/8
    (λ () (combine
@@ -172,7 +176,7 @@
                       LINE/MEAN/END-1/2)))))
 
 (define symbol:&
-  (Char-3D
+  (make-Char-3D-memoized
    #\&
    WIDTH-EM-3/4
    (λ ()
@@ -223,7 +227,7 @@
           (cirque-x-link-1/2 #:arc (arc bottom-arc-angle-right -110.0))))))
 
 (define symbol:*
-  (Char-3D
+  (make-Char-3D-memoized
    #\*
    WIDTH-EM-3/8
    (λ ()
@@ -246,9 +250,9 @@
       (rotate-z/center cross 120.0)))))
 
 (define symbol:paren-left
-  (Char-3D
+  (make-Char-3D-memoized
    #\u0028
-   WIDTH-EM-3/8
+   WIDTH-EM-1/4
    (λ ()
      (define paren
        (combine
@@ -268,9 +272,9 @@
      (move-y paren (- WIDTH-STROKE)))))
 
 (define symbol:paren-right
-  (Char-3D
+  (make-Char-3D-memoized
    #\u0029
-   WIDTH-EM-3/8
+   WIDTH-EM-1/4
    (λ ()
      (define curve-shift (- (- WIDTH-EM-3/8 WIDTH-STROKE)))
      (define paren
@@ -291,9 +295,9 @@
      (move-y paren (- WIDTH-STROKE)))))
 
 (define symbol:bracket-square-left
-  (Char-3D
+  (make-Char-3D-memoized
    #\u005b
-   WIDTH-EM-3/8
+   WIDTH-EM-1/4
    (λ ()
      (define bracket
        (combine
@@ -312,9 +316,9 @@
      (move-y bracket (- WIDTH-STROKE)))))
 
 (define symbol:bracket-square-right
-  (Char-3D
+  (make-Char-3D-memoized
    #\u005d
-   WIDTH-EM-3/8
+   WIDTH-EM-1/4
    (λ ()
      (define bracket
        (combine
@@ -336,29 +340,33 @@
 
 ; TODO figure out curly bracket descention
 (define symbol:bracket-curly-left
-  (Char-3D
+  (make-Char-3D-memoized
    #\u007b
    WIDTH-EM-3/8
    (λ () 
      (define top-arc-angle 125.0)
      (define top-arc-angle-r (degrees->radians top-arc-angle))
      (define top-arc-radius-x WIDTH-EM-1/4)
-     (define top-arc-radius-y HEIGHT-Y-1/2)
-     (define top-arc-pos-left (pos+ LINE/MEAN/START (dir 0.0 (- top-arc-radius-y) 0.0)))
+     (define top-arc-radius-y HEIGHT-FULL-1/4)
+     (define top-arc-pos-left (pos+ LINE/MID-FULL/START -y (+ HEIGHT-FULL-1/4 WIDTH-STROKE)))
      (define top-arc-pos-center (pos+ top-arc-pos-left +x top-arc-radius-x))
 
      (define bottom-arc-angle -125.0)
      (define bottom-arc-angle-r (degrees->radians bottom-arc-angle))
      (define bottom-arc-radius-x WIDTH-EM-1/4)
-     (define bottom-arc-radius-y (+ HEIGHT-X-1/2 WIDTH-STROKE-1/2))           ; from cirque-x-link
-     (define bottom-arc-pos-left (pos+ LINE/MID-X/START -y WIDTH-STROKE-1/2)) ; from cirque-x-link
+     (define bottom-arc-radius-y HEIGHT-FULL-1/4)
+     (define bottom-arc-pos-left (pos+ LINE/MID-FULL/START +y (- HEIGHT-FULL-1/4 WIDTH-STROKE)))
      (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x bottom-arc-radius-x))
 
-     (define midline (pos+ LINE/MEAN/START -y WIDTH-STROKE-1/2))
+     (define midline (pos+ LINE/MID-FULL/START -y WIDTH-STROKE))
      (define connector-end midline)
+
      (combine
       ; top arc
-      (cirque-y-1/2 #:arc (arc top-arc-angle -70.0))
+      (cirque-1/2 top-arc-pos-left
+                  top-arc-radius-y
+                  #:arc (arc top-arc-angle -70.0)
+                  #:basis #f)
       ; joiner/tail top
       (quad-thicc (pos+ top-arc-pos-center
                         (dir (* top-arc-radius-x
@@ -390,32 +398,41 @@
                   (pos+ connector-end -y WIDTH-STROKE-1/4)
                   (pos+ connector-end +y WIDTH-STROKE-1/4))
       ; bottom arc
-      (cirque-x-link-1/2 #:arc (arc 70.0 bottom-arc-angle))))))
+      (cirque-1/2 bottom-arc-pos-left
+                  bottom-arc-radius-y
+                  #:arc (arc 70.0 bottom-arc-angle)
+                  #:basis #f)))))
 
 (define symbol:bracket-curly-right
-  (Char-3D
+  (make-Char-3D-memoized
    #\u007d
    WIDTH-EM-3/8
    (λ () 
-     (define offset-x WIDTH-EM-1/8)
+     (define offset-x (- WIDTH-EM-1/4))
      (define arc-radius-x WIDTH-EM-1/4)
+
      (define top-arc-angle 55.0)
      (define top-arc-angle-r (degrees->radians top-arc-angle))
-     (define top-arc-radius-y HEIGHT-Y-1/2)
-     (define top-arc-pos-left (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- top-arc-radius-y) 0.0)))
-     (define top-arc-pos-center (pos+ top-arc-pos-left +x (- arc-radius-x offset-x)))
+     (define top-arc-radius-y HEIGHT-FULL-1/4)
+     (define top-arc-pos-left (pos+ LINE/MID-FULL/START
+                                    (dir offset-x (- (+ HEIGHT-FULL-1/4 WIDTH-STROKE)) 0.0)))
+     (define top-arc-pos-center (pos+ top-arc-pos-left +x arc-radius-x))
 
      (define bottom-arc-angle -55.0)
      (define bottom-arc-angle-r (degrees->radians bottom-arc-angle))
-     (define bottom-arc-radius-y (+ HEIGHT-X-1/2 WIDTH-STROKE-1/2))           ; from cirque-x-link
-     (define bottom-arc-pos-left (pos+ LINE/MID-X/START -y WIDTH-STROKE-1/2)) ; from cirque-x-link
-     (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x (- arc-radius-x offset-x)))
+     (define bottom-arc-radius-y HEIGHT-FULL-1/4)
+     (define bottom-arc-pos-left (pos+ LINE/MID-FULL/START
+                                       (dir offset-x (- HEIGHT-FULL-1/4 WIDTH-STROKE) 0.0)))
+     (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x arc-radius-x))
 
-     (define midline (pos+ LINE/MEAN/START -y WIDTH-STROKE-1/2))
-     (define connector-end (pos+ midline +x (+ arc-radius-x offset-x)))
+     (define midline (pos+ LINE/MID-FULL/START -y WIDTH-STROKE))
+     (define connector-end (pos+ midline +x (+ (* arc-radius-x 2.0) offset-x)))
      (combine
       ; top arc
-      (move-x (cirque-y-1/2 #:arc (arc -110.0 top-arc-angle)) (- WIDTH-EM-1/8))
+      (cirque-1/2 top-arc-pos-left
+                  top-arc-radius-y
+                  #:arc (arc -110.0 top-arc-angle)
+                  #:basis #f)
       ; joiner/tail top
       (quad-thicc (pos+ top-arc-pos-center
                         (dir (* (- arc-radius-x WIDTH-STROKE)
@@ -447,64 +464,68 @@
                   (pos+ connector-end +y WIDTH-STROKE-1/4)
                   (pos+ connector-end -y WIDTH-STROKE-1/4))
       ; bottom arc
-      (move-x (cirque-x-link-1/2 #:arc (arc bottom-arc-angle 110.0)) (- WIDTH-EM-1/8))))))
+      (cirque-1/2 bottom-arc-pos-left
+                  bottom-arc-radius-y
+                  #:arc (arc bottom-arc-angle 110.0)
+                  #:basis #f)))))
 
 (define symbol:-
-  (Char-3D
+  (make-Char-3D-memoized
    #\-
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:_
-  (Char-3D
+  (make-Char-3D-memoized
    #\_
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:/
-  (Char-3D
+  (make-Char-3D-memoized
    #\/
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:\
-  (Char-3D
+  (make-Char-3D-memoized
    #\\
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:vertical-line
-  (Char-3D
+  (make-Char-3D-memoized
    #\u007c
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:quote-single
-  (Char-3D
+  (make-Char-3D-memoized
    #\'
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:quote-double
-  (Char-3D
+  (make-Char-3D-memoized
    #\"
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol::
-  (Char-3D
+  (make-Char-3D-memoized
    #\:
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:semicolon
-  (Char-3D
+  (make-Char-3D-memoized
    #\;
    WIDTH-EM-3/8
    (λ () (placeholder-tall WIDTH-EM-1/8))))
 
 (define symbol:comma
-  (Char-3D #\,
+  (make-Char-3D-memoized
+#\,
            WIDTH-EM-1/4
            (λ () (combine
                   ; circle
@@ -521,7 +542,8 @@
                                     (dir WIDTH-STROKE-3/4     0.0          0.0)))))))
 
 (define symbol:dot
-  (Char-3D #\.
+  (make-Char-3D-memoized
+#\.
            WIDTH-EM-1/4
            (λ () (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
                          WIDTH-STROKE-3/4))))

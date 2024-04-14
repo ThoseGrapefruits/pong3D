@@ -13,7 +13,8 @@
 (define UPPER-ARC-OFFSET 15.0)
 
 (define char:A
-  (Char-3D #\A
+  (make-Char-3D-memoized
+#\A
            WIDTH-EM-3/4
            (λ ()
             (define half-width (- WIDTH-EM-5/8 WIDTH-STROKE-1/2))
@@ -36,7 +37,8 @@
                         (dir cross-radius WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:B
-  (Char-3D #\B
+  (make-Char-3D-memoized
+#\B
            WIDTH-EM-5/8
            (λ () 
              (define overangle 15.0)
@@ -52,7 +54,8 @@
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:C
-  (Char-3D #\C
+  (make-Char-3D-memoized
+#\C
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -70,7 +73,8 @@
               (cirque-x-1/2 #:arc (arc 15.0 180.0) #:basis 'x)))))
 
 (define char:D
-  (Char-3D #\D
+  (make-Char-3D-memoized
+#\D
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -95,7 +99,8 @@
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:E
-  (Char-3D #\E
+  (make-Char-3D-memoized
+#\E
            WIDTH-EM-9/16
            (λ ()
              (combine
@@ -114,7 +119,8 @@
                          (dir WIDTH-BASE/WIDE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:F
-  (Char-3D #\F
+  (make-Char-3D-memoized
+#\F
            WIDTH-EM-1/2
            (λ ()
              (combine
@@ -130,7 +136,8 @@
                          (dir WIDTH-BASE/WIDE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:G
-  (Char-3D #\G
+  (make-Char-3D-memoized
+#\G
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -156,7 +163,8 @@
                          (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:H
-  (Char-3D #\H
+  (make-Char-3D-memoized
+#\H
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -171,7 +179,8 @@
                          (dir WIDTH-EM-1/4 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:I
-  (Char-3D #\I
+  (make-Char-3D-memoized
+#\I
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -186,7 +195,8 @@
                          (dir WIDTH-EM-1/4 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:J
-  (Char-3D #\J
+  (make-Char-3D-memoized
+#\J
            WIDTH-EM-3/4
            (λ ()
              (combine
@@ -206,8 +216,9 @@
               (cirque-x-link-1/2 #:arc (arc 0.0 (- 180.0 UPPER-ARC-OFFSET)) #:basis 'x)))))
 
 (define char:K
-  (Char-3D #\K
-           WIDTH-EM-3/4
+  (make-Char-3D-memoized
+#\K
+           WIDTH-EM-5/8
            (λ () 
              (combine
               ; ascender
@@ -230,7 +241,8 @@
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:L
-  (Char-3D #\L
+  (make-Char-3D-memoized
+#\L
            WIDTH-EM-1/2
            (λ ()
              (combine
@@ -243,7 +255,8 @@
                          (dir WIDTH-BASE/WIDE-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:M
-  (Char-3D #\M
+  (make-Char-3D-memoized
+#\M
            WIDTH-EM-7/8
            (λ () (combine
                   ; ascender left
@@ -264,7 +277,8 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:N
-  (Char-3D #\N
+  (make-Char-3D-memoized
+#\N
            WIDTH-EM-5/8
            (λ () (combine
                   ; ascender left
@@ -280,7 +294,8 @@
                              (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:O
-  (Char-3D #\O
+  (make-Char-3D-memoized
+#\O
            WIDTH-EM-5/8
            (λ () 
             (combine 
@@ -306,7 +321,8 @@
                         (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/4 DEPTH-Z-1/2))))))
 
 (define char:P
-  (Char-3D #\P
+  (make-Char-3D-memoized
+#\P
            WIDTH-EM-5/8
            (λ () 
              (define overangle 15.0)
@@ -320,8 +336,9 @@
                       (- WIDTH-STROKE WIDTH-EM-3/8))))))
 
 (define char:Q
-  (Char-3D #\Q
-           WIDTH-EM-3/4
+  (make-Char-3D-memoized
+#\Q
+           WIDTH-EM-5/8
            (λ ()
              (define arc-bottom-radius-x WIDTH-EM-1/4)
              (define arc-bottom-radius-y HEIGHT-X-1/2)
@@ -364,7 +381,8 @@
                                 (dir WIDTH-STROKE     (- HEIGHT-DESC-1/4 WIDTH-STROKE-1/4) 0.0)))))))
 
 (define char:R
-  (Char-3D #\R
+  (make-Char-3D-memoized
+#\R
            WIDTH-EM-5/8
            (λ () 
              (define overangle 15.0)
@@ -387,7 +405,8 @@
                                 (dir WIDTH-STROKE                         0.0 0.0)))))))
 
 (define char:S
-  (Char-3D #\S
+  (make-Char-3D-memoized
+#\S
            WIDTH-EM-3/4
            (λ () (combine
                   ; upper
@@ -396,7 +415,8 @@
                   (cirque-x-link-1/2 #:arc (arc -90.0 -210.0) #:basis 'y)))))
 
 (define char:T
-  (Char-3D #\T
+  (make-Char-3D-memoized
+#\T
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -408,8 +428,9 @@
                          (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))))))
 
 (define char:U
-  (Char-3D #\U
-           WIDTH-EM-3/4
+  (make-Char-3D-memoized
+#\U
+           WIDTH-EM-5/8
            (λ () 
              (combine
               ; ascender left y
@@ -432,7 +453,8 @@
                          (dir WIDTH-STROKE-1/2 HEIGHT-Y-1/2 DEPTH-Z-1/2))))))
 
 (define char:V
-  (Char-3D #\V
+  (make-Char-3D-memoized
+#\V
            WIDTH-EM-5/8
            (λ () (combine
                   ; left
@@ -447,7 +469,8 @@
                               (pos+ LINE/CAP/END-1/2     -x WIDTH-STROKE))))))
 
 (define char:W
-  (Char-3D #\W
+  (make-Char-3D-memoized
+#\W
            WIDTH-EM-7/8
            (λ ()
              (define center-offset WIDTH-EM-3/8)
@@ -477,8 +500,9 @@
                           (pos+ LINE/CAP/START  +x (- far WIDTH-STROKE)))))))
 
 (define char:X
-  (Char-3D #\X
-           WIDTH-EM-5/8
+  (make-Char-3D-memoized
+#\X
+           WIDTH-EM-9/16
            (λ ()
              (combine
               ; bottom-left to top-right
@@ -493,7 +517,8 @@
                           (pos+ LINE/CAP/START   +x 0.0))))))
 
 (define char:Y
-  (Char-3D #\Y
+  (make-Char-3D-memoized
+#\Y
            WIDTH-EM-5/8
            (λ ()
              (combine
@@ -511,7 +536,8 @@
                          (dir WIDTH-STROKE-1/2 HEIGHT-X-1/2 DEPTH-Z-1/2))))))
 
 (define char:Z
-  (Char-3D #\Z
+  (make-Char-3D-memoized
+#\Z
            WIDTH-EM-5/8
            (λ ()
             (combine

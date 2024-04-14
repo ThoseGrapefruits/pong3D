@@ -89,7 +89,7 @@
       (render-game-play-ball s)
       (render-game-play-hud s)
       (render-game-play-lights+camera s)
-      (render-game-play-arena s)
+      ; (render-game-play-arena s)
       (render-game-play-arena-bumpers s))]
     [else empty-pict3d]))
 
@@ -115,28 +115,31 @@
     (rotate-y/center (rotate-x/center pict rot-x) rot-y)))
 
 (define tqbf (string-append
-              "the quick brown fox jumps over the lazy dog... "
-              "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG "
-              "\n${test} $[test] $(test)\n"
-              "0123456789 10 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5"))
-(displayln tqbf)
+              "the quick brown fox jumps over the lazy dog...\n"
+              "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG!\n"
+              "abcdefghijklmnopqrstuvwxyz...\n"
+              "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\n"
+              "{one}[two](three)\n"
+              "012345678910 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5"))
 
-(define cor "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT.
-             ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING
-             THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY
-             MOVE AND I DO EVERY MOVE HARD. MAKIN WHOOSHING SOUNDS WHEN I SLAM
-             DOWN SOME NECRO BASTARDS OR EVEN WHEN I MESS UP TECHNIQUE. NOT MANY
-             CAN SAY THEY ESCAPED THE GALAXYS MOST DANGEROUS PRISON. I CAN. I
-             SAY IT & I SAY IT OUTLOUD EVERYDAY TO PEOPLE IN MY COLLEGE CLASS
-             AND ALL THEY DO IS PROVE PEOPLE IN COLLEGE CLASS CAN STILL BE
-             IMMATURE JEKRS. AND IVE LEARNED ALL THE LINES AND IVE LEARNED HOW
-             TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2
-             HOURS INCLUDING WIND DOWN EVERY MORNIng")
+(define cor (string-append
+             "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT."
+             "ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING"
+             "THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY"
+             "MOVE AND I DO EVERY MOVE HARD. MAKIN WHOOSHING SOUNDS WHEN I SLAM"
+             "DOWN SOME NECRO BASTARDS OR EVEN WHEN I MESS UP TECHNIQUE. NOT MANY"
+             "CAN SAY THEY ESCAPED THE GALAXYS MOST DANGEROUS PRISON. I CAN. I"
+             "SAY IT & I SAY IT OUTLOUD EVERYDAY TO PEOPLE IN MY COLLEGE CLASS"
+             "AND ALL THEY DO IS PROVE PEOPLE IN COLLEGE CLASS CAN STILL BE"
+             "IMMATURE JEKRS. AND IVE LEARNED ALL THE LINES AND IVE LEARNED HOW"
+             "TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2"
+             "HOURS INCLUDING WIND DOWN EVERY MORNIng"))
 
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
   (combine
-  ;  (render-sample-text-cor s)
+   (render-sample-text-cor s)
+   (render-sample-text-smol s "s")
    (render-sample-text-tqbf s)
   ))
 
@@ -145,18 +148,30 @@
   (define t (State-t s))
   (parameterize
       ([current-emitted (emitted 0.5 0.7 1.0 2.0)])
-    (rotate-y/center
      (transform
       (text cor
             #:wrap 9.0
             #:onchar (get-on-char s))
       (affine-compose
        (move-x (+ 9.0 (* t -0.0002)))
-       (move-z 6.35)
+       (rotate-y -90.0)
+       (move-z 6.0)
        (move-y -0.8)
        (rotate-x -90.0)
        (rotate-y -90.0)
-       (scale 0.18))) -90.0)))
+       (scale 0.18)))))
+
+(: render-sample-text-smol : State-Play String -> Pict3D)
+(define (render-sample-text-smol s str)
+  (parameterize
+      ([current-emitted (emitted "pink" 1.0)])
+    (transform
+     (text str
+           #:wrap 13.0
+           #:onchar (get-on-char s))
+     (affine-compose
+      (position-screen-space-relative s 0.0 -0.5 0.6)
+      (scale 0.2)))))
 
 (: render-sample-text-tqbf : State-Play -> Pict3D)
 (define (render-sample-text-tqbf s)
@@ -167,7 +182,7 @@
            #:wrap 13.0
            #:onchar (get-on-char s))
      (affine-compose
-      (position-screen-space-relative s -0.5 0.0 0.8)
+      (position-screen-space-relative s -0.5 -0.8 0.8)
       (scale 0.05)))))
 
 (: render-game-play-arena : State-Play -> Pict3D)

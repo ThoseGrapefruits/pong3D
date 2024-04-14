@@ -7,7 +7,9 @@
 (provide (all-defined-out))
 
 (define ws:space
-  (Char-3D #\space WIDTH-EM-1/2 (λ () empty-pict3d)))
+  (make-Char-3D-memoized
+#\space WIDTH-EM-1/2 (λ () empty-pict3d)))
 
 (define ws:tab
-  (Char-3D #\tab WIDTH-EM-2 (λ () empty-pict3d)))
+  (make-Char-3D-memoized
+#\tab WIDTH-EM-2 (λ () empty-pict3d)))

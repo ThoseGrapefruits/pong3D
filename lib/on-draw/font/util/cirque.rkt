@@ -14,6 +14,7 @@
 (define-type Cirque-Maker-Base  (->* (Pos Flonum Flonum   #:arc Arc #:basis Basis) () Pict3D))
 (define-type Cirque-Maker-Width (->* (Pos        Flonum   #:arc Arc #:basis Basis) () Pict3D))
 (define-type Cirque-Maker-Exact (->* (                 ) (#:arc Arc #:basis Basis)    Pict3D))
+(define-type Cirque-Maker-Dynam (->* (    Flonum       ) (#:arc Arc #:basis Basis)    Pict3D))
 
 (: cirque Cirque-Maker-Base)
 (define (cirque center radius-x radius-y #:arc arc #:basis basis)
@@ -177,6 +178,10 @@
               #:basis basis))
 
 ; CIRQUE-DESC — cirques taking up the entire desc range
+
+(: cirque-desc Cirque-Maker-Dynam)
+(define (cirque-desc radius-x #:arc [arc circle-arc] #:basis [basis #f])
+  (cirque LINE/MID-DESC/START radius-x HEIGHT-DESC-1/2 #:arc arc #:basis basis))
 
 (: cirque-desc-3/8 Cirque-Maker-Exact)
 (define (cirque-desc-3/8 #:arc [arc circle-arc] #:basis [basis #f])
