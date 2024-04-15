@@ -34,7 +34,7 @@
 (define char:c
   (make-Char-3D-memoized
    #\c
-   WIDTH-EM-9/16
+   WIDTH-EM-1/2
    (λ () (cirque-x-3/8 #:arc (arc 40.0 -40.0)))))
 
 (define char:d
@@ -83,7 +83,7 @@
                            (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 0.0))
                      (dir WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
           ; curve x
-          (cirque-x-3/8 #:basis #f)
+          (cirque-x-3/8 #:basis 'y)
           ; connector
           (cirque-1/2 LINE/BASE/START HEIGHT-DESC-3/8 #:arc (arc 125.0 225.0) #:basis #f)
           ; curve desc
@@ -130,7 +130,7 @@
 (define char:j
   (make-Char-3D-memoized
    #\j
-   WIDTH-EM-3/8
+   WIDTH-EM-1/2
    (λ () (combine
           ; dot
           (rectangle (pos+ LINE/MEAN/CENTER-1/2 -y (* WIDTH-STROKE 1.5))
@@ -153,7 +153,7 @@
 (define char:k
   (make-Char-3D-memoized
    #\k
-   WIDTH-EM-1/2
+   WIDTH-EM-3/8
    (λ () (combine
           ; ascender
           (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
@@ -386,8 +386,8 @@
 
 (define char:y
   (make-Char-3D-memoized
-#\y
-           WIDTH-EM-5/8
+   #\y
+   WIDTH-EM-1/2
            (λ () (combine
                   ; left
                   (quad-thicc (pos+ LINE/BASE/CENTER-3/8 -x WIDTH-STROKE-1/2)

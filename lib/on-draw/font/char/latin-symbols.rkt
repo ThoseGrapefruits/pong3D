@@ -180,51 +180,53 @@
    #\&
    WIDTH-EM-3/4
    (λ ()
-   (define top-arc-angle-left -240.0)
-   (define top-arc-angle-left-r (degrees->radians top-arc-angle-left))
-   (define top-arc-radius-x WIDTH-EM-3/16)
-   (define top-arc-radius-y HEIGHT-Y-3/8)
-   (define top-arc-pos-left (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- top-arc-radius-y) 0.0)))
-   (define top-arc-pos-center (pos+ top-arc-pos-left +x top-arc-radius-x))
-   (define bottom-arc-angle-right 40.0)
-   (define bottom-arc-angle-right-r (degrees->radians bottom-arc-angle-right))
-   (define bottom-arc-radius-x WIDTH-EM-1/4)
-   (define bottom-arc-radius-y (+ HEIGHT-X-1/2 WIDTH-STROKE-1/2))           ; from cirque-x-link
-   (define bottom-arc-pos-left (pos+ LINE/MID-X/START -y WIDTH-STROKE-1/2)) ; from cirque-x-link
-   (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x bottom-arc-radius-x))
-   (combine
-          ; top cirque
-          (cirque-3/8 top-arc-pos-left top-arc-radius-y
-                      #:arc (arc top-arc-angle-left -30.0)
-                      #:basis 'x)
-          ; ascender
-          (quad-thicc (pos+ top-arc-pos-center
-                            (dir (* (- top-arc-radius-x WIDTH-STROKE) (cos top-arc-angle-left-r))
-                                 (* (- top-arc-radius-y WIDTH-STROKE) (sin top-arc-angle-left-r))
-                                    0.0))
-                      (pos+ top-arc-pos-center
-                            (dir (* top-arc-radius-x (cos top-arc-angle-left-r))
-                                 (* top-arc-radius-y (sin top-arc-angle-left-r))
-                                 0.0))
-                      (pos+ LINE/BASE/END-5/8 -y 0.0)
-                      (pos+ LINE/BASE/END-5/8 -y WIDTH-DIAGONAL-SLIGHT-BASE))
-          ; bottom tail
-          (quad-thicc (pos+ bottom-arc-pos-center
-                            (dir (* (- bottom-arc-radius-x WIDTH-STROKE)
-                                    (cos bottom-arc-angle-right-r))
-                                 (* (- bottom-arc-radius-y WIDTH-STROKE)
-                                    (sin bottom-arc-angle-right-r))
-                                    0.0))
-                      (pos+ bottom-arc-pos-center
-                            (dir (* bottom-arc-radius-x
-                                    (cos bottom-arc-angle-right-r))
-                                 (* bottom-arc-radius-y
-                                    (sin bottom-arc-angle-right-r))
-                                 0.0))
-                      (pos+ LINE/MEAN/END-5/8 -y 0.0)
-                      (pos+ LINE/MEAN/END-5/8 -x WIDTH-DIAGONAL-SLIGHT-BASE))
-          ; bottom cirque
-          (cirque-x-link-1/2 #:arc (arc bottom-arc-angle-right -110.0))))))
+     (define top-arc-angle-left -240.0)
+     (define top-arc-angle-left-r (degrees->radians top-arc-angle-left))
+     (define top-arc-radius-x WIDTH-EM-3/16)
+     (define top-arc-radius-y HEIGHT-Y-3/8)
+     (define top-arc-pos-left (pos+ LINE/MEAN/START (dir WIDTH-STROKE-1/2 (- top-arc-radius-y) 0.0)))
+     (define top-arc-pos-center (pos+ top-arc-pos-left +x top-arc-radius-x))
+
+     (define bottom-arc-angle-right 40.0)
+     (define bottom-arc-angle-right-r (degrees->radians bottom-arc-angle-right))
+     (define bottom-arc-radius-x WIDTH-EM-1/4)
+     (define bottom-arc-radius-y (+ HEIGHT-X-1/2 WIDTH-STROKE-1/2))           ; from cirque-x-link
+     (define bottom-arc-pos-left (pos+ LINE/MID-X/START -y WIDTH-STROKE-1/2)) ; from cirque-x-link
+     (define bottom-arc-pos-center (pos+ bottom-arc-pos-left +x bottom-arc-radius-x))
+
+     (combine
+      ; top cirque
+      (cirque-3/8 top-arc-pos-left top-arc-radius-y
+                  #:arc (arc top-arc-angle-left -30.0)
+                  #:basis #f)
+      ; ascender
+      (quad-thicc (pos+ top-arc-pos-center
+                        (dir (* (- top-arc-radius-x WIDTH-STROKE) (cos top-arc-angle-left-r))
+                             (* (- top-arc-radius-y WIDTH-STROKE) (sin top-arc-angle-left-r))
+                             0.0))
+                  (pos+ top-arc-pos-center
+                        (dir (* top-arc-radius-x (cos top-arc-angle-left-r))
+                             (* top-arc-radius-y (sin top-arc-angle-left-r))
+                             0.0))
+                  (pos+ LINE/BASE/END-5/8 -y 0.0)
+                  (pos+ LINE/BASE/END-5/8 -y WIDTH-DIAGONAL-SLIGHT-BASE))
+      ; bottom tail
+      (quad-thicc (pos+ bottom-arc-pos-center
+                        (dir (* (- bottom-arc-radius-x WIDTH-STROKE)
+                                (cos bottom-arc-angle-right-r))
+                             (* (- bottom-arc-radius-y WIDTH-STROKE)
+                                (sin bottom-arc-angle-right-r))
+                             0.0))
+                  (pos+ bottom-arc-pos-center
+                        (dir (* bottom-arc-radius-x
+                                (cos bottom-arc-angle-right-r))
+                             (* bottom-arc-radius-y
+                                (sin bottom-arc-angle-right-r))
+                             0.0))
+                  (pos+ LINE/MEAN/END-5/8 -y 0.0)
+                  (pos+ LINE/MEAN/END-5/8 -x WIDTH-DIAGONAL-SLIGHT-BASE))
+      ; bottom cirque
+      (cirque-x-link-1/2 #:arc (arc bottom-arc-angle-right -110.0))))))
 
 (define symbol:*
   (make-Char-3D-memoized
@@ -472,14 +474,23 @@
 (define symbol:-
   (make-Char-3D-memoized
    #\-
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/2
+   (λ () (rectangle (pos+ LINE/MEAN/START (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 0.0))
+                    (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z-1/2)))))
+
+(define symbol:—
+  (make-Char-3D-memoized
+   #\—
+   WIDTH-EM
+   (λ () (rectangle (pos+ LINE/MEAN/START (dir WIDTH-EM-1/2 WIDTH-STROKE-1/2 0.0))
+                    (dir WIDTH-EM-1/2 WIDTH-STROKE-1/2 DEPTH-Z-1/2)))))
 
 (define symbol:_
   (make-Char-3D-memoized
    #\_
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-5/8
+   (λ () (rectangle (pos+ LINE/BASE/START (dir WIDTH-EM-1/4 (- WIDTH-STROKE-1/2) 0.0))
+                    (dir WIDTH-EM-1/4 WIDTH-STROKE-1/2 DEPTH-Z-1/2)))))
 
 (define symbol:/
   (make-Char-3D-memoized

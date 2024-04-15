@@ -119,8 +119,9 @@
               "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG!\n"
               "abcdefghijklmnopqrstuvwxyz...\n"
               "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\n"
-              "{one}[two](three)\n"
-              "012345678910 +=!@$#%^&* ()[]{} -_? /\\| :;., '\" 2+2=5"))
+              "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ "
+              "{one} [two] (three)\n"
+              "012345678910 +=!@$#%^&* ()[]{} -_—? /\\| :;., '\" 2+2=5"))
 
 (define cor (string-append
              "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT."
@@ -171,7 +172,7 @@
            #:onchar (get-on-char s))
      (affine-compose
       (position-screen-space-relative s 0.0 -0.5 0.6)
-      (scale 0.2)))))
+      (scale 0.4)))))
 
 (: render-sample-text-tqbf : State-Play -> Pict3D)
 (define (render-sample-text-tqbf s)
@@ -179,10 +180,10 @@
       ([current-emitted (emitted "oldlace" 1.0)])
     (transform
      (text tqbf
-           #:wrap 13.0
+           #:wrap 15.0
            #:onchar (get-on-char s))
      (affine-compose
-      (position-screen-space-relative s -0.5 -0.8 0.8)
+      (position-screen-space-relative s -0.6 -0.8 0.8)
       (scale 0.05)))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
