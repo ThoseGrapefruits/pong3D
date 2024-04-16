@@ -50,10 +50,17 @@
   (make-Char-3D-memoized
    #\e
    WIDTH-EM-1/2
-   (λ () (combine
-          (cirque-x-3/8 #:arc (arc 60.0 0.0) #:basis 'x)
-          (rectangle LINE/MID-X/CENTER-3/8
-                     (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
+   (λ ()
+     (define extender-radius-x (- WIDTH-BASE/NARROW-1/2 WIDTH-STROKE-1/4))
+     (combine
+      ; curve left
+      (cirque-x-3/8 #:arc (arc 90.0 0.0) #:basis 'y)
+      ; cross
+      (rectangle LINE/MID-X/CENTER-3/8
+                 (dir WIDTH-EM-3/16 WIDTH-STROKE-1/2 DEPTH-Z-1/2))
+      ; bottom extender
+      (rectangle (pos+ LINE/BASE/CENTER-3/8 (dir extender-radius-x (- WIDTH-STROKE-1/2) 0.0))
+                 (dir extender-radius-x WIDTH-STROKE-1/2 DEPTH-Z-1/2))))))
 
 (define char:f
   (make-Char-3D-memoized

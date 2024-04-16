@@ -62,11 +62,14 @@
 (: WIDTH-EM : Flonum)
 (define WIDTH-EM 1.0)
 
+(: WIDTH-EM-1/32 : Flonum)
+(define WIDTH-EM-1/32 (/ WIDTH-EM 32.0))
+
 (: WIDTH-EM-1/16 : Flonum)
 (define WIDTH-EM-1/16 (/ WIDTH-EM 16.0))
 
-(: WIDTH-EM-1/32 : Flonum)
-(define WIDTH-EM-1/32 (/ WIDTH-EM 32.0))
+(: WIDTH-EM-3/32 : Flonum)
+(define WIDTH-EM-3/32 (* 3.0 WIDTH-EM-1/32))
 
 (: WIDTH-EM-1/8 : Flonum)
 (define WIDTH-EM-1/8 (/ WIDTH-EM 8.0))
@@ -140,6 +143,9 @@
 (: WIDTH-STROKE-3/4 : Flonum)
 (define WIDTH-STROKE-3/4 (* 3.0 WIDTH-STROKE-1/4))
 
+(: WIDTH-STROKE-3/2 : Flonum)
+(define WIDTH-STROKE-3/2 (* 3.0 WIDTH-STROKE-1/2))
+
 ; WIDTH-DIAGONAL-BASE
 ; The width of the base of any diagonal strokes close to 45º. This is slightly larger than
 ; WIDTH-STROKE to give the diagonal about the same weight as WIDTH-STROKE.
@@ -183,7 +189,7 @@
 ; Depth of characters on the z-axis
 
 (: DEPTH-Z : Flonum)
-(define DEPTH-Z (* WIDTH-STROKE 1.0))
+(define DEPTH-Z (* WIDTH-STROKE 0.85))
 
 (: DEPTH-Z-1/2 : Flonum)
 (define DEPTH-Z-1/2 (/ DEPTH-Z 2.0))

@@ -354,6 +354,9 @@
 (: LINE/DESC/END-1/4 : Pos)
 (define LINE/DESC/END-1/4 (pos+ LINE/DESC/START +x WIDTH-EM-1/4))
 
+(: LINE/DESC/END-3/8 : Pos)
+(define LINE/DESC/END-3/8 (pos+ LINE/DESC/START +x WIDTH-EM-3/8))
+
 (: LINE/DESC/END-1/2 : Pos)
 (define LINE/DESC/END-1/2 (pos+ LINE/DESC/START +x WIDTH-EM-1/2))
 

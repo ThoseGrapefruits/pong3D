@@ -120,8 +120,8 @@
               "abcdefghijklmnopqrstuvwxyz...\n"
               "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\n"
               "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ "
-              "{one} [two] (three)\n"
-              "012345678910 +=!@$#%^&* ()[]{} -_—? /\\| :;., '\" 2+2=5"))
+              "{one} [two] (three) \"some\" 'thing' \n"
+              "012345678910 +=!@$#%^&* ()[]{} -—_? a/b\\c| :;., '\" 2+2=5"))
 
 (define cor (string-append
              "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT."
@@ -136,12 +136,29 @@
              "TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2"
              "HOURS INCLUDING WIND DOWN EVERY MORNIng"))
 
+(define wop (string-append
+             "Why you have to do it like that?\n"
+             "Got these ladies checkin' they bags\n"
+             "Lookin' like they breakin' they back—breakin' they back\n"
+             "Takin' it back-back-back wait\n"
+             "Now I'm checkin' shawty with the microbraids (Braids)\n"
+             "Hotter than a baby in a microwave\n"
+             "Look at how she woppin', man, she might get paid\n"
+             "She wop, wop, wop a little harder\n"
+             "Look at how she wop, she a party starter\n"
+             "I hope that security remembered to card her\n"
+             "'Cause I ain't finna wop, but with you I'll holler\n"
+             "Said I never drop dime, but I drop you a dollar\n"
+             "Told her give me your number and maybe I call her\n"
+             "She said that she knew me and she know I'm a baller\n"))
+
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
   (combine
    (render-sample-text-cor s)
    (render-sample-text-smol s "s")
    (render-sample-text-tqbf s)
+  ;  (render-sample-text-wop s)
   ))
 
 (: render-sample-text-cor : State-Play -> Pict3D)
@@ -177,14 +194,27 @@
 (: render-sample-text-tqbf : State-Play -> Pict3D)
 (define (render-sample-text-tqbf s)
   (parameterize
-      ([current-emitted (emitted "oldlace" 1.0)])
+      ([current-emitted (emitted 1.0 0.9 0.0 1.1)])
     (transform
      (text tqbf
            #:wrap 15.0
            #:onchar (get-on-char s))
      (affine-compose
-      (position-screen-space-relative s -0.6 -0.8 0.8)
+      (position-screen-space-relative s -0.6 -0.85 0.8)
       (scale 0.05)))))
+
+(: render-sample-text-wop : State-Play -> Pict3D)
+(define (render-sample-text-wop s)
+  (parameterize
+      ([current-emitted (emitted 1.0 0.9 0.0 1.5)])
+    (transform
+     (text wop
+           #:wrap 40.0
+           #:spacing-paragraph 0.0
+           #:onchar (get-on-char s))
+     (affine-compose
+      (position-screen-space-relative s -0.8 -0.85 0.7)
+      (scale 0.04)))))
 
 (: render-game-play-arena : State-Play -> Pict3D)
 (define (render-game-play-arena s)

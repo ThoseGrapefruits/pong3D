@@ -495,66 +495,97 @@
 (define symbol:/
   (make-Char-3D-memoized
    #\/
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/2
+   (λ () (quad-thicc (pos+ LINE/DESC/START
+                           (dir 0.0                            (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/DESC/START
+                           (dir WIDTH-DIAGONAL-SLIGHT-BASE     (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/CAP/END-3/8
+                           (dir 0.0                            (+ WIDTH-STROKE) 0.0))
+                     (pos+ LINE/CAP/END-3/8
+                           (dir (- WIDTH-DIAGONAL-SLIGHT-BASE) (+ WIDTH-STROKE) 0.0))))))
 
 (define symbol:\
   (make-Char-3D-memoized
    #\\
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/2
+   (λ () (quad-thicc (pos+ LINE/DESC/END-3/8
+                     (dir (- WIDTH-DIAGONAL-SLIGHT-BASE) (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/DESC/END-3/8
+                     (dir 0.0                            (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/CAP/START
+                     (dir WIDTH-DIAGONAL-SLIGHT-BASE     (+ WIDTH-STROKE) 0.0))
+                     (pos+ LINE/CAP/START
+                     (dir 0.0                            (+ WIDTH-STROKE) 0.0))))))
 
 (define symbol:vertical-line
   (make-Char-3D-memoized
    #\u007c
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/4
+   (λ () (quad-thicc (pos+ LINE/DESC/START
+                           (dir 0.0                        (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/DESC/START
+                           (dir WIDTH-DIAGONAL-SLIGHT-BASE (- WIDTH-STROKE-3/2) 0.0))
+                     (pos+ LINE/CAP/START
+                           (dir WIDTH-DIAGONAL-SLIGHT-BASE (+ WIDTH-STROKE) 0.0))
+                     (pos+ LINE/CAP/START
+                           (dir 0.0                        (+ WIDTH-STROKE) 0.0))))))
 
 (define symbol:quote-single
   (make-Char-3D-memoized
    #\'
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/4
+   (λ () (quad-thicc (pos+ LINE/CAP/START (dir WIDTH-STROKE 0.0 0.0))
+                     (pos+ LINE/CAP/START (dir 0.0 0.0 0.0))
+                     (pos+ LINE/CAP/START (dir WIDTH-STROKE-1/4 WIDTH-BASE/NARROW 0.0))
+                     (pos+ LINE/CAP/START (dir WIDTH-STROKE-3/4 WIDTH-BASE/NARROW 0.0))))))
 
 (define symbol:quote-double
   (make-Char-3D-memoized
    #\"
    WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   (λ () 
+     (define single ((Char-3D-draw symbol:quote-single)))
+     (combine single (move-x single WIDTH-STROKE-3/2)))))
+
+(define symbol:comma
+  (make-Char-3D-memoized
+   #\,
+   WIDTH-EM-1/4
+   (λ () (combine
+          ; circle
+          (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
+                    WIDTH-STROKE-3/4)
+          ; tail
+          (quad-thicc (pos+ LINE/BASE/CENTER-1/4
+                            (dir (- WIDTH-STROKE-1/4) 0.0 0.0))
+                      (pos+ LINE/BASE/CENTER-1/4
+                            (dir (- WIDTH-STROKE-1/4) WIDTH-STROKE 0.0))
+                      (pos+ LINE/BASE/CENTER-1/4
+                            (dir WIDTH-STROKE-1/4     WIDTH-STROKE 0.0))
+                      (pos+ LINE/BASE/CENTER-1/4
+                            (dir WIDTH-STROKE-3/4     0.0          0.0)))))))
+
+(define symbol:dot
+  (make-Char-3D-memoized
+   #\.
+   WIDTH-EM-1/4
+   (λ () (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
+                   WIDTH-STROKE-3/4))))
 
 (define symbol::
   (make-Char-3D-memoized
    #\:
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
+   WIDTH-EM-1/4
+   (λ ()
+     (define dot ((Char-3D-draw symbol:dot)))
+     (combine dot (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
 
 (define symbol:semicolon
   (make-Char-3D-memoized
    #\;
-   WIDTH-EM-3/8
-   (λ () (placeholder-tall WIDTH-EM-1/8))))
-
-(define symbol:comma
-  (make-Char-3D-memoized
-#\,
-           WIDTH-EM-1/4
-           (λ () (combine
-                  ; circle
-                  (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
-                            WIDTH-STROKE-3/4)
-                            ; tail
-                  (quad-thicc (pos+ LINE/BASE/CENTER-1/4
-                                    (dir (- WIDTH-STROKE-1/4) 0.0 0.0))
-                              (pos+ LINE/BASE/CENTER-1/4
-                                    (dir (- WIDTH-STROKE-1/4) WIDTH-STROKE 0.0))
-                              (pos+ LINE/BASE/CENTER-1/4
-                                    (dir WIDTH-STROKE-1/4     WIDTH-STROKE 0.0))
-                              (pos+ LINE/BASE/CENTER-1/4
-                                    (dir WIDTH-STROKE-3/4     0.0          0.0)))))))
-
-(define symbol:dot
-  (make-Char-3D-memoized
-#\.
-           WIDTH-EM-1/4
-           (λ () (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
-                         WIDTH-STROKE-3/4))))
+   WIDTH-EM-1/4
+   (λ ()
+     (define dot ((Char-3D-draw symbol:dot)))
+     (define comma ((Char-3D-draw symbol:comma)))
+     (combine comma (move-y dot (- WIDTH-STROKE HEIGHT-X))))))

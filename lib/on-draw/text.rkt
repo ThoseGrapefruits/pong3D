@@ -145,7 +145,10 @@
 (define-type On-Char-Handler (-> Pict3D Char Integer Pict3D))
 
 (: text (->* (String)
-             (#:spacing-line Flonum #:onchar On-Char-Handler #:wrap Flonum)
+             (#:onchar On-Char-Handler
+              #:spacing-line Flonum
+              #:spacing-paragraph Flonum
+              #:wrap Flonum)
              Pict3D))
 (define (text s
               #:spacing-line [spacing-line 0.4]
