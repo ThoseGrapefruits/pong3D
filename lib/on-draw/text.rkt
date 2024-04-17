@@ -158,10 +158,10 @@
   (define paragraphs (map string-trim (string-split s #px"(?:\r?\n)+")))
   (define-values (_ paragraphs-rendered)
     (for/fold : (Values Flonum (Listof Pict3D))
-      ([paragraph-y : Flonum 0.0]
-       [out empty-list/Pict3D])
-      ([i (range 0 (length paragraphs))]
-       [paragraph paragraphs])
+      ([paragraph-y : Flonum          0.0]
+       [out         : (Listof Pict3D) '()])
+      ([i           : Integer         (range 0 (length paragraphs))]
+       [paragraph   : String          paragraphs])
       (define paragraph-y-now (+ paragraph-y spacing-paragraph))
       (define-values (paragraph-y-new paragraph-rendered)
         (text-paragraph paragraph paragraph-y-now
@@ -185,7 +185,7 @@
   (define lines (make-lines words-rendered #:wrap wrap))
   (for/fold : (Values Flonum (Listof Pict3D))
     ([line-y : Flonum y-start]
-     [out empty-list/Pict3D])
+     [out    : (Listof Pict3D) '()])
     ([line lines])
     (define line-y-now (+ line-y line-height))
     (define-values (_ line-rendered)
@@ -197,9 +197,9 @@
                   (Values Flonum (Listof Pict3D))))
 (define (text-line line line-y #:onchar onchar)
   (for/fold : (Values Flonum (Listof Pict3D))
-    ([word-x : Flonum 0.0]
-     [out empty-list/Pict3D])
-    ([word line])
+    ([word-x : Flonum          0.0]
+     [out    : (Listof Pict3D) '()])
+    ([word   : Word-3D         line])
     (define-values (word-x-new chars-rendered)
       (text-word word line-y word-x #:onchar onchar))
     (values word-x-new (append chars-rendered out))))
@@ -208,34 +208,45 @@
                   ()
                   (Values Flonum (Listof Pict3D))))
 (define (text-word word line-y word-x #:onchar onchar)
-  (define-values (_ word-x-new chars-rendered)
-    (for/fold : (Values Integer Flonum (Listof Pict3D))
-      ([char-i : Integer 0]
-       [char-x word-x]
-       [out empty-list/Pict3D])
-      ([char (Word-3D-chars word)])
-      (define char-rendered ((font:Char-3D-draw char)))
-      (define char-positioned
-        (onchar (transform char-rendered
-                           (affine-compose (move-x char-x)
-                                           (move-y line-y)))
-                (font:Char-3D-char char)
-                char-i))
-      (values (+ 1 char-i)
-              (+ char-x (font:Char-3D-width char))
-              (cons char-positioned out))))
-  (values word-x-new chars-rendered))
+  (define chars (Word-3D-chars word))
+  (println (map font:Char-3D-char chars))
+  (cond [(empty? chars) (values word-x '())]
+        [else (define-values (_ word-x-new chars-rendered)
+                (if (empty? chars)
+                    (values word-x '())
+                    (for/fold : (Values Integer Flonum (Listof Pict3D))
+                      ([char-i : Integer         0]
+                       [char-x : Flonum          word-x]
+                       [out    : (Listof Pict3D) '()])
+                      ([char   : font:Char-3D    chars])
+                      (define char-rendered ((font:Char-3D-draw char)))
+                      (define char-positioned
+                        (onchar (transform char-rendered
+                                           (affine-compose (move-x char-x)
+                                                           (move-y line-y)))
+                                (font:Char-3D-char char)
+                                char-i))
+                      (values (+ 1 char-i)
+                              (+ char-x (font:Char-3D-width char))
+                              (cons char-positioned out)))))
+              (values word-x-new chars-rendered) ]))
 
 (: make-lines (->* ((Listof Word-3D) #:wrap Flonum) () (Listof (Listof Word-3D))))
 (define (make-lines words #:wrap wrap)
-  (map reverse-line (reverse (make-lines-reversed words #:wrap wrap))))
+  (: lines-reversed : (Listof (Listof Word-3D)))
+  (define lines-reversed (reverse (make-lines-reversed words #:wrap wrap)))
+  ; Typed Racket doesn't infer this correctly. Might be the nested lists?
+  (: reverse-line : (Listof Word-3D) -> (Listof Word-3D))
+  (define (reverse-line l) (reverse l))
+
+  (map reverse-line lines-reversed))
 
 (: make-lines-reversed (->* ((Listof Word-3D) #:wrap Flonum) () (Listof (Listof Word-3D))))
 (define (make-lines-reversed words #:wrap wrap)
   (define-values (_ lines)
     (for/fold : (Values Flonum (Listof (Listof Word-3D))) ([line-length 0.0]
-               [lines empty-list-list/Word-3D])
-              ([word words])
+               [lines : (Listof (Listof Word-3D)) '(())])
+              ([word  : Word-3D words])
       (define word-width (Word-3D-width word))
       (if (> (+ line-length word-width) wrap)
           (values word-width
@@ -244,20 +255,7 @@
                    lines))
           (values (+ line-length word-width WORD-SPACE/WIDTH)
                   (cons
-                   (cons word (cons WORD-SPACE (car lines)))
+                   ; Space goes before the word because these lines will be reversed.
+                   (cons WORD-SPACE (cons word (car lines)))
                    (cdr lines))))))
   lines)
-
-
-; UTILS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; typed racket chokes without this stuff and I couldn't figure out why
-
-(: reverse-line : (Listof Word-3D) -> (Listof Word-3D))
-(define (reverse-line l) (reverse l))
-
-(: empty-list/Pict3D (Listof Pict3D))
-(define empty-list/Pict3D empty)
-
-(: empty-list-list/Word-3D (Listof (Listof Word-3D)))
-(define empty-list-list/Word-3D (list empty))
