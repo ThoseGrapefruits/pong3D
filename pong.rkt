@@ -29,6 +29,7 @@
 
 (big-bang3d
  (state-start)
+ #:cursor (make-object cursor% 'bullseye)
  #:frame-delay FRAME-DELAY-MILLIS
  #:name "Pong3D — Racket"
  #:on-draw on-draw

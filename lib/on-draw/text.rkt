@@ -209,7 +209,6 @@
                   (Values Flonum (Listof Pict3D))))
 (define (text-word word line-y word-x #:onchar onchar)
   (define chars (Word-3D-chars word))
-  (println (map font:Char-3D-char chars))
   (cond [(empty? chars) (values word-x '())]
         [else (define-values (_ word-x-new chars-rendered)
                 (if (empty? chars)
