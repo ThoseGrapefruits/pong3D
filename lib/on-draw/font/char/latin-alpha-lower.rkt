@@ -281,34 +281,59 @@
    #\s
    WIDTH-EM-3/8
    (λ ()
-     (define meeting-angle-bot -40.0)
-     (define meeting-angle-bot-r (degrees->radians meeting-angle-bot))
-     (define meeting-angle-top (+ 180.0 meeting-angle-bot))
-     (define meeting-angle-top-r (degrees->radians meeting-angle-top))
+     (define position-angle      : Flonum  115.0)
+     (define position-angle-r (degrees->radians position-angle))
+     (define connector-angle-bot : Flonum -45.0)
+     (define connector-angle-bot-r (degrees->radians connector-angle-bot))
+     (define connector-angle-top (+ 180.0 connector-angle-bot))
+     (define connector-angle-top-r (degrees->radians connector-angle-top))
+     (define distance-offset (- WIDTH-STROKE-1/4))
      (define radius-x WIDTH-EM-3/16)
-     (define radius-y (+ HEIGHT-X-1/4 WIDTH-STROKE-1/4))
+     (define radius-y HEIGHT-X-1/4)
+     (define radius-position (cirque-radius position-angle-r radius-x radius-y))
+     (define radius-connector (cirque-radius connector-angle-bot-r radius-x radius-y))
+     ; this is still slightly off, not sure why
+     (define radius-connector-inner (- radius-connector WIDTH-STROKE))
 
-     (define radius-x-mid (- radius-x WIDTH-STROKE-1/2))
-     (define radius-y-mid (- radius-y WIDTH-STROKE-1/2))
+     (define connector-angle-rendered-r (cirque-angle-rendered connector-angle-bot-r radius-x radius-y))
+     (define connector-angle-rendered (radians->degrees connector-angle-rendered-r))
 
-     (define offset-x-bot (+ (* -1.0 radius-x-mid (cos meeting-angle-bot-r))
-                             (*  1.0 radius-x-mid (cos meeting-angle-top-r))))
-     (define offset-y-bot (* radius-y-mid (sin meeting-angle-bot-r)))
-     (define offset-y-top (* radius-y-mid (sin meeting-angle-top-r)))
+     (define offset-x (+ distance-offset (* radius-position (abs (cos position-angle-r)))))
+     (define offset-y (+ distance-offset (* radius-position (abs (sin position-angle-r)))))
+
+     (define top-left (pos+ LINE/MID-X/START
+                            (dir (* 2.0 offset-x) (- offset-y) 0.0)))
+     (define top-center (pos+ top-left +x radius-x))
+     (define bot-left (pos+ LINE/MID-X/START
+                            (dir 0.0              offset-y     0.0)))
+     (define bot-center (pos+ bot-left +x radius-x))
 
      (combine
       ; top curve
-      (cirque-3/8 (pos+ LINE/MID-X/START
-                        (dir 0.0 (+ (- radius-y) offset-y-top) 0.0))
-                  radius-y
-                  #:arc (arc meeting-angle-top 300.0)
-                  #:basis #f)
+      (cirque top-center
+              radius-x
+              radius-y
+              #:arc (arc connector-angle-top 330.0)
+              #:basis connector-angle-top-r)
+      ; connector
+      (quad-thicc (pos+ top-center (dir (* -1.0 radius-connector-inner (cos connector-angle-rendered-r))
+                                        (* -1.0 radius-connector-inner (sin connector-angle-rendered-r))
+                                        0.0))
+                  (pos+ top-center (dir (* radius-x (cos connector-angle-top-r))
+                                        (* radius-y (sin connector-angle-top-r))
+                                        0.0))
+                  (pos+ bot-center (dir (* radius-connector-inner (cos connector-angle-rendered-r))
+                                        (* radius-connector-inner (sin connector-angle-rendered-r))
+                                        0.0))
+                  (pos+ bot-center (dir (* radius-x (cos connector-angle-bot-r))
+                                        (* radius-y (sin connector-angle-bot-r))
+                                        0.0)))
       ; bottom curve
-      (cirque-3/8 (pos+ LINE/MID-X/START
-                        (dir offset-x-bot (+ radius-y offset-y-bot) 0.0))
-                  radius-y
-                  #:arc (arc meeting-angle-bot 120.0)
-                  #:basis #f)))))
+      (cirque bot-center
+              radius-x
+              radius-y
+              #:arc (arc connector-angle-bot 150.0)
+              #:basis connector-angle-bot-r)))))
 
 (define char:t
   (make-Char-3D-memoized

@@ -184,12 +184,10 @@
   (parameterize
       ([current-emitted (emitted "pink" 1.0)])
     (transform
-     (text str
-           #:wrap 13.0
-           #:onchar (get-on-char s))
+     (text str #:onchar (get-on-char s))
      (affine-compose
-      (position-screen-space-relative s 0.0 -0.5 0.6)
-      (scale 0.4)))))
+      (position-screen-space-relative s 0.0 -3.5 0.6)
+      (scale 0.8)))))
 
 (: render-sample-text-tqbf : State-Play -> Pict3D)
 (define (render-sample-text-tqbf s)

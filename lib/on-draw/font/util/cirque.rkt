@@ -1,6 +1,8 @@
 #lang typed/racket/base
 
 (require pict3d
+         racket/flonum
+         racket/math
          "../statics/guides.rkt"
          "../statics/measurements.rkt")
 
@@ -9,18 +11,44 @@
 ; CIRQUE
 ; The cirque is a part or whole donut shape.
 
-(define-type Basis (Union #f 'x 'y))
+(define-type Basis
+  (Union
+   ; consider basis to be the average of radius-x and radius-y
+   #f
+   ; consider basis to be radius-x (equivalent to using 0.0 or pi)
+   'x
+   ; consider basis to be radius-y (equivalent to using pi/2 or 3*pi/2)
+   'y
+   ; consider basis to be a weighted average of radius-x and radius-y based on an angle, in radians
+   Flonum
+   ))
 
 (define-type Cirque-Maker-Base  (->* (Pos Flonum Flonum   #:arc Arc #:basis Basis) () Pict3D))
 (define-type Cirque-Maker-Width (->* (Pos        Flonum   #:arc Arc #:basis Basis) () Pict3D))
 (define-type Cirque-Maker-Exact (->* (                 ) (#:arc Arc #:basis Basis)    Pict3D))
 (define-type Cirque-Maker-Dynam (->* (    Flonum       ) (#:arc Arc #:basis Basis)    Pict3D))
 
+(: cirque-radius : Flonum Flonum Flonum -> Flonum)
+(define (cirque-radius angle-r radius-x radius-y)
+  (/ (* radius-x radius-y)
+     (flsqrt (+ (* (sqr radius-x) (sqr (sin angle-r)))
+                (* (sqr radius-y) (sqr (cos angle-r)))))))
+
+(: cirque-angle-rendered : Flonum Flonum Flonum -> Flonum)
+(define (cirque-angle-rendered angle-r radius-x radius-y)
+  (define radius-at (cirque-radius angle-r radius-x radius-y))
+  (define opposite (* radius-at (sin angle-r)))
+  (define adjacent (* radius-at (cos angle-r)))
+  (atan (/ (* opposite (/ radius-y radius-at))
+           (* adjacent (/ radius-x radius-at)))))
+
 (: cirque Cirque-Maker-Base)
 (define (cirque center radius-x radius-y #:arc arc #:basis basis)
-  (define radius-basis (cond [(not basis)       (/ (+ radius-x radius-y) 2.0)]
+  (define radius-basis (cond [(not basis)       (* 0.5 (+ radius-x radius-y))]
                              [(equal? basis 'x) radius-x]
-                             [(equal? basis 'y) radius-y]))
+                             [(equal? basis 'y) radius-y]
+                             ; https://math.stackexchange.com/a/432907
+                             [(flonum? basis) (cirque-radius basis radius-x radius-y)]))
   (pipe center
         (dir radius-x
              radius-y
