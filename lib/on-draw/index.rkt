@@ -19,6 +19,18 @@
                             #:specular 0
                             #:roughness 0.3))
 
+(define-struct Score-Section
+  ([color-emitted : Emitted]
+   [y : Flonum]
+   [place-low : Integer]
+   [place-high : Integer]))
+
+(define SCORE-SECTIONS : (Listof Score-Section)
+  (list (Score-Section (emitted 1.0 1.0 1.0 2.0) 0.0  10       1)   ; ones
+        (Score-Section (emitted 0.5 0.7 1.0 2.0) 0.03 100     10)   ; tens
+        (Score-Section (emitted 1.0 0.8 0.0 1.5) 0.06 1000   100)   ; hundreds
+        (Score-Section (emitted 0.6 0.0 0.8 1.5) 0.09 10000 1000))) ; thousands
+
 ; RENDER — ON-DRAW
 
 (: on-draw : State Natural Flonum -> Pict3D)
@@ -50,6 +62,14 @@
 
 ; RENDER FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: get-on-draw-game-score : (-> State-Game-Over font:On-Draw-Handler))
+(define (get-on-draw-game-score s)
+  (define len (length SCORE-SECTIONS))
+  (λ (draw c i)
+    (define score-section (list-ref SCORE-SECTIONS (- len i 1)))
+     (match-define (Score-Section color-emitted _ _ _) score-section)
+     (parameterize ([current-emitted color-emitted]) (draw))))
+
 ; RENDER FUNCTIONS — GAME OVER
 
 (: render-game-over : State -> Pict3D)
@@ -59,22 +79,40 @@
      (combine
       (camera s)
       (render-game-over-background s)
+      (render-game-over-message s)
       (render-game-over-score s))]
     [else empty-pict3d]))
 
 (: render-game-over-background : State-Game-Over -> Pict3D)
 (define (render-game-over-background s)
-  (transform (with-emitted (emitted "red" 2.0)
+  (transform (with-emitted (emitted "red" 0.2)
                (rotate-z (move-z (cube origin 0.5) 1.0) 45))
              (position-screen-space-relative s 0.0 0.0 1.0)))
 
+(: render-game-over-message : State-Game-Over -> Pict3D)
+(define (render-game-over-message s)
+  (with-emitted (emitted "oldlace" 1.5)
+    (transform (text "GAME OVER"
+                     #:wrap 15.0
+                     #:onchar (get-on-char-jiggle s))
+               (affine-compose
+                (position-screen-space-relative s -0.8 -0.85 0.9)
+                (scale 0.06)))))
+
 (: render-game-over-score : State-Game-Over -> Pict3D)
 (define (render-game-over-score s)
-  (transform (render-player-score
-              (Player-score
-               (State-Play-player
-                (State-Game-Over-end-state s))))
-             (position-screen-space-relative s 0.0 0.0 1.0)))
+  (define score (Player-score (State-Play-player (State-Game-Over-end-state s))))
+  (combine
+   (transform (render-player-score score)
+              (position-screen-space-relative s 0.0 0.0 0.9))
+   (with-emitted (emitted "oldlace" 1.5)
+     (transform (text (number->string score)
+                      #:wrap 15.0
+                      #:onchar (get-on-char-jiggle s)
+                      #:ondraw (get-on-draw-game-score s))
+                (affine-compose
+                 (position-screen-space-relative s 0.0 -0.5 0.9)
+                 (scale 0.06))))))
 
 ; RENDER FUNCTIONS — GAME-PLAY
 
@@ -101,8 +139,8 @@
   (define indexmod (modulo (* 827 (+ 7 index)) 587))
   (+ 100 (modulo (* 677 charint indexmod) 53)))
 
-(: get-on-char : State -> On-Char-Handler)
-(define (get-on-char s)
+(: get-on-char-jiggle : State -> font:On-Char-Handler)
+(define (get-on-char-jiggle s)
   (define t (State-t s))
   (define ts (* 0.00001 t))
   (λ (pict char index)
@@ -155,10 +193,11 @@
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
   (combine
-   (render-sample-text-cor s)
-   (render-sample-text-smol s "s")
-   (render-sample-text-tqbf s)
-  ;  (render-sample-text-wop s)
+    empty-pict3d
+    ; (render-sample-text-cor s)
+    ; (render-sample-text-smol s "s")
+    ; (render-sample-text-tqbf s)
+    ; (render-sample-text-wop s)
   ))
 
 (: render-sample-text-cor : State-Play -> Pict3D)
@@ -169,7 +208,7 @@
      (transform
       (text cor
             #:wrap 9.0
-            #:onchar (get-on-char s))
+            #:onchar (get-on-char-jiggle s))
       (affine-compose
        (move-x (+ 9.0 (* t -0.0002)))
        (rotate-y -90.0)
@@ -184,7 +223,7 @@
   (parameterize
       ([current-emitted (emitted "pink" 1.0)])
     (transform
-     (text str #:onchar (get-on-char s))
+     (text str #:onchar (get-on-char-jiggle s))
      (affine-compose
       (position-screen-space-relative s 0.0 -3.5 0.6)
       (scale 0.8)))))
@@ -196,7 +235,7 @@
     (transform
      (text tqbf
            #:wrap 15.0
-           #:onchar (get-on-char s))
+           #:onchar (get-on-char-jiggle s))
      (affine-compose
       (position-screen-space-relative s -0.6 -0.85 0.8)
       (scale 0.05)))))
@@ -209,7 +248,7 @@
      (text wop
            #:wrap 40.0
            #:spacing-paragraph 0.0
-           #:onchar (get-on-char s))
+           #:onchar (get-on-char-jiggle s))
      (affine-compose
       (position-screen-space-relative s -0.8 -0.85 0.7)
       (scale 0.04)))))
@@ -336,18 +375,6 @@
   (combine (light (pos 0 1 2) (emitted "Thistle"))
            (light (pos 0 -1 -2) (emitted "PowderBlue"))
            (camera s)))
-
-(define-struct Score-Section
-  ([color-emitted : Emitted]
-   [y : Flonum]
-   [place-low : Integer]
-   [place-high : Integer]))
-
-(define SCORE-SECTIONS : (Listof Score-Section)
-  (list (Score-Section (emitted 1.0 1.0 1.0 2.0) 0.0  10       1)   ; ones
-        (Score-Section (emitted 0.5 0.7 1.0 2.0) 0.03 100     10)   ; tens
-        (Score-Section (emitted 1.0 0.8 0.0 1.5) 0.06 1000   100)   ; hundreds
-        (Score-Section (emitted 0.6 0.0 0.8 1.5) 0.09 10000 1000))) ; thousands
 
 (: render-player-score : Nonnegative-Integer -> Pict3D)
 (define (render-player-score score)
