@@ -23,17 +23,18 @@
   (define (draw-memoize char draw)
     (define cache-box (box (make-immutable-hasheq)))
     (λ ([ondraw apply] [c char] [i 0])
-      (define cached-value
-        (nested-hash-ref (unbox cache-box)
-                         char (current-emitted) ; key
-                         #:default #f))
-      (cond [cached-value cached-value]
-            [else (define drawn (ondraw draw c i))
-                  (set-box! cache-box
-                            (nested-hash-set (unbox cache-box)
-                                             char (current-emitted) ; key
-                                             drawn))
-                  drawn]))))
+      (ondraw (λ ()
+                (define cached-value
+                  (nested-hash-ref (unbox cache-box)
+                                   char (current-emitted) ; key
+                                   #:default #f))
+                (cond [cached-value cached-value]
+                      [else (define drawn (draw))
+                            (set-box! cache-box
+                                      (nested-hash-set (unbox cache-box)
+                                                       char (current-emitted) ; key
+                                                       drawn))
+                            drawn])) c i))))
 
 (require/typed 'draw-memoized
   [draw-memoize (-> Char (-> Pict3D) Draw)])
