@@ -292,11 +292,16 @@
      (define radius-y HEIGHT-X-1/4)
      (define radius-position (cirque-radius position-angle-r radius-x radius-y))
      (define radius-connector (cirque-radius connector-angle-bot-r radius-x radius-y))
-     ; this is still slightly off, not sure why
-     (define radius-connector-inner (- radius-connector WIDTH-STROKE))
+
 
      (define connector-angle-rendered-r (cirque-angle-rendered connector-angle-bot-r radius-x radius-y))
      (define connector-angle-rendered (radians->degrees connector-angle-rendered-r))
+
+     ; TODO: This is still slightly off. There is probably a good reason having
+     ; to do with the squashed pipe not _really_ having a width of WIDTH-STROKE
+     ; at the connector angle. It's ok at normal rendering sizes so I'm not
+     ; gonna worry about trying to fix it for now.
+     (define radius-connector-inner (- radius-connector WIDTH-STROKE))
 
      (define offset-x (+ distance-offset (* radius-position (abs (cos position-angle-r)))))
      (define offset-y (+ distance-offset (* radius-position (abs (sin position-angle-r)))))
