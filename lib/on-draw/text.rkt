@@ -5,7 +5,9 @@
 (require (prefix-in font: "font.rkt")
          (prefix-in font: "./font/statics/measurements.rkt"))
 
-(provide text On-Char-Handler)
+(provide text
+         font:On-Char-Handler
+         font:On-Draw-Handler)
 
 (: char-list : (Listof font:Char-3D))
 (define char-list
@@ -142,18 +144,18 @@
 (: WORD-SPACE/WIDTH Flonum)
 (define WORD-SPACE/WIDTH (Word-3D-width WORD-SPACE))
 
-(define-type On-Char-Handler (-> Pict3D Char Integer Pict3D))
-
 (: text (->* (String)
-             (#:onchar On-Char-Handler
+             (#:onchar font:On-Char-Handler
+              #:ondraw font:On-Draw-Handler
               #:spacing-line Flonum
               #:spacing-paragraph Flonum
               #:wrap Flonum)
              Pict3D))
 (define (text s
+              #:onchar [onchar : font:On-Char-Handler (λ (pict c i) pict)]
+              #:ondraw [ondraw : font:On-Draw-Handler (λ (draw c i) (draw))]
               #:spacing-line [spacing-line 0.4]
               #:spacing-paragraph [spacing-paragraph 0.2]
-              #:onchar [onchar (λ (pict c i) pict)]
               #:wrap [wrap 40.0])
   (define paragraphs (map string-trim (string-split s #px"(?:\r?\n)+")))
   (define-values (_ paragraphs-rendered)
@@ -166,17 +168,24 @@
       (define-values (paragraph-y-new paragraph-rendered)
         (text-paragraph paragraph paragraph-y-now
                         #:onchar onchar
+                        #:ondraw ondraw
                         #:spacing-line spacing-line
                         #:wrap wrap))
       (values paragraph-y-new (append paragraph-rendered out))))
   (combine paragraphs-rendered))
 
-(: text-paragraph (->* (String Flonum #:spacing-line Flonum #:onchar On-Char-Handler #:wrap Flonum)
+(: text-paragraph (->* (String
+                        Flonum
+                        #:spacing-line Flonum
+                        #:onchar font:On-Char-Handler
+                        #:ondraw font:On-Draw-Handler
+                        #:wrap Flonum)
                        ()
                        (Values Flonum (Listof Pict3D))))
 (define (text-paragraph paragraph
                         y-start
                         #:onchar onchar
+                        #:ondraw ondraw
                         #:spacing-line spacing-line
                         #:wrap wrap)
   (define line-height (+ spacing-line font:HEIGHT-CAP))
@@ -189,25 +198,32 @@
     ([line lines])
     (define line-y-now (+ line-y line-height))
     (define-values (_ line-rendered)
-      (text-line line line-y-now #:onchar onchar))
+      (text-line line line-y-now #:onchar onchar #:ondraw ondraw))
     (values line-y-now (append line-rendered out))))
 
-(: text-line (->* ((Listof Word-3D) Flonum #:onchar On-Char-Handler)
+(: text-line (->* ((Listof Word-3D)
+                   Flonum
+                   #:onchar font:On-Char-Handler
+                   #:ondraw font:On-Draw-Handler)
                   ()
                   (Values Flonum (Listof Pict3D))))
-(define (text-line line line-y #:onchar onchar)
+(define (text-line line line-y #:onchar onchar #:ondraw ondraw)
   (for/fold : (Values Flonum (Listof Pict3D))
     ([word-x : Flonum          0.0]
      [out    : (Listof Pict3D) '()])
     ([word   : Word-3D         line])
     (define-values (word-x-new chars-rendered)
-      (text-word word line-y word-x #:onchar onchar))
+      (text-word word line-y word-x #:onchar onchar #:ondraw ondraw))
     (values word-x-new (append chars-rendered out))))
 
-(: text-word (->* (Word-3D Flonum Flonum #:onchar On-Char-Handler)
+(: text-word (->* (Word-3D
+                   Flonum
+                   Flonum
+                   #:onchar font:On-Char-Handler
+                   #:ondraw font:On-Draw-Handler)
                   ()
                   (Values Flonum (Listof Pict3D))))
-(define (text-word word line-y word-x #:onchar onchar)
+(define (text-word word line-y word-x #:onchar onchar #:ondraw ondraw)
   (define chars (Word-3D-chars word))
   (cond [(empty? chars) (values word-x '())]
         [else (define-values (_ word-x-new chars-rendered)
@@ -218,7 +234,9 @@
                        [char-x : Flonum          word-x]
                        [out    : (Listof Pict3D) '()])
                       ([char   : font:Char-3D    chars])
-                      (define char-rendered ((font:Char-3D-draw char)))
+                      (define char-rendered ((font:Char-3D-draw char) ondraw
+                                                                      (font:Char-3D-char char)
+                                                                      char-i))
                       (define char-positioned
                         (onchar (transform char-rendered
                                            (affine-compose (move-x char-x)
