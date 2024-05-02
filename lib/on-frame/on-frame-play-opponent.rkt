@@ -6,16 +6,18 @@
   "../config.rkt"
   "../state/state.rkt"
   "../util/number/index.rkt"
-  "../util/player/index.rkt")
+  "../util/player/index.rkt"
+  "../util/pid.rkt")
 
 (provide on-frame-play-opponent)
+
+(define pid-position (pid 0.1 0.01 0.0001))
 
 (: on-frame-play-opponent : State-Play -> State-Play)
 (define (on-frame-play-opponent s)
   (define ball (State-Play-ball s))
   (define ball-y (pos-y (Ball-pos ball)))
   (define opponent (State-Play-opponent s))
-  (define aim-buffer (/ BUMPER-CONTACT-WIDTH 8))
   (define pos-predicted-maybe
     (findf (λ ([p : Pos]) (negative? (pos-x p)))
            (State-Play-ball-predicted-pos-ends s)))
@@ -24,21 +26,10 @@
     (cond [(null? pos-predicted) ball-y]
           [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]
           [else (pos-y pos-predicted)]))
-  (define pos-diff (- pos-desired-y (Opponent-y opponent)))
-  (define y-desired (+ (Opponent-y opponent)
-                       (cond
-                         [(within?
-                           pos-desired-y
-                           (- (Opponent-y opponent) aim-buffer)
-                           (+ (Opponent-y opponent) aim-buffer))
-                          (* OPPONENT-SPEED
-                             (/ 1.0 (max (State-dt s) 1.0))
-                             pos-diff
-                             0.05)]
-                         [else
-                          (* OPPONENT-SPEED
-                             (/ 1.0 (max (State-dt s) 1.0))
-                             (flsgn pos-diff))])))
+  ; clamping here helps the pid controller's integral not get mad when it can't
+  ; reach the edge of the stage
+  (define pos-diff (- (clamp-bumper-y pos-desired-y) (Opponent-y opponent)))
+  (define y-desired (pid-position pos-diff (State-dt s)))
   (struct-copy
    State-Play s
    [opponent

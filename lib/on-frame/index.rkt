@@ -11,8 +11,8 @@
 
 (: on-frame : State Natural Flonum -> State)
 (define (on-frame s n t)
-  ((compose-n
-    (λ ([s : State]) (State-update-counters s n t))
+  ((compose-n ; bottom-to-top
     on-frame-paused
-    on-frame-play)
+    on-frame-play
+    (λ ([s : State]) (State-update-counters s n t)))
    s))

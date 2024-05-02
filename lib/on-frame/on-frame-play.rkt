@@ -19,11 +19,11 @@
 (define (on-frame-play s)
   (cond [(State-Play? s)
          (on-frame-play-endgame
-          ((compose-n
-            on-frame-play-opponent
+          ((compose-n ; bottom-to-top
+            on-frame-play-lives
             on-frame-play-ball
-            on-frame-play-player-position
-            on-frame-play-lives)
+            on-frame-play-opponent
+            on-frame-play-player-position)
            s))]
         [else s]))
 

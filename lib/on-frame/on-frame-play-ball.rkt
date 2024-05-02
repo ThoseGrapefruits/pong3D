@@ -14,7 +14,7 @@
 
 (: on-frame-play-ball : State-Play -> State-Play)
 (define (on-frame-play-ball s)
-  ((compose1
+  ((compose1 ; bottom-to-top
     on-frame-play-ball-direction
     on-frame-play-ball-position) s))
 
@@ -134,7 +134,7 @@
 
 (: on-frame-play-ball-direction : State-Play -> State-Play)
 (define (on-frame-play-ball-direction s)
-  ((compose1
+  ((compose1 ; bottom-to-top
     on-frame-play-ball-collision-bumper
     on-frame-play-ball-collision-wall) s))
 
