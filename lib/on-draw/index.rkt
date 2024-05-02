@@ -158,7 +158,7 @@
     (define rot-y (* hash-x (sin (* hash-y ts)) 0.2))
     (rotate-y/center (rotate-x/center pict rot-x) rot-y)))
 
-(define tqbf (string-append
+(define tqbf (string-append-immutable
               "the quick brown fox jumps over the lazy dog...\n"
               "i said THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG!\n"
               "abcdefghijklmnopqrstuvwxyz...\n"
@@ -167,20 +167,20 @@
               "{one} [two] (three) \"some\" 'thing' \n"
               "012345678910 +=!@$#%^&* ()[]{} -—_? a/b\\c| :;., '\" 2+2=5"))
 
-(define cor (string-append
-             "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT."
-             "ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING"
-             "THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY"
-             "MOVE AND I DO EVERY MOVE HARD. MAKIN WHOOSHING SOUNDS WHEN I SLAM"
-             "DOWN SOME NECRO BASTARDS OR EVEN WHEN I MESS UP TECHNIQUE. NOT MANY"
-             "CAN SAY THEY ESCAPED THE GALAXYS MOST DANGEROUS PRISON. I CAN. I"
-             "SAY IT & I SAY IT OUTLOUD EVERYDAY TO PEOPLE IN MY COLLEGE CLASS"
-             "AND ALL THEY DO IS PROVE PEOPLE IN COLLEGE CLASS CAN STILL BE"
-             "IMMATURE JEKRS. AND IVE LEARNED ALL THE LINES AND IVE LEARNED HOW"
-             "TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2"
+(define cor (string-append-immutable
+             "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT. "
+             "ITS CHRONICLES OF RIDDICK AND RIGHT THEN & THERE I START DOING "
+             "THE MOVES ALONGSIDE WITH THE MAIN CHARACTER, RIDDICK. I DO EVERY "
+             "MOVE AND I DO EVERY MOVE HARD. MAKIN WHOOSHING SOUNDS WHEN I SLAM "
+             "DOWN SOME NECRO BASTARDS OR EVEN WHEN I MESS UP TECHNIQUE. NOT MANY "
+             "CAN SAY THEY ESCAPED THE GALAXYS MOST DANGEROUS PRISON. I CAN. I "
+             "SAY IT & I SAY IT OUTLOUD EVERYDAY TO PEOPLE IN MY COLLEGE CLASS "
+             "AND ALL THEY DO IS PROVE PEOPLE IN COLLEGE CLASS CAN STILL BE "
+             "IMMATURE JEKRS. AND IVE LEARNED ALL THE LINES AND IVE LEARNED HOW "
+             "TO MAKE MYSELF & MY APARTMENT LESS LONELY BY SHOUTING EM ALL. 2 "
              "HOURS INCLUDING WIND DOWN EVERY MORNIng"))
 
-(define wop (string-append
+(define wop (string-append-immutable
              "Why you have to do it like that?\n"
              "Got these ladies checkin' they bags\n"
              "Lookin' like they breakin' they back—breakin' they back\n"

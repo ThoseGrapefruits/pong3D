@@ -20,8 +20,8 @@
   (cond [(State-Play? s)
          (on-frame-play-endgame
           ((compose-n
-            on-frame-play-ball
             on-frame-play-opponent
+            on-frame-play-ball
             on-frame-play-player-position
             on-frame-play-lives)
            s))]

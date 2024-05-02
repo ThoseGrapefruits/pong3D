@@ -32,12 +32,12 @@
                            (- (Opponent-y opponent) aim-buffer)
                            (+ (Opponent-y opponent) aim-buffer))
                           (* OPPONENT-SPEED
-                             (State-dt s)
+                             (/ 1.0 (max (State-dt s) 1.0))
                              pos-diff
-                             0.1)]
+                             0.05)]
                          [else
                           (* OPPONENT-SPEED
-                             (State-dt s)
+                             (/ 1.0 (max (State-dt s) 1.0))
                              (flsgn pos-diff))])))
   (struct-copy
    State-Play s
