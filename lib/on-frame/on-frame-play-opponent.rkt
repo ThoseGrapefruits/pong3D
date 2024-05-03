@@ -1,17 +1,17 @@
 #lang typed/racket
 
 (require
-  math/flonum
   pict3d
   "../config.rkt"
   "../state/state.rkt"
-  "../util/number/index.rkt"
   "../util/player/index.rkt"
   "../util/pid.rkt")
 
 (provide on-frame-play-opponent)
 
-(define pid-position (pid 0.1 0.01 0.0001))
+(define pid-position (make-pid #:tuning-p 0.1
+                               #:tuning-i 0.01
+                               #:tuning-d 0.0001))
 
 (: on-frame-play-opponent : State-Play -> State-Play)
 (define (on-frame-play-opponent s)
@@ -26,10 +26,13 @@
     (cond [(null? pos-predicted) ball-y]
           [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]
           [else (pos-y pos-predicted)]))
+  (define dt (State-dt s))
+  (define max-err (* dt OPPONENT-SPEED))
   ; clamping here helps the pid controller's integral not get mad when it can't
   ; reach the edge of the stage
   (define pos-diff (- (clamp-bumper-y pos-desired-y) (Opponent-y opponent)))
-  (define y-desired (pid-position pos-diff (State-dt s)))
+  (define pos-diff-clamped (max (- max-err) (min max-err pos-diff)))
+  (define y-desired (pid-step! pid-position pos-diff-clamped dt))
   (struct-copy
    State-Play s
    [opponent

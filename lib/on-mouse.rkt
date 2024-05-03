@@ -1,10 +1,7 @@
 #lang typed/racket/base
 
-(require
-  pict3d
-  "./config.rkt"
-  "./state/setters.rkt"
-  "./state/state.rkt")
+(require "./config.rkt"
+         "./state/state.rkt")
 
 (provide (all-defined-out))
 
@@ -16,7 +13,9 @@
 (: on-mouse-game-play : State-Play Natural Flonum Integer Integer String -> State)
 (define (on-mouse-game-play s n t x y e)
   (cond [(string=? e "move")
-         (State-set-player-position
-          s
-          (- (* 1.6 (/ (exact->inexact x) SCREEN-WIDTH)) 0.8))]
+         (struct-copy
+          State-Play s
+          [player (struct-copy
+                   Player (State-Play-player s)
+                   [y-desired (- (* 1.6 (/ (exact->inexact x) SCREEN-WIDTH)) 0.8)])])]
         [else s]))

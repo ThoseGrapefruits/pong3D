@@ -11,7 +11,8 @@
   "../state/syntax.rkt"
   "../util/player/index.rkt"
   "./on-frame-play-ball.rkt"
-  "./on-frame-play-opponent.rkt")
+  "./on-frame-play-opponent.rkt"
+  "./on-frame-play-player-position.rkt")
 
 (provide on-frame-play)
 
@@ -33,21 +34,6 @@
          (rs-play SOUND-ENDGAME)
          (State-transition State-Game-Over s s)]
         [else s]))
-
-(: on-frame-play-player-position : State-Play -> State-Play)
-(define (on-frame-play-player-position s)
-  (define player (State-Play-player s))
-  (define pressed (State-pressed s))
-  (cond
-    [(set-member? pressed "left")
-     (State-set-player-position
-      s
-      (+ (Player-y player) (* (State-dt s) -1/512)))]
-    [(set-member? pressed "right")
-     (State-set-player-position
-      s
-      (+ (Player-y player) (* (State-dt s)  1/512)))]
-    [else s]))
 
 (: on-frame-play-lives : State-Play -> State-Play)
 (define (on-frame-play-lives s)

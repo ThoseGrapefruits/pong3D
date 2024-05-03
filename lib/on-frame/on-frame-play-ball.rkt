@@ -105,7 +105,6 @@
           (< ball-y (- BALL-MAX-Y)))
      (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (define dist-past-wall (- (- BALL-MAX-Y) ball-y))
-     (displayln dist-past-wall)
      (struct-copy
       State-Play s
       [ball (struct-copy
@@ -120,7 +119,6 @@
           (> ball-y BALL-MAX-Y))
      (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (define dist-past-wall (- ball-y BALL-MAX-Y))
-     (displayln dist-past-wall)
      (struct-copy
       State-Play s
       [ball (struct-copy

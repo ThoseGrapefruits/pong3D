@@ -44,7 +44,7 @@
 (define FRAME-DELAY-MILLIS (max 1.0 (abs (/ 1000.0 FPS))))
 
 (: OPPONENT-SPEED : Flonum)
-(define OPPONENT-SPEED 5.0)
+(define OPPONENT-SPEED 0.0035)
 
 (: OPPONENT-X : Flonum)
 (define OPPONENT-X -1.0)
@@ -63,6 +63,9 @@
 
 (: PLAYER-BOUNDS : Flonum)
 (define PLAYER-BOUNDS (+ PLAYER-X BOUNDS-BUMPER-GAP))
+
+(: PLAYER-SPEED : Flonum)
+(define PLAYER-SPEED 0.05)
 
 (: REDIRECT-FACTOR : Flonum)
 (define REDIRECT-FACTOR 40.0)

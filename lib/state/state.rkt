@@ -23,7 +23,8 @@
   ([lives : Nonnegative-Integer]
    [score : Nonnegative-Integer]
    [score-multiplier : Nonnegative-Flonum]
-   [y : Flonum]))
+   [y : Flonum]
+   [y-desired : Flonum]))
 
 (struct State
   ([dt   : Flonum]

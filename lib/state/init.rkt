@@ -37,7 +37,8 @@
     3    ; lives
     0    ; score
     1.0  ; score-multiplier
-    0.0) ; y
+    0.0  ; y
+    0.0) ; y-desired
    t))   ; start-t
 
 (define (state-start-game-play-ball)
