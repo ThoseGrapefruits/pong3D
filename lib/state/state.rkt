@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require pict3d
+  "../util/pid.rkt")
 
 (provide
  (struct-out Ball)
@@ -24,7 +25,8 @@
    [score : Nonnegative-Integer]
    [score-multiplier : Nonnegative-Flonum]
    [y : Flonum]
-   [y-desired : Flonum]))
+   [y-desired : (U Flonum #f)]
+   [y-pid : PID]))
 
 (struct State
   ([dt   : Flonum]

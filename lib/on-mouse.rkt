@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
 (require "./config.rkt"
+         "./util/pid.rkt"
          "./state/state.rkt")
 
 (provide (all-defined-out))
@@ -13,6 +14,11 @@
 (: on-mouse-game-play : State-Play Natural Flonum Integer Integer String -> State)
 (define (on-mouse-game-play s n t x y e)
   (cond [(string=? e "move")
+         (define player (State-Play-player s))
+         (define player-pid (Player-y-pid player))
+         (if (Player-y-desired player)
+             void
+             (pid-reset! player-pid))
          (struct-copy
           State-Play s
           [player (struct-copy

@@ -20,10 +20,11 @@
                  [else (set-remove (State-pressed s) key)])])]))
 
 (: State-set-player-position (->* (State-Play Flonum) (Flonum) State-Play))
-(define (State-set-player-position s y [y-desired y])
+(define (State-set-player-position s y [y-desired #f])
   (struct-copy
    State-Play s
-   [player (struct-copy
-            Player (State-Play-player s)
-            [y         (clamp-bumper-y y)]
-            [y-desired (clamp-bumper-y y-desired)])]))
+   [player
+    (struct-copy
+     Player (State-Play-player s)
+     [y         (clamp-bumper-y y)]
+     [y-desired (and y-desired (clamp-bumper-y y-desired))])]))

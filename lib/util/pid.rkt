@@ -21,8 +21,8 @@
                   #:tuning-d [tuning-d 0.0])
   (PID tuning-p tuning-i tuning-d (box 0.0) (box 0.0)))
 
-(: pid-reset! : PID -> Void)
-(define (pid-reset! pid)
+(: pid-reset! (->* (PID) (Flonum) Void))
+(define (pid-reset! pid [value 0.0])
   (set-box! (PID-err-integral pid) 0.0)
   (set-box! (PID-err-last pid) 0.0))
 

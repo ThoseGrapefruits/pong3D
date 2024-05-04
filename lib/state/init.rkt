@@ -3,6 +3,7 @@
 (require
   pict3d
   "../util/ball/ball-prediction.rkt"
+  "../util/pid.rkt"
   "../util/number/index.rkt"
   "./state.rkt")
 
@@ -34,11 +35,14 @@
    (Opponent ; opponent
     predicted-ball-y) ; y
    (Player   ; player
-    3    ; lives
-    0    ; score
-    1.0  ; score-multiplier
-    0.0  ; y
-    0.0) ; y-desired
+    3                        ; lives
+    0                        ; score
+    1.0                      ; score-multiplier
+    0.0                      ; y
+    0.0                      ; y-desired
+    (make-pid #:tuning-p 0.3 ; pid
+              #:tuning-i 0.00001
+              #:tuning-d 0.00002))
    t))   ; start-t
 
 (define (state-start-game-play-ball)
