@@ -35,6 +35,7 @@
 
   (set-box! (PID-err-integral pid) err-i)
   (set-box! (PID-err-last pid) err)
+
   (+ (* (PID-tuning-p pid) err-p)
      (* (PID-tuning-i pid) err-i)
      (* (PID-tuning-d pid) err-d)))

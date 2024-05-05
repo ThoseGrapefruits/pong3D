@@ -1,129 +1,11 @@
 #lang typed/racket
 
-(require
-  pict3d
-  "./camera.rkt"
-  "./position-screen-space.rkt"
-  "./text.rkt"
-  "../config.rkt"
-  "../state/state.rkt"
-  "../util/number/index.rkt")
+(require "./state.rkt"
+         "./text.rkt"
+         pict3d)
 
-(module srfi racket
-  (require srfi/13)
-  (provide string-pad))
-
-(require/typed 'srfi
-  [string-pad (->* (String Integer) (Char Integer Integer) String)])
-
-(provide on-draw)
-
-; GLOBAL SETTINGS
-
-(current-pict3d-fov FOV)
-(current-material (material #:ambient 0
-                            #:diffuse 0
-                            #:specular 0
-                            #:roughness 0.3))
-
-(define-struct Score-Section
-  ([color-emitted : Emitted]
-   [y : Flonum]
-   [place-low : Integer]
-   [place-high : Integer]))
-
-(define SCORE-SECTIONS : (Listof Score-Section)
-  (list (Score-Section (emitted 1.0 1.0 1.0 2.0) 0.0  10       1)   ; ones
-        (Score-Section (emitted 0.5 0.7 1.0 2.0) 0.03 100     10)   ; tens
-        (Score-Section (emitted 1.0 0.8 0.0 2.0) 0.06 1000   100)   ; hundreds
-        (Score-Section (emitted 1.3 1.0 2.0 1.5) 0.09 10000 1000))) ; thousands
-
-; RENDER — ON-DRAW
-
-(: on-draw : State Natural Flonum -> Pict3D)
-(define (on-draw s n t)
-  (combine (render-game-play s)
-           (render-game-over s)))
-
-; RENDER — CONSTANTS
-
-(define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
-(define COLOR-PLAYER-EMITTED (emitted "plum" 2))
-
-(: arena-bumper Pict3D)
-(define arena-bumper
-  (combine (with-emitted (emitted "oldlace" 2) (cylinder origin 1))
-           (for/list : (Listof Pict3D) ([z (in-range 0 10)])
-             (light (pos 0.0 0.0 (/ (exact->inexact z) 9.0))
-                    (emitted "oldlace" 4.0)))))
-
-(: axes Pict3D)
-(define axes
-  (combine (with-emitted (emitted "cyan" 2)
-             (arrow origin -x))
-           (with-emitted (emitted "magenta" 2)
-             (arrow origin -y))
-           (with-emitted (emitted "yellow" 2)
-             (arrow origin -z))))
-
-
-; RENDER FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(: get-on-draw-game-score : (-> State-Game-Over font:On-Draw-Handler))
-(define (get-on-draw-game-score s)
-  (define len (length SCORE-SECTIONS))
-  (λ (draw c i)
-    (define score-section (list-ref SCORE-SECTIONS (- len i 1)))
-    (match-define (Score-Section color-emitted _ _ _) score-section)
-    (parameterize ([current-emitted color-emitted]) (draw))))
-
-; RENDER FUNCTIONS — GAME OVER
-
-(: render-game-over : State -> Pict3D)
-(define (render-game-over s)
-  (cond
-    [(State-Game-Over? s) (combine (camera s)
-                                   (render-game-over-background s)
-                                   (render-game-over-message s)
-                                   (render-game-over-score s))]
-    [else                 empty-pict3d]))
-
-(: render-game-over-background : State-Game-Over -> Pict3D)
-(define (render-game-over-background s)
-  (transform (with-emitted (emitted "red" 0.2)
-               (rotate-z (move-z (cube origin 0.5) 1.0) 45))
-             (position-screen-space-relative s 0.0 0.0 1.0)))
-
-(: render-game-over-message : State-Game-Over -> Pict3D)
-(define (render-game-over-message s)
-  (with-emitted (emitted "oldlace" 1.5)
-    (transform (text "GAME OVER"
-                     #:wrap 15.0
-                     #:onchar (get-on-char-jiggle s))
-               (affine-compose
-                (position-screen-space-relative s -0.8 -0.85 0.9)
-                (scale 0.06)))))
-
-(: render-game-over-score : State-Game-Over -> Pict3D)
-(define (render-game-over-score s)
-  (define score (Player-score (State-Play-player (State-Game-Over-end-state s))))
-  (define score-text (string-pad (number->string score) (length SCORE-SECTIONS) #\0))
-  (combine
-   (transform (render-player-score score)
-              (position-screen-space-relative s 0.0 0.0 0.9))
-   (with-emitted (emitted "oldlace" 1.5)
-     (transform (text score-text
-                      #:wrap 15.0
-                      #:onchar (get-on-char-jiggle s)
-                      #:ondraw (get-on-draw-game-score s))
-                (affine-compose
-                 (position-screen-space-relative s 0.0 -0.5 0.9)
-                 (scale 0.06))))))
-
-; RENDER FUNCTIONS — GAME-PLAY
-
-(: render-game-play : State -> Pict3D)
-(define (render-game-play s)
+(: on-draw-game-play : State -> Pict3D)
+(define (on-draw-game-play s)
   (cond
     [(State-Play? s)
      (combine
@@ -136,27 +18,6 @@
       ; (render-game-play-arena s)
       (render-game-play-arena-bumpers s))]
     [else empty-pict3d]))
-
-; Get an approximately [50, 100] range integer that can be used as a consistent
-; factor for the rotation speed of a given character.
-(: hash-char : Char Integer -> Integer)
-(define (hash-char char index)
-  (define charint (modulo (* 677 (+ 13 (char->integer char))) 1259))
-  (define indexmod (modulo (* 827 (+ 7 index)) 587))
-  (+ 100 (modulo (* 677 charint indexmod) 53)))
-
-(: get-on-char-jiggle : State -> font:On-Char-Handler)
-(define (get-on-char-jiggle s)
-  (define t (State-t s))
-  (define ts (* 0.00001 t))
-  (λ (pict char index)
-    (define hash-x (hash-char char (- index)))
-    (define hash-y (hash-char char index))
-    ; purposefully flip the intensity and time factors to give some more
-    ; character without having to generate 4 values
-    (define rot-x (* hash-y (cos (* hash-x ts)) 0.1))
-    (define rot-y (* hash-x (sin (* hash-y ts)) 0.2))
-    (rotate-y/center (rotate-x/center pict rot-x) rot-y)))
 
 (define tqbf (string-append-immutable
               "the quick brown fox jumps over the lazy dog...\n"
@@ -381,20 +242,3 @@
   (combine (light (pos 0 1 2) (emitted "Thistle"))
            (light (pos 0 -1 -2) (emitted "PowderBlue"))
            (camera s)))
-
-(: render-player-score : Nonnegative-Integer -> Pict3D)
-(define (render-player-score score)
-  (combine
-   (for/list : (Listof Pict3D)
-     ([ score-section SCORE-SECTIONS ])
-     (match-define (Score-Section color-emitted y place-low place-high) score-section)
-     (parameterize ([current-emitted color-emitted])
-       (combine
-        (for/list : (Listof Pict3D)
-          ([ n (range 0.0 10) ])
-          (pipe (pos (* n 0.03) y 0.0) (dir 0.01 0.01 0.001)
-                #:top-radii (interval 6/10 1)
-                #:bottom-radii (interval 6/10 1)))
-        (for/list : (Listof Pict3D)
-          ([n (range 0.0 (get-number-place score place-low place-high))])
-          (sphere (pos (* n 0.03) y 0.0) 0.01)))))))

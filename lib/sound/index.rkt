@@ -103,7 +103,7 @@
 ; │   │   │   │   │   │   │   │   │
 ; │   │   │   │   │   │   │   │   │
 ; │   │   │   │   │   │   │   │   │
-; └───┘───┘───┘───┘───┘───┘───┘───┘
+; └───┴───┴───┴───┴───┴───┴───┴───┘
 
 (: note-to-frequency : Integer -> Nonnegative-Integer)
 (define (note-to-frequency n)
