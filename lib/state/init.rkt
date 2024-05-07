@@ -46,5 +46,8 @@
    t))   ; start-t
 
 (define (state-start-game-play-ball)
-  (Ball (dir -1.0 (* 1.5 (- 0.5 (random-0-1))) 0.0)
-        (pos 0.0 0.0 0.0)))
+  (define y (* 1.5 (- 0.5 (random-0-1))))
+  (Ball (dir -1.0 y 0.0)  ; dir
+        (pos 0.0 0.0 0.0) ; pos
+        #f                ; /moved
+        #f))              ; /r-axis

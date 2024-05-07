@@ -14,8 +14,11 @@
  (struct-out State-Play))
 
 (struct Ball
-  ([dir : Dir]
-   [pos : Pos]))
+  ([dir    : Dir]
+   [pos    : Pos]
+   ; in-frame state
+   [/moved  : Boolean]
+   [/r-axis : (U Dir #f)]))
 
 (struct Opponent
   ([y : Flonum ]))
