@@ -4,6 +4,8 @@
          "../state/state.rkt"
          pict3d)
 
+(provide get-on-char-jiggle)
+
 ; Get an approximately [50, 100] range integer that can be used as a consistent
 ; factor for the rotation speed of a given character.
 (: hash-char : Char Integer -> Integer)

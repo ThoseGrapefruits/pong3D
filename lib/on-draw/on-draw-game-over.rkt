@@ -2,10 +2,13 @@
 
 (require
   "./camera.rkt"
+  "./on-char-jiggle.rkt"
   "./position-screen-space.rkt"
   "./text.rkt"
   "../state/state.rkt"
   pict3d)
+
+(provide on-draw-game-over)
 
 (: on-draw-game-over : State -> Pict3D)
 (define (on-draw-game-over s)

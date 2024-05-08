@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require "./state.rkt"
+(require "./on-char-jiggle.rkt"
+         "./state.rkt"
          "./text.rkt"
          pict3d)
 
