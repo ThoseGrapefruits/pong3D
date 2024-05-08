@@ -13,7 +13,7 @@
   "../state/state.rkt"
   "../util/number/index.rkt")
 
-(module srfi racket
+(module srfi racket/base
   (require srfi/13)
   (provide string-pad))
 

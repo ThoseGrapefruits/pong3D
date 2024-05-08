@@ -16,7 +16,7 @@
    ; emitted, etc when drawing.
    [draw : Draw]))
 
-(module draw-memoized racket
+(module draw-memoized racket/base
   (require nested-hash pict3d)
   (provide draw-memoize)
 

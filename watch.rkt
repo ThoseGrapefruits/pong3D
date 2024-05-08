@@ -3,7 +3,7 @@
 (require racket/system
          racket/file)
 
-(module wrapper-file-watchers racket
+(module wrapper-file-watchers racket/base
   (require file-watchers)
   (provide apathetic-watch
            file-activity-channel

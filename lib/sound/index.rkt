@@ -5,7 +5,7 @@
          racket/math
          typed/racket/gui/base)
 
-(module wrapper racket
+(module wrapper racket/base
   (require (prefix-in rs: rsound))
   (provide
    rs:andplay
