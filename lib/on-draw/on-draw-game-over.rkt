@@ -1,14 +1,23 @@
 #lang typed/racket/base
 
-(require
-  "./camera.rkt"
-  "./on-char-jiggle.rkt"
-  "./position-screen-space.rkt"
-  "./text.rkt"
-  "../state/state.rkt"
-  pict3d)
+(require pict3d
+         racket/string
+         "./camera.rkt"
+         "./game-score.rkt"
+         "./on-char-jiggle.rkt"
+         "./position-screen-space.rkt"
+         "./render-player-score.rkt"
+         "./text.rkt"
+         "../state/state.rkt")
 
 (provide on-draw-game-over)
+
+(module srfi racket/base
+  (require srfi/13)
+  (provide string-pad))
+
+(require/typed 'srfi
+  [string-pad (->* (String Integer) (Char Integer Integer) String)])
 
 (: on-draw-game-over : State -> Pict3D)
 (define (on-draw-game-over s)

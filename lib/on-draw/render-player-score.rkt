@@ -7,6 +7,8 @@
   "../util/number/index.rkt"
   pict3d)
 
+(provide render-player-score)
+
 (: render-player-score : Nonnegative-Integer -> Pict3D)
 (define (render-player-score score)
   (combine

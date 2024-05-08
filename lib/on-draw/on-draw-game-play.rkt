@@ -1,9 +1,19 @@
 #lang typed/racket/base
 
-(require "./on-char-jiggle.rkt"
-         "./state.rkt"
+(require pict3d
+         racket/list
+         "./camera.rkt"
+         "./on-char-jiggle.rkt"
+         "./position-screen-space.rkt"
+         "./render-player-score.rkt"
          "./text.rkt"
-         pict3d)
+         "../config.rkt"
+         "../state/state.rkt")
+
+(provide on-draw-game-play)
+
+(define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
+(define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
 (: on-draw-game-play : State -> Pict3D)
 (define (on-draw-game-play s)
@@ -57,6 +67,13 @@
              "Said I never drop dime, but I drop you a dollar\n"
              "Told her give me your number and maybe I call her\n"
              "She said that she knew me and she know I'm a baller\n"))
+
+(: render-arena-bumper Pict3D)
+(define render-arena-bumper
+  (combine (with-emitted (emitted "oldlace" 2) (cylinder origin 1))
+           (for/list : (Listof Pict3D) ([z (in-range 0 10)])
+             (light (pos 0.0 0.0 (/ (exact->inexact z) 9.0))
+                    (emitted "oldlace" 4.0)))))
 
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
@@ -163,11 +180,11 @@
 (: render-game-play-arena-bumpers : State-Play -> Pict3D)
 (define (render-game-play-arena-bumpers s)
   (combine
-   (transform arena-bumper
+   (transform render-arena-bumper
               (affine-compose
                (move-y (+ WALL-Y BALL-RADIUS))
                (scale (dir 10 1/256 1/256))))
-   (transform arena-bumper
+   (transform render-arena-bumper
               (affine-compose
                (move-y (- 0.0 WALL-Y BALL-RADIUS))
                (scale (dir 10 1/256 1/256))))))

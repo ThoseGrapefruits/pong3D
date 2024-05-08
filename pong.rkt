@@ -5,8 +5,8 @@
   typed/racket/gui
 
   "./lib/config.rkt"
-  "./lib/on-draw/index.rkt"
-  "./lib/on-frame/index.rkt"
+  "./lib/on-draw/on-draw.rkt"
+  "./lib/on-frame/on-frame.rkt"
   "./lib/on-key.rkt"
   "./lib/on-mouse.rkt"
   "./lib/sound/index.rkt"
