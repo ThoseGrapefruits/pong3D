@@ -2,15 +2,11 @@
 
 (require
   pict3d
-  "./camera.rkt"
-  "./game-score.rkt"
-  "./on-char-jiggle.rkt"
   "./on-draw-game-over.rkt"
   "./on-draw-game-play.rkt"
   "./text.rkt"
   "../config.rkt"
-  "../state/state.rkt"
-  "../util/number/index.rkt")
+  "../state/state.rkt")
 
 (provide on-draw)
 

@@ -26,7 +26,7 @@
       (render-game-play-ball s)
       (render-game-play-hud s)
       (render-game-play-lights+camera s)
-      ; (render-game-play-arena s)
+      (render-game-play-arena s)
       (render-game-play-arena-bumpers s))]
     [else empty-pict3d]))
 
@@ -80,10 +80,10 @@
   (combine
     empty-pict3d
     ; (render-sample-text-cor s)
-    ; (render-sample-text-smol s "s")
-    ; (render-sample-text-tqbf s)
-    ; (render-sample-text-wop s)
-  ))
+    (render-sample-text-smol s "s")
+    (render-sample-text-tqbf s)
+    (render-sample-text-wop s)
+    ))
 
 (: render-sample-text-cor : State-Play -> Pict3D)
 (define (render-sample-text-cor s)

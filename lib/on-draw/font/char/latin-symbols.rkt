@@ -545,8 +545,8 @@
   (make-Char-3D-memoized
    #\"
    WIDTH-EM-3/8
-   (λ () 
-     (define single ((Char-3D-draw symbol:quote-single)))
+   (λ ()
+     (define single ((Char-3D-draw-raw symbol:quote-single)))
      (combine single (move-x single WIDTH-STROKE-3/2)))))
 
 (define symbol:comma
@@ -579,7 +579,7 @@
    #\:
    WIDTH-EM-1/4
    (λ ()
-     (define dot ((Char-3D-draw symbol:dot)))
+     (define dot ((Char-3D-draw-raw symbol:dot)))
      (combine dot (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
 
 (define symbol:semicolon
@@ -587,6 +587,6 @@
    #\;
    WIDTH-EM-1/4
    (λ ()
-     (define dot ((Char-3D-draw symbol:dot)))
-     (define comma ((Char-3D-draw symbol:comma)))
+     (define dot ((Char-3D-draw-raw symbol:dot)))
+     (define comma ((Char-3D-draw-raw symbol:comma)))
      (combine comma (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
