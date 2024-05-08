@@ -1,6 +1,7 @@
-#lang typed/racket
+#lang typed/racket/base
 
-(require "./state.rkt")
+(require racket/format
+         "./state.rkt")
 
 (provide (all-defined-out))
 

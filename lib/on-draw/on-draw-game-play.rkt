@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require "./state.rkt"
          "./text.rkt"

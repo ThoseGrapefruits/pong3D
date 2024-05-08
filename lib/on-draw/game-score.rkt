@@ -1,6 +1,7 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
+  racket/match
   "../state/state.rkt"
   "./text.rkt"
   pict3d)

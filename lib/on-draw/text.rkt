@@ -1,6 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
-(require pict3d)
+(require pict3d
+         racket/list
+         racket/string)
 
 (require (prefix-in font: "font.rkt")
          (prefix-in font: "./font/statics/measurements.rkt"))

@@ -1,6 +1,7 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
+  racket/set
   "../config.rkt"
   "../state/state.rkt"
   "../state/setters.rkt"

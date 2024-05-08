@@ -1,7 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
   pict3d
+  racket/set
   "../util/ball/ball-prediction.rkt"
   "../util/pid.rkt"
   "../util/number/index.rkt"
@@ -14,8 +15,8 @@
   (struct-copy
    State-Play (state-start t)
    [dt #:parent State (State-dt s)]
-   [n  #:parent State (State-n s)]
-   [t  #:parent State (State-t s)]))
+   [n  #:parent State (State-n  s)]
+   [t  #:parent State (State-t  s)]))
 
 (: state-start : (->* () (Flonum) State))
 (define (state-start [t 0.0])

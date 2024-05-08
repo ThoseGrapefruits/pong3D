@@ -1,6 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
+  racket/list
+  racket/match
   "./game-score.rkt"
   "../util/number/index.rkt"
   pict3d)

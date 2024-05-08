@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
   pict3d
@@ -6,7 +6,6 @@
   "../config.rkt"
   "../sound/index.rkt"
   "../state/init.rkt"
-  "../state/setters.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt"
   "../util/player/index.rkt"

@@ -1,4 +1,6 @@
-#lang typed/racket
+#lang typed/racket/base
+
+(require racket/math)
 
 (provide (all-defined-out))
 

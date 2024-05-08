@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require "./latin-alpha-lower.rkt"
          "./latin-alpha-upper.rkt"

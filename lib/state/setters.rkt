@@ -1,6 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
+  racket/set
+  racket/string
   "../util/player/index.rkt"
   "./state.rkt"
   "./syntax.rkt")
@@ -23,8 +25,7 @@
 (define (State-set-player-position s y [y-desired #f])
   (struct-copy
    State-Play s
-   [player
-    (struct-copy
-     Player (State-Play-player s)
-     [y         (clamp-bumper-y y)]
-     [y-desired (and y-desired (clamp-bumper-y y-desired))])]))
+   [player (struct-copy
+            Player (State-Play-player s)
+            [y         (clamp-bumper-y y)]
+            [y-desired (and y-desired (clamp-bumper-y y-desired))])]))

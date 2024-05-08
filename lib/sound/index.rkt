@@ -1,6 +1,9 @@
-#lang typed/racket
+#lang typed/racket/base
 
-(require typed/racket/gui/base)
+(require racket/file
+         racket/list
+         racket/math
+         typed/racket/gui/base)
 
 (module wrapper racket
   (require (prefix-in rs: rsound))

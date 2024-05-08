@@ -1,7 +1,8 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require
   pict3d
+  racket/bool
   "../config.rkt"
   "../state/state.rkt"
   "../util/player/index.rkt"

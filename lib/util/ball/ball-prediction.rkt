@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 ; This module is used to predict the end position of the ball by the time it
 ; reaches the end of the arena it's currently moving towards. It's the
@@ -8,6 +8,8 @@
 
 (require
   pict3d
+  racket/list
+  racket/match
   typed/racket/stream
   "../../config.rkt"
   "../../state/state.rkt")

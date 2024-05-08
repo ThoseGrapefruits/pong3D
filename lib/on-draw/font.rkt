@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require "./font/char/index.rkt"
          "./font/statics/types.rkt")

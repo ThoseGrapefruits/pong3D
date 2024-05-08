@@ -1,6 +1,7 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require pict3d
+         racket/math
          "../statics/guides.rkt"
          "../statics/measurements.rkt"
          "../statics/types.rkt"

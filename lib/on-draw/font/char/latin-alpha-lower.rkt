@@ -1,6 +1,7 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require pict3d
+         racket/math
          "../statics/guides.rkt"
          "../statics/measurements.rkt"
          "../statics/types.rkt"
@@ -165,7 +166,7 @@
           ; ascender
           (rectangle (pos+ LINE/MID/START +x WIDTH-STROKE-1/2)
                      (dir WIDTH-STROKE-1/2 HEIGHT-CAP-1/2 DEPTH-Z-1/2))
-          ; diagonal lower
+          ; diagonal upper
           (quad-thicc (pos+ LINE/MID-X/START
                             (dir WIDTH-STROKE (- WIDTH-STROKE-1/2) 0.0))
                       (pos+ LINE/MID-X/START
