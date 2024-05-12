@@ -1,6 +1,9 @@
 #lang typed/racket/base
 
-(provide PID make-pid pid-step! pid-reset!)
+(provide PID
+         make-pid
+         pid-step!
+         pid-reset!)
 
 ; A Proportional-integral-derivative controller
 ; https://en.wikipedia.org/wiki/Proportional–integral–derivative_controller

@@ -4,7 +4,6 @@
   pict3d
   "./on-draw-game-over.rkt"
   "./on-draw-game-play.rkt"
-  "./text.rkt"
   "../config.rkt"
   "../state/state.rkt")
 
@@ -22,8 +21,10 @@
 
 (: on-draw : State Natural Flonum -> Pict3D)
 (define (on-draw s n t)
-  (combine (on-draw-game-play s)
+  (define drawn (combine (on-draw-game-play s)
            (on-draw-game-over s)))
+  (set-box! (State-pict-last s) drawn)
+  drawn)
 
 ; RENDER — CONSTANTS
 

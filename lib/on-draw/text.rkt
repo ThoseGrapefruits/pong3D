@@ -225,7 +225,11 @@
                    #:ondraw font:On-Draw-Handler)
                   ()
                   (Values Flonum (Listof Pict3D))))
-(define (text-word word line-y word-x #:onchar onchar #:ondraw ondraw)
+(define (text-word word
+                   line-y
+                   word-x
+                   #:onchar onchar
+                   #:ondraw ondraw)
   (define chars (Word-3D-chars word))
   (cond [(empty? chars) (values word-x '())]
         [else (define-values (_ word-x-new chars-rendered)

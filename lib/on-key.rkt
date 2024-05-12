@@ -5,7 +5,8 @@
   "./state/setters.rkt"
   "./state/state.rkt")
 
-(provide (all-defined-out))
+(provide on-key
+         on-release)
 
 (: on-key : State Natural Flonum String -> State)
 (define (on-key s n t k)

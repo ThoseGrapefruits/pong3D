@@ -28,6 +28,8 @@
 (define-syntax-rule (State-transition S s field ...)
   (S (State-dt s)
      (State-n s)
+     (State-pict-last s)
      (State-pressed s)
      (State-t s)
+     (State-window-dims s)
      field ...))

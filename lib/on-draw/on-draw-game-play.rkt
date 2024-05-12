@@ -20,7 +20,7 @@
   (cond
     [(State-Play? s)
      (combine
-      (render-sample-text s)
+      ; (render-sample-text s)
       (render-game-play-opponent s)
       (render-game-play-player s)
       (render-game-play-ball s)

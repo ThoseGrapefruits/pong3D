@@ -27,8 +27,10 @@
    ; State
    0.0   ; dt
    0     ; n
+   (box empty-pict3d)
    (set) ; pressed
    t     ; t
+   (cons 0 0) ; window-dims
 
    ; State-Play
    ball      ; ball
@@ -48,7 +50,5 @@
 
 (define (state-start-game-play-ball)
   (define y (* 1.5 (- 0.5 (random-0-1))))
-  (Ball (dir -1.0 y 0.0)  ; dir
-        (pos 0.0 0.0 0.0) ; pos
-        #f                ; /moved
-        #f))              ; /r-axis
+  (Ball (dir -1.0 y 0.0)    ; dir
+        (pos 0.0 0.0 0.0))) ; pos

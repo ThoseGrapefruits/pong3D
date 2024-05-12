@@ -31,6 +31,9 @@
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
   (cond
-    [(< high low) (error "low must be less than high")]
-    [else (and (<= x high)
-               (>= x low))]))
+    [(< high low)
+     (and (>= x high)
+          (<= x low))]
+    [else
+     (and (<= x high)
+          (>= x low))]))

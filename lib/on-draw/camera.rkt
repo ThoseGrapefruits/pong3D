@@ -6,9 +6,9 @@
 
 (provide aspect-ratio
          camera
-         camera-dir
-         camera-point-at
-         camera-pos
+         CAMERA-DIR
+         CAMERA-POINT-AT
+         CAMERA-POS
          camera-transform-pong)
 
 ;; RENDER — CAMERA
@@ -21,23 +21,25 @@
 (define (camera s)
   (basis 'camera (camera-transform-pong s)))
 
-(: camera-dir : -> Dir)
-(define (camera-dir)
-  (define normalized (dir-normalize (pos- origin (camera-pos))))
-  (cond [normalized normalized]
-        [else (error "normalized not normal")]))
+(: CAMERA-POS : Pos)
+(define CAMERA-POS
+  ((λ ()
+     (define ar (aspect-ratio))
+     (define fov (exact->inexact FOV))
+     (pos (+ 2.0 (* ar -0.3) (* fov 0.01))      ; distance
+          0.0                                   ; side-to-side
+          (+ 1.0 (* ar -0.2) (* fov 0.001)))))) ; elevation
 
-(: camera-point-at : -> Affine)
-(define (camera-point-at) (point-at (camera-pos) CAMERA-LOOK-AT))
+(: CAMERA-DIR : Dir)
+(define CAMERA-DIR
+  ((λ ()
+     (define normalized (dir-normalize (pos- CAMERA-LOOK-AT CAMERA-POS)))
+     (cond [normalized normalized]
+           [else (error "normalized not normal")]))))
 
-(: camera-pos : -> Pos)
-(define (camera-pos)
-  (define ar (aspect-ratio))
-  (define fov (exact->inexact FOV))
-  (pos (+ 2.0 (* ar -0.3) (* fov 0.01))    ; distance
-       0.0                                 ; side-to-side
-       (+ 1.0 (* ar -0.2) (* fov 0.001)))) ; elevation
+(: CAMERA-POINT-AT : Affine)
+(define CAMERA-POINT-AT (point-at CAMERA-POS CAMERA-LOOK-AT))
 
 (: camera-transform-pong : State -> Affine)
 (define (camera-transform-pong s)
-  (camera-point-at))
+  CAMERA-POINT-AT)
