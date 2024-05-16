@@ -113,6 +113,9 @@
                                 (predict-ball-pos-ends-2 ball-new)
                                 (State-Play-ball-predicted-pos-ends s))]))
 
+(: FLONUM-SMOL : Flonum)
+(define FLONUM-SMOL 0.00000001)
+
 (: move-reflect-ball : State-Play Ball Flonum -> (Values Boolean Ball))
 (define (move-reflect-ball s ball move-remaining)
   (define ball-dir (Ball-dir ball))
@@ -122,8 +125,8 @@
   (define-values (axis dist-past) (get-bound-passed s ball-pos-next))
 
   (cond
-    [(and axis (> move-remaining 0.00001))
-     (define move-before-reflection (- move-remaining dist-past))
+    [(and axis (> move-remaining 0.0))
+     (define move-before-reflection (- move-remaining dist-past FLONUM-SMOL))
      (define-values (_ ball-new)
        (move-reflect-ball
         s
