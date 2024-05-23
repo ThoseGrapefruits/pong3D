@@ -27,6 +27,9 @@
 ; states more easily, copying the fields stored on the base State struct.
 (define-syntax-rule (State-transition S s field ...)
   (S (State-dt s)
+     (State-mouse-pos-last s)
+     (State-mouse-trace s)
+     (State-mouse-trace-last s)
      (State-n s)
      (State-pict-last s)
      (State-pressed s)

@@ -9,6 +9,9 @@
 
 (provide on-frame-play-player-position)
 
+(: KEYBOARD-SPEED-FACTOR : Flonum)
+(define KEYBOARD-SPEED-FACTOR 0.05)
+
 (: on-frame-play-player-position : State-Play -> State-Play)
 (define (on-frame-play-player-position s)
   (define player (State-Play-player s))
@@ -17,16 +20,15 @@
   (define player-y-desired (Player-y-desired player))
   (define pressed (State-pressed s))
   (define dt (State-dt s))
-  (define speed (* dt PLAYER-SPEED))
   (cond
     [(set-member? pressed "left")
       (State-set-player-position
        s
-       (- player-y (/ speed 10.0)))]
+       (- player-y (* dt PLAYER-SPEED KEYBOARD-SPEED-FACTOR)))]
     [(set-member? pressed "right")
       (State-set-player-position
        s
-       (+ player-y (/ speed 10.0)))]
+       (+ player-y (* dt PLAYER-SPEED KEYBOARD-SPEED-FACTOR)))]
     [player-y-desired
      (define dt (State-dt s))
      (define diffff-y (- player-y-desired player-y))

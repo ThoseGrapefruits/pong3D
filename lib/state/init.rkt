@@ -6,6 +6,7 @@
   "../util/ball/ball-prediction.rkt"
   "../util/pid.rkt"
   "../util/number/index.rkt"
+  "../config.rkt"
   "./state.rkt")
 
 (provide (all-defined-out))
@@ -25,12 +26,19 @@
   (define ball-ppe (predict-ball-pos-ends-2 ball))
   (State-Play
    ; State
-   0.0   ; dt
-   0     ; n
-   (box empty-pict3d)
-   (set) ; pressed
-   t     ; t
-   (cons 0 0) ; window-dims
+   0.0                ; dt
+   (cons              ; mouse-pos-last
+    (round (/ SCREEN-WIDTH 2))
+    (round (/ SCREEN-HEIGHT 2)))
+   #f                 ; mouse-trace
+   #f                 ; mouse-trace-last
+   0                  ; n
+   (box empty-pict3d) ; pict-last
+   (set)              ; pressed
+   t                  ; t
+   (cons              ; window-dims
+    (if (index? SCREEN-WIDTH)  SCREEN-WIDTH  0)
+    (if (index? SCREEN-HEIGHT) SCREEN-HEIGHT 0))
 
    ; State-Play
    ball      ; ball

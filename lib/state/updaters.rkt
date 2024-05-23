@@ -1,6 +1,9 @@
 #lang typed/racket/base
 
 (require
+  pict3d
+  racket/match
+  "../on-draw/camera.rkt"
   "./state.rkt"
   "./syntax.rkt")
 
@@ -13,3 +16,28 @@
    [dt #:parent State (- t (State-t s)) ]
    [n #:parent State n]
    [t #:parent State t]))
+
+(: State-update-mouse-trace : State Integer Integer -> State)
+(define (State-update-mouse-trace s x y)
+  (match-define (cons width height) (State-window-dims s))
+  (define direction ((camera-ray-dir (camera-transform-pong s)
+                                     #:width width
+                                     #:height height
+                                     #:z-near 0.01)
+                     x y))
+  (define traced-data (and direction
+                           (trace/data (unbox (State-pict-last s))
+                                       (camera-pos s)
+                                       direction)))
+  (define mouse-pos : (Pairof Integer Integer) (cons x y))
+
+  ; Only update mouse-trace-last if we have a successful trace
+  (cond [traced-data
+         (State-update-parent s
+                              [mouse-pos-last   #:parent State mouse-pos]
+                              [mouse-trace      #:parent State traced-data]
+                              [mouse-trace-last #:parent State traced-data])]
+        [else
+         (State-update-parent s
+                              [mouse-pos-last #:parent State mouse-pos]
+                              [mouse-trace    #:parent State traced-data])]))

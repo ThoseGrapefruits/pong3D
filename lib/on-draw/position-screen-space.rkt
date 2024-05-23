@@ -1,11 +1,11 @@
 #lang typed/racket/base
 
-(require
-  pict3d
-  "./camera.rkt"
-  "./util.rkt"
-  "../config.rkt"
-  "../state/state.rkt")
+(require pict3d
+         racket/match
+         "./camera.rkt"
+         "./util.rkt"
+         "../config.rkt"
+         "../state/state.rkt")
 
 (provide position-screen-space-pixels
 position-screen-space-relative)
@@ -16,11 +16,12 @@ position-screen-space-relative)
 ; z-plane 1 unit away from the camera.
 (: position-screen-space-pixels : State Flonum Flonum Flonum [#:wrap? Boolean] -> Affine)
 (define (position-screen-space-pixels s x y [z 1.0] #:wrap? [wrap? #f])
+  (match-define (cons width height) (State-window-dims s))
   (define cam-t (camera-transform-pong s))
   (define z-near (* z CAMERA-SPACE-DISTANCE))
   (define dir ((camera-ray-dir cam-t
-                               #:width SCREEN-WIDTH
-                               #:height SCREEN-HEIGHT
+                               #:width width
+                               #:height height
                                #:z-near z-near)
                (if wrap? (wrap-within x SCREEN-WIDTH-INEXACT) x)
                (if wrap? (wrap-within y SCREEN-HEIGHT-INEXACT) y)))

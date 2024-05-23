@@ -28,9 +28,6 @@
 (: BOUNDS-BUMPER-GAP : Flonum)
 (define BOUNDS-BUMPER-GAP (* 10 (dir-dx BUMPER-SCALE)))
 
-(: CAMERA-LOOK-AT : Pos)
-(define CAMERA-LOOK-AT (pos+ origin +x 0.8))
-
 (: BUMPER-CONTACT-BUFFER : Flonum)
 (define BUMPER-CONTACT-BUFFER (+ BALL-RADIUS (dir-dx BUMPER-SCALE)))
 

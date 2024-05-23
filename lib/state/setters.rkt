@@ -12,6 +12,7 @@
 (: State-set-key-pressed : State String Boolean -> State)
 (define (State-set-key-pressed s key pressed?)
   (cond
+    ; ignore mouse wheel events (optimization)
     [(string-prefix? key "wheel-") s]
     [else
      (State-update-parent

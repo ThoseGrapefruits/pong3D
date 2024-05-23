@@ -1,45 +1,52 @@
 #lang typed/racket/base
 
 (require pict3d
+         racket/match
          "../config.rkt"
          "../state/state.rkt")
 
 (provide aspect-ratio
          camera
-         CAMERA-DIR
-         CAMERA-POINT-AT
-         CAMERA-POS
+         camera-dir
+         camera-point-at
+         camera-pos
          camera-transform-pong)
 
 ;; RENDER — CAMERA
 
-(: aspect-ratio : -> Flonum)
-(define (aspect-ratio) (/ SCREEN-WIDTH-INEXACT
-                          SCREEN-HEIGHT-INEXACT))
+(: aspect-ratio : State -> Flonum)
+(define (aspect-ratio s)
+  (match-define (cons width height) (State-window-dims s))
+  (/ (exact->inexact width)
+     (exact->inexact height)))
 
 (: camera : State -> Pict3D)
 (define (camera s)
   (basis 'camera (camera-transform-pong s)))
 
-(: CAMERA-POS : Pos)
-(define CAMERA-POS
-  ((λ ()
-     (define ar (aspect-ratio))
-     (define fov (exact->inexact FOV))
-     (pos (+ 2.0 (* ar -0.3) (* fov 0.01))      ; distance
-          0.0                                   ; side-to-side
-          (+ 1.0 (* ar -0.2) (* fov 0.001)))))) ; elevation
+(: camera-pos : State -> Pos)
+(define (camera-pos s)
+  (define ar (aspect-ratio s))
+  (define fov (exact->inexact FOV))
+  (pos (+ 2.0 (* ar -0.3) (* fov 0.01))      ; distance
+       0.0                                   ; side-to-side
+       (+ 1.0 (* ar -0.2) (* fov 0.001))))   ; elevation
 
-(: CAMERA-DIR : Dir)
-(define CAMERA-DIR
-  ((λ ()
-     (define normalized (dir-normalize (pos- CAMERA-LOOK-AT CAMERA-POS)))
-     (cond [normalized normalized]
-           [else (error "normalized not normal")]))))
+(: camera-dir : State -> Dir)
+(define (camera-dir s)
+  (define normalized (dir-normalize (pos- (camera-look-at s)
+                                          (camera-pos s))))
+  (or normalized
+      (error "camera-dir not normalizable")))
 
-(: CAMERA-POINT-AT : Affine)
-(define CAMERA-POINT-AT (point-at CAMERA-POS CAMERA-LOOK-AT))
+(: camera-look-at : State -> Pos)
+(define (camera-look-at s) (pos+ origin +x 0.8))
+
+(: camera-point-at : State -> Affine)
+(define (camera-point-at s)
+  (point-at (camera-pos s)
+            (camera-look-at s)))
 
 (: camera-transform-pong : State -> Affine)
 (define (camera-transform-pong s)
-  CAMERA-POINT-AT)
+  (camera-point-at s))
