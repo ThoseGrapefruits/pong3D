@@ -17,8 +17,8 @@
          (struct-copy State-Game-Over s [t #:parent State v] ...)]
         [(State-Main-Menu? s)
          (struct-copy State-Main-Menu s [t #:parent State v] ...)]
-        [(State-Paused? s)
-         (struct-copy State-Paused s [t #:parent State v] ...)]
+        [(State-Pause-Menu? s)
+         (struct-copy State-Pause-Menu s [t #:parent State v] ...)]
         [(State-Play? s)
          (struct-copy State-Play s [t #:parent State v] ...)]
         [else (error (~s "Invalid state: " s))]))

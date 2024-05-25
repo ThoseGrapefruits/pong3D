@@ -4,7 +4,7 @@
   racket/list
   racket/match
   "./game-score.rkt"
-  "../util/number/index.rkt"
+  "../util/number/number.rkt"
   pict3d)
 
 (provide render-player-score)

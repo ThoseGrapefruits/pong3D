@@ -5,7 +5,7 @@
   typed-compose
   "../state/state.rkt"
   "../state/updaters.rkt"
-  "./on-frame-paused.rkt"
+  "./on-frame-pause-menu.rkt"
   "./on-frame-play.rkt")
 
 (provide on-frame)
@@ -14,7 +14,7 @@
 (define (on-frame s n t)
   (match-define (cons mouse-x mouse-y) (State-mouse-pos-last s))
   ((compose-n ; bottom-to-top
-    on-frame-paused
+    on-frame-pause-menu
     on-frame-play
     (λ ([s : State]) (State-update-mouse-trace s mouse-x mouse-y))
     (λ ([s : State]) (State-update-counters s n t)))

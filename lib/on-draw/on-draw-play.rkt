@@ -10,13 +10,13 @@
          "../config.rkt"
          "../state/state.rkt")
 
-(provide on-draw-game-play)
+(provide on-draw-play)
 
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
-(: on-draw-game-play : State -> Pict3D)
-(define (on-draw-game-play s)
+(: on-draw-play : State -> Pict3D)
+(define (on-draw-play s)
   (cond
     [(State-Play? s)
      (combine

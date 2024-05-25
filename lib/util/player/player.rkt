@@ -5,7 +5,7 @@
   pict3d
   "../../config.rkt"
   "../../state/state.rkt"
-  "../number/index.rkt")
+  "../number/number.rkt")
 
 (provide (all-defined-out))
 

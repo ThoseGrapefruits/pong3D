@@ -7,9 +7,9 @@
   "./lib/config.rkt"
   "./lib/on-draw/on-draw.rkt"
   "./lib/on-frame/on-frame.rkt"
-  "./lib/on-key.rkt"
+  "./lib/on-key/on-key.rkt"
   "./lib/on-mouse.rkt"
-  "./lib/sound/index.rkt"
+  "./lib/sound/sound.rkt"
   "./lib/state/init.rkt"
   "./lib/state/validation.rkt")
 

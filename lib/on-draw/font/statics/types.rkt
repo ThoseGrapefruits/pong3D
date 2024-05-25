@@ -26,16 +26,19 @@
     (define cache-box (box (make-immutable-hasheq)))
     (λ ([ondraw apply] [c char] [i 0])
       (ondraw (λ ()
+                (define cache-key '(char (current-emitted)))
                 (define cached-value
-                  (nested-hash-ref (unbox cache-box)
-                                   char (current-emitted) ; key
-                                   #:default #f))
+                  (apply nested-hash-ref
+                         (unbox cache-box)
+                         cache-key
+                         #:default #f))
                 (cond [cached-value cached-value]
                       [else (define drawn (freeze (draw))) ; the freeze-draw cycle
                             (set-box! cache-box
-                                      (nested-hash-set (unbox cache-box)
-                                                       char (current-emitted) ; key
-                                                       drawn))
+                                      (apply nested-hash-set
+                                             (unbox cache-box)
+                                             cache-key
+                                             drawn))
                             drawn])) c i))))
 
 (require/typed 'draw-memoized

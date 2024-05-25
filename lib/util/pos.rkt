@@ -2,7 +2,7 @@
 
 (require pict3d
          "../state/state.rkt"
-         "./number/index.rkt")
+         "./number/number.rkt")
 
 (provide within-bounds?)
 

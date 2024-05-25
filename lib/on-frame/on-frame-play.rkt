@@ -1,14 +1,15 @@
 #lang typed/racket/base
 
 (require
+  racket/set
   pict3d
   typed-compose
   "../config.rkt"
-  "../sound/index.rkt"
+  "../sound/sound.rkt"
   "../state/init.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt"
-  "../util/player/index.rkt"
+  "../util/player/player.rkt"
   "./on-frame-play-ball.rkt"
   "./on-frame-play-opponent.rkt"
   "./on-frame-play-player-position.rkt")

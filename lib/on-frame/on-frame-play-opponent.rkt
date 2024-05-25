@@ -5,7 +5,7 @@
   racket/bool
   "../config.rkt"
   "../state/state.rkt"
-  "../util/player/index.rkt"
+  "../util/player/player.rkt"
   "../util/pid.rkt")
 
 (provide on-frame-play-opponent)

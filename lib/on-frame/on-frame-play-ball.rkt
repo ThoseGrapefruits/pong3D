@@ -2,18 +2,19 @@
 
 (require
   pict3d
+  typed-compose
   "../config.rkt"
-  "../sound/index.rkt"
+  "../sound/sound.rkt"
   "../state/accessors.rkt"
   "../state/state.rkt"
   "../util/ball/ball-prediction.rkt"
-  "../util/number/index.rkt")
+  "../util/number/number.rkt")
 
 (provide on-frame-play-ball)
 
 (: on-frame-play-ball : State-Play -> State-Play)
 (define (on-frame-play-ball s)
-  ((compose1 ; bottom-to-top
+  ((compose-n ; bottom-to-top
     on-frame-play-ball-direction
     on-frame-play-ball-position) s))
 

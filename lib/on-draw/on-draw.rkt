@@ -3,7 +3,8 @@
 (require
   pict3d
   "./on-draw-game-over.rkt"
-  "./on-draw-game-play.rkt"
+  "./on-draw-pause-menu.rkt"
+  "./on-draw-play.rkt"
   "../config.rkt"
   "../state/state.rkt")
 
@@ -21,8 +22,10 @@
 
 (: on-draw : State Natural Flonum -> Pict3D)
 (define (on-draw s n t)
-  (define drawn (combine (on-draw-game-play s)
-           (on-draw-game-over s)))
+  (define drawn (combine
+                 (on-draw-play   s)
+                 (on-draw-game-over   s)
+                 (on-draw-pause-menu s)))
   (set-box! (State-pict-last s) drawn)
   drawn)
 

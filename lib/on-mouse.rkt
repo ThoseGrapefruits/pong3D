@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
 (require pict3d
+         typed-compose
          "./state/state.rkt"
          "./state/updaters.rkt"
          "./util/pid.rkt")
@@ -9,12 +10,14 @@
 
 (: on-mouse : State Natural Flonum Integer Integer String -> State)
 (define (on-mouse s n t x y e)
-  (define s-pre (on-mouse-pre s n t x y e))
-  (on-mouse-post
-   (cond [(State-Play? s-pre) (on-mouse-play s-pre n t x y e)]
-         [(State-Main-Menu? s-pre) (on-mouse-main-menu s-pre n t x y e)]
-         [else s-pre])
-   n t x y e))
+  ((compose-n ; bottom-to-top
+    (λ ([s : State]) (on-mouse-post s n t x y e))
+    (λ ([s : State])
+      (cond [(State-Play? s)      (on-mouse-play      s n t x y e)]
+            [(State-Main-Menu? s) (on-mouse-main-menu s n t x y e)]
+            [else s]))
+    (λ ([s : State]) (on-mouse-pre s n t x y e)))
+   s))
 
 (: on-mouse-main-menu : State-Main-Menu Natural Flonum Integer Integer String -> State)
 (define (on-mouse-main-menu s n t x y e)
@@ -34,7 +37,6 @@
               State-Play s
               [player (struct-copy
                        Player (State-Play-player s)
-                       ; TODO change math to match changing screen sizes
                        [y-desired (pos-y (surface-data-pos trace))])])
              s)]
         [else s]))

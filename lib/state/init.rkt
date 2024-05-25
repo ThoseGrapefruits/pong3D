@@ -5,7 +5,7 @@
   racket/set
   "../util/ball/ball-prediction.rkt"
   "../util/pid.rkt"
-  "../util/number/index.rkt"
+  "../util/number/number.rkt"
   "../config.rkt"
   "./state.rkt")
 
@@ -45,6 +45,7 @@
    ball-ppe  ; ball-predicted-pos-ends
    (Opponent ; opponent
     predicted-ball-y) ; y
+   #f        ; pause-state
    (Player   ; player
     3                        ; lives
     0                        ; score
