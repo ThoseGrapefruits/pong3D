@@ -11,8 +11,8 @@
   racket/list
   racket/match
   typed/racket/stream
-  "../../config.rkt"
-  "../../state/state.rkt")
+  "../config.rkt"
+  "../state/state.rkt")
 
 (struct Pos-Dir
   ([pos : Pos]

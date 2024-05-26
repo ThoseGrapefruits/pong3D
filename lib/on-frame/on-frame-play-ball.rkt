@@ -7,8 +7,8 @@
   "../sound/sound.rkt"
   "../state/accessors.rkt"
   "../state/state.rkt"
-  "../util/ball/ball-prediction.rkt"
-  "../util/number/number.rkt")
+  "../util/ball.rkt"
+  "../util/number.rkt")
 
 (provide on-frame-play-ball)
 

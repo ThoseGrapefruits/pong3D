@@ -17,18 +17,21 @@
 
 (: on-draw-play : State -> Pict3D)
 (define (on-draw-play s)
-  (cond
-    [(State-Play? s)
-     (combine
-      ; (render-sample-text s)
-      (render-game-play-opponent s)
-      (render-game-play-player s)
-      (render-game-play-ball s)
-      (render-game-play-hud s)
-      (render-game-play-lights+camera s)
-      (render-game-play-arena s)
-      (render-game-play-arena-bumpers s))]
-    [else empty-pict3d]))
+  (: state-play : (U #f State-Play))
+  (define state-play
+    (cond [(State-Play? s) s]
+          [(State-Pause-Menu? s) (State-Pause-Menu-resume-state s)]
+          [else #f]))
+  (if state-play
+      (combine (render-game-play-opponent state-play)
+               ; (render-sample-text state-play)
+               (render-game-play-player state-play)
+               (render-game-play-ball state-play)
+               (render-game-play-hud state-play)
+               (render-game-play-lights+camera state-play)
+               (render-game-play-arena state-play)
+               (render-game-play-arena-bumpers state-play))
+      empty-pict3d))
 
 (define tqbf (string-append-immutable
               "the quick brown fox jumps over the lazy dog...\n"

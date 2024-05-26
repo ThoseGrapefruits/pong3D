@@ -17,8 +17,8 @@
    [n #:parent State n]
    [t #:parent State t]))
 
-(: State-update-mouse-trace : State Integer Integer -> State)
-(define (State-update-mouse-trace s x y)
+(: State-update-trace-mouse : State Integer Integer -> State)
+(define (State-update-trace-mouse s x y)
   (match-define (cons width height) (State-window-dims s))
   (define direction ((camera-ray-dir (camera-transform-pong s)
                                      #:width width
@@ -31,13 +31,13 @@
                                        direction)))
   (define mouse-pos : (Pairof Integer Integer) (cons x y))
 
-  ; Only update mouse-trace-last if we have a successful trace
+  ; Only update trace-mouse/last if we have a successful trace
   (cond [traced-data
          (State-update-parent s
                               [mouse-pos-last   #:parent State mouse-pos]
-                              [mouse-trace      #:parent State traced-data]
-                              [mouse-trace-last #:parent State traced-data])]
+                              [trace-mouse      #:parent State traced-data]
+                              [trace-mouse/last #:parent State traced-data])]
         [else
          (State-update-parent s
                               [mouse-pos-last #:parent State mouse-pos]
-                              [mouse-trace    #:parent State traced-data])]))
+                              [trace-mouse    #:parent State traced-data])]))

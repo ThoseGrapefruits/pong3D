@@ -16,16 +16,15 @@
 (define (on-key s n t k)
   ((compose-n ; bottom-to-top
     (λ ([s : State]) (State-set-key-pressed s k #t))
-    (λ ([s : State]) (on-key-immediate s n t k))
-  ) s))
+    (λ ([s : State]) (on-key-immediate s n t k))) s))
 
 (: on-key-immediate : State Natural Flonum String -> State)
 ; Immediate reactions to keypresses
 (define (on-key-immediate s n t k)
   (cond
-    [(State-Play? s)      (on-key-immediate-play      s n t k)]
-    [(State-Pause-Menu? s)    (on-key-immediate-pause-menu    s n t k)]
-    [(State-Game-Over? s) (on-key-immediate-game-over s n t k)]
+    [(State-Play? s)       (on-key-immediate-play       s n t k)]
+    [(State-Pause-Menu? s) (on-key-immediate-pause-menu s n t k)]
+    [(State-Game-Over? s)  (on-key-immediate-game-over  s n t k)]
     [else s]))
 
 (: on-key-immediate-game-over : State-Game-Over Natural Flonum String -> State)

@@ -9,7 +9,7 @@
   "../state/init.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt"
-  "../util/player/player.rkt"
+  "../util/player.rkt"
   "./on-frame-play-ball.rkt"
   "./on-frame-play-opponent.rkt"
   "./on-frame-play-player-position.rkt")

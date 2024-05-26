@@ -3,7 +3,7 @@
 (require
   racket/set
   racket/string
-  "../util/player/player.rkt"
+  "../util/player.rkt"
   "./state.rkt"
   "./syntax.rkt")
 

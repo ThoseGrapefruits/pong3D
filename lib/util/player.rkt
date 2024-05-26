@@ -3,9 +3,9 @@
 (require
   math/flonum
   pict3d
-  "../../config.rkt"
-  "../../state/state.rkt"
-  "../number/number.rkt")
+  "../config.rkt"
+  "../state/state.rkt"
+  "./number.rkt")
 
 (provide (all-defined-out))
 

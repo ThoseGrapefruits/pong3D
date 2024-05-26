@@ -16,6 +16,6 @@
   ((compose-n ; bottom-to-top
     on-frame-pause-menu
     on-frame-play
-    (λ ([s : State]) (State-update-mouse-trace s mouse-x mouse-y))
+    (λ ([s : State]) (State-update-trace-mouse s mouse-x mouse-y))
     (λ ([s : State]) (State-update-counters s n t)))
    s))

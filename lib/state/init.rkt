@@ -3,9 +3,9 @@
 (require
   pict3d
   racket/set
-  "../util/ball/ball-prediction.rkt"
+  "../util/ball.rkt"
   "../util/pid.rkt"
-  "../util/number/number.rkt"
+  "../util/number.rkt"
   "../config.rkt"
   "./state.rkt")
 
@@ -30,12 +30,13 @@
    (cons              ; mouse-pos-last
     (round (/ SCREEN-WIDTH 2))
     (round (/ SCREEN-HEIGHT 2)))
-   #f                 ; mouse-trace
-   #f                 ; mouse-trace-last
    0                  ; n
    (box empty-pict3d) ; pict-last
    (set)              ; pressed
    t                  ; t
+   #f                 ; trace-mouse
+   #f                 ; trace-mouse/last
+   #f                 ; trace-mouse-down
    (cons              ; window-dims
     (if (index? SCREEN-WIDTH)  SCREEN-WIDTH  0)
     (if (index? SCREEN-HEIGHT) SCREEN-HEIGHT 0))
