@@ -23,7 +23,7 @@
                                    #:diffuse 0.15
                                    #:specular 0.3
                                    #:roughness 0.3)]
-       [current-color (rgba 0.5 0.5 0.5 0.5)])
+       [current-color (rgba 0.8 0.8 0.8 0.9)])
      (rectangle origin (dir 1.0 1.0 0.01)))
    (affine-compose
     (position-screen-space-relative s 0.0 0.0 0.6))))

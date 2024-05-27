@@ -73,7 +73,7 @@
 
 (: render-arena-bumper Pict3D)
 (define render-arena-bumper
-  (combine (with-emitted (emitted "oldlace" 2) (cylinder origin 1))
+  (combine (with-emitted (emitted "oldlace" 2.0) (cylinder origin 1))
            (for/list : (Listof Pict3D) ([z (in-range 0 10)])
              (light (pos 0.0 0.0 (/ (exact->inexact z) 9.0))
                     (emitted "oldlace" 4.0)))))

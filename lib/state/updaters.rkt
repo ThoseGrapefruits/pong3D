@@ -20,16 +20,16 @@
 (: State-update-trace-mouse : State Integer Integer -> State)
 (define (State-update-trace-mouse s x y)
   (match-define (cons width height) (State-window-dims s))
-  (define direction ((camera-ray-dir (camera-transform-pong s)
-                                     #:width width
-                                     #:height height
-                                     #:z-near 0.01)
-                     x y))
+  (define direction   ((camera-ray-dir (camera-transform-pong s)
+                                       #:width width
+                                       #:height height
+                                       #:z-near 0.01)
+                       x y))
   (define traced-data (and direction
                            (trace/data (unbox (State-pict-last s))
                                        (camera-pos s)
                                        direction)))
-  (define mouse-pos : (Pairof Integer Integer) (cons x y))
+  (define mouse-pos   (cons x y))
 
   ; Only update trace-mouse/last if we have a successful trace
   (cond [traced-data

@@ -3,7 +3,7 @@
 (require
   pict3d
   "./on-draw-game-over.rkt"
-  ; "./on-draw-main-menu.rkt"
+  "./on-draw-main-menu.rkt"
   "./on-draw-pause-menu.rkt"
   "./on-draw-play.rkt"
   "../config.rkt"
@@ -26,7 +26,7 @@
   (define drawn (combine
                  (on-draw-play       s)
                  (on-draw-game-over  s)
-                ;  (on-draw-main-menu  s)
+                 (on-draw-main-menu  s)
                  (on-draw-pause-menu s)))
   (set-box! (State-pict-last s) drawn)
   drawn)

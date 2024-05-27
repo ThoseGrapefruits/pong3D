@@ -14,7 +14,6 @@
 
 (: on-key-immediate-main-menu : State-Main-Menu Natural Flonum String -> State)
 (define (on-key-immediate-main-menu s n t k)
-  (displayln k)
   (cond
     [(just-pressed? s k "return" "enter" "\n" "\r")
      (state-reset-play s n t)]   ; start-t
