@@ -38,7 +38,7 @@
                                       (apply nested-hash-set
                                              (unbox cache-box)
                                              cache-key
-                                             drawn))
+                                             '(drawn)))
                             drawn])) c i))))
 
 (require/typed 'draw-memoized

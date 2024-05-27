@@ -6,9 +6,8 @@
 
 (: valid-state? : State Natural Flonum -> Boolean)
 (define (valid-state? s n t)
-  (define is-init (zero? n))
-  (cond [is-init (valid-state-init? s n t)]
-        [else    (valid-state-run? s n t)]))
+  (cond [(zero? n) (valid-state-init? s n t)]
+        [else      (valid-state-run?  s n t)]))
 
 (: valid-state-init? : State Natural Flonum -> Boolean)
 (define (valid-state-init? s n t)
@@ -25,4 +24,7 @@
            ; required if paused
            (State-Pause-Menu-resume-state s)
            #t)
-      (State-Play? s)))
+      (and (State-Play? s)
+           (or (not (State-Play-pause-state s))
+               (not (State-Pause-Menu-resume-state
+                     (State-Play-pause-state s)))))))

@@ -5,7 +5,6 @@
 ; foundation of a smart opponent that can pre-position themselves to receive the
 ; ball without having to rely on fast movement speeds.
 
-
 (require
   pict3d
   racket/list

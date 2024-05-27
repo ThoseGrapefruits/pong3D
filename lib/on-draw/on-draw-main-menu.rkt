@@ -1,15 +1,21 @@
 #lang typed/racket/base
 
 (require pict3d
+         racket/list
+         "./camera.rkt"
+         "./on-char-jiggle.rkt"
          "./position-screen-space.rkt"
+         "./render-player-score.rkt"
+         "./text.rkt"
+         "../config.rkt"
          "../state/state.rkt")
 
-(provide on-draw-pause-menu)
+(provide on-draw-main-menu)
 
-(: on-draw-pause-menu : State -> Pict3D)
-(define (on-draw-pause-menu s)
+(: on-draw-main-menu : State -> Pict3D)
+(define (on-draw-main-menu s)
   (cond
-    [(State-Pause-Menu? s)
+    [(State-Main-Menu? s)
      (combine
       (render-background s)
       (render-menu s))]

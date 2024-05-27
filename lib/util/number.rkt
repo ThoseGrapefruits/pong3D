@@ -22,11 +22,10 @@
               null
               (digits q radix))))
 
-(: random-0-1 : -> Flonum)
-(define (random-0-1)
-  (define result (/ (exact->inexact (random 4294967087)) 4294967086.0))
-  (cond [(flonum? result) result]
-        [else (error "random did not return flonum")]))
+(: random/0-1 : -> Flonum)
+(define (random/0-1)
+  (/ (exact->inexact (random 4294967087))
+     4294967086.0))
 
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)

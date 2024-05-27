@@ -111,7 +111,8 @@
         font:symbol:dot))
 
 (: char-to-pair : font:Char-3D -> (Pairof Char font:Char-3D))
-(define (char-to-pair char) (cons (font:Char-3D-char char) char))
+(define (char-to-pair char)
+  (cons (font:Char-3D-char char) char))
 
 ; TODO it would be nice to use something like parser-tools/lex to 
 ; pull out multi-character things and allow for e.g. ligatures.

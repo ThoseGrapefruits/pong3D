@@ -124,9 +124,12 @@
   (define ball-pos-next (pos+ ball-pos
                               (dir-scale ball-dir move-remaining)))
   (define-values (axis dist-past) (get-bound-passed s ball-pos-next))
-
+  (define is-out-of-movement (or (not axis)
+                                 (<= move-remaining 0.0)))
   (cond
-    [(and axis (> move-remaining 0.0))
+    [is-out-of-movement
+     (values #f (struct-copy Ball ball [pos ball-pos-next]))]
+    [else
      (define move-before-reflection (- move-remaining dist-past FLONUM-SMOL))
      (define-values (_ ball-new)
        (move-reflect-ball
@@ -139,7 +142,4 @@
                 (dir-scale (Ball-dir ball)
                            move-before-reflection))])
         dist-past))
-     (values #t ball-new)]
-     [else
-      (values #f
-              (struct-copy Ball ball [pos ball-pos-next]))]))
+     (values #t ball-new)]))
