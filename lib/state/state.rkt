@@ -7,12 +7,14 @@
 
 (provide Bounds
          bounds?
+         State-Any
          (struct-out Ball)
          (struct-out Menu)
          (struct-out Menu-Item)
          (struct-out Opponent)
          (struct-out Player)
          (struct-out State)
+         (struct-out State-Stop)
          (struct-out State-Game-Over)
          (struct-out State-Main-Menu)
          (struct-out State-Pause-Menu)
@@ -49,14 +51,23 @@
 
 ; STRUCTS — STATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define-type State-Any (U State-Game-Over
+                          State-Main-Menu
+                          State-Pause-Menu
+                          State-Play
+                          State-Stop))
+
+; The player ran out of lives.
 (struct State-Game-Over State
   ([end-state : State-Play])
   #:transparent)
 
+; The main menu is open. Currently the launch state as well.
 (struct State-Main-Menu State
   ([menu : Menu])
   #:transparent)
 
+; The pause menu is open during a game.
 (struct State-Pause-Menu State
    ; The menu.
   ([menu : Menu]
@@ -65,6 +76,12 @@
    [resume-state : (U #f State-Play)])
   #:transparent)
 
+; The player has expressed a desire to stop playing.
+(struct State-Stop State
+  ()
+  #:transparent)
+
+; The game is actively running.
 (struct State-Play State
   ([ball : Ball]
    [ball-predicted-pos-ends : (Listof Pos)]

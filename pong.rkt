@@ -8,9 +8,10 @@
   "./lib/on-draw/on-draw.rkt"
   "./lib/on-frame/on-frame.rkt"
   "./lib/on-key/on-key.rkt"
-  "./lib/on-mouse.rkt"
+  "./lib/on-mouse/on-mouse.rkt"
   "./lib/sound/sound.rkt"
   "./lib/state/init.rkt"
+  "./lib/state/stop.rkt"
   "./lib/state/validation.rkt")
 
 ;
@@ -35,6 +36,7 @@
             #:on-key on-key
             #:on-mouse on-mouse
             #:on-release on-release
+            #:stop-state? stop-state?
             #:valid-state? valid-state?
             #:width SCREEN-WIDTH
             #:height SCREEN-HEIGHT)

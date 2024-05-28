@@ -2,13 +2,11 @@
 
 (require pict3d
          typed-compose
-         racket/bool
-         "./state/menu.rkt"
-         "./state/state.rkt"
-         "./state/syntax.rkt"
-         "./state/updaters.rkt"
-         "./util/tag.rkt"
-         "./util/pid.rkt")
+         "../state/state.rkt"
+         "../state/syntax.rkt"
+         "../state/updaters.rkt"
+         "../util/pid.rkt"
+         "./on-mouse-main-menu.rkt")
 
 (provide on-mouse)
 
@@ -22,25 +20,6 @@
             [else s]))
     (λ ([s : State]) (on-mouse-pre s n t x y e)))
    s))
-
-(: on-mouse-main-menu : State-Main-Menu Natural Flonum Integer Integer String -> State)
-(define (on-mouse-main-menu s n t x y e)
-  (cond [(string=? e "left-up") (on-mouse-main-menu-left-up s)]
-        [else                   s]))
-
-(: on-mouse-main-menu-left-up : State-Main-Menu -> State)
-(define (on-mouse-main-menu-left-up s)
-  (define mouse-down (State-trace-mouse-down s))
-  (define trace      (State-trace-mouse      s))
-  (define mouse-down-path (and mouse-down (surface-data-path mouse-down)))
-  (define trace-path      (and trace      (surface-data-path trace)))
-
-  (cond [(and mouse-down-path
-              trace-path
-              (path=? mouse-down-path trace-path))
-         (struct-copy State-Main-Menu s
-                      [menu (Menu-handle-activate s (State-Main-Menu-menu s))])]
-        [else s]))
 
 (: on-mouse-play : State-Play Natural Flonum Integer Integer String -> State)
 (define (on-mouse-play s n t x y e)

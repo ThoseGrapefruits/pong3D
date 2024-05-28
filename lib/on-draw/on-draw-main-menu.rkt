@@ -5,6 +5,7 @@
          "./on-char-jiggle.rkt"
          "./position-screen-space.rkt"
          "./text.rkt"
+         "../state/menu.rkt"
          "../state/state.rkt")
 
 (provide on-draw-main-menu)
@@ -35,33 +36,51 @@
 (: render-menu : State-Main-Menu -> Pict3D)
 (define (render-menu s)
   (define menu (State-Main-Menu-menu s))
-  (define root (Menu-root menu))
-  (define active (unbox (Menu-active-item menu)))
-  (combine
-    (render-menu-header      s active)
-    (render-menu-item-active s active)))
+  (define active-path (unbox (Menu-active-path menu)))
+  (define active-menu-item (Menu-ref menu active-path))
+  (cond [(not active-menu-item) empty-pict3d]
+        [else
+         (combine
+          (render-menu-header      s active-menu-item)
+          (render-menu-item-active s active-menu-item))]))
+
+(define TEXT-SCALE 0.06)
 
 (: render-menu-item-active : State-Main-Menu Menu-Item -> Pict3D)
 (define (render-menu-item-active s menu-item)
   (define parent (unbox (Menu-Item-parent menu-item)))
   (define parent-usable (if (Menu-Item? parent) parent menu-item))
+  (define siblings (Menu-Item-children parent-usable))
   (parameterize
-      ([current-material (material #:ambient 0.01
-                                   #:diffuse 0.15
-                                   #:specular 0.3
-                                   #:roughness 0.3)]
-       [current-emitted (emitted "oldlace" 2.0)])
-    (combine
-     ; header
-     (transform
-      (combine (text (Menu-Item-label menu-item)) 
-               (cube origin 0.1))
-      (affine-compose
-       (position-screen-space-relative s -0.8 -0.8 0.6)
-       (scale 0.06)))
-     (for/list : (Listof Pict3D)
-       ([menu-item (Menu-Item-children parent-usable)])
-       (text (Menu-Item-label menu-item))))))
+      ([current-emitted (emitted "oldlace" 2.0)])
+    (group
+     (combine
+      ; header
+      (transform
+       (text (Menu-Item-label menu-item))
+       (affine-compose
+        (position-screen-space-relative s -0.8 -0.8 0.6)
+        (scale TEXT-SCALE)))
+      ; items
+      (for/list : (Listof Pict3D)
+        ([menu-item siblings]
+         [i (in-range 0 (length siblings))])
+        (define label-rendered (text (Menu-Item-label menu-item)) )
+        (define-values (bound1 bound2) (bounding-rectangle label-rendered))
+        (transform
+         (group (combine
+                 (parameterize ([current-emitted (emitted "oldlace" 2.0)])
+                   (text (Menu-Item-label menu-item)))
+                 (parameterize ([current-emitted (emitted 0.5 0.5 0.5 0.5)])
+                   (if (and bound1 bound2)
+                       (rectangle (pos+ bound1 (dir -0.2 -0.2 0.1))
+                                  (pos+ bound2 (dir  0.2  0.2 0.1)))
+                       empty-pict3d)))
+                (Menu-Item-tag menu-item))
+         (affine-compose
+          (position-screen-space-relative s -0.8 (+ -0.6 (* (exact->inexact i) 0.2)) 0.6)
+          (scale TEXT-SCALE)))))
+     (Menu-Item-tag parent-usable))))
 
 ; PARENTS
 

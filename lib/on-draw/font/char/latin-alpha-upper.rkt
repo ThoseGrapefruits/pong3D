@@ -408,7 +408,7 @@
 (define char:S
   (make-Char-3D-memoized
    #\S
-   WIDTH-EM-3/4
+   WIDTH-EM-5/8
    (λ () (combine
           ; upper
           (cirque-y-1/2 #:arc (arc  90.0 330.0) #:basis 'y)

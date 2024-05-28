@@ -3,9 +3,12 @@
 (require pict3d
          racket/bool)
 
-(provide path=?)
+(provide path=?
+         Tags)
 
-(: path=? : (Listof Tag) (Listof Tag) -> Boolean)
+(define-type Tags (Listof Tag))
+
+(: path=? : Tags Tags -> Boolean)
 (define (path=? tags1 tags2)
   (and (= (length tags1) (length tags2))
        (for/and ([t1 tags1]

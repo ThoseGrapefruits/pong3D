@@ -45,9 +45,13 @@
 
    ; State-Main-Menu
    (make-Menu (make-Menu-Item
-               #:children (list)
-               #:label "Pong"
-               #:tag 'root-main))))
+               #:label "pong3D"
+               #:tag   'root-main
+               #:children
+               (list (make-Menu-Item #:label "Start"
+                                     #:tag   'start)
+                     (make-Menu-Item #:label "Exit"
+                                     #:tag   'exit))))))
 
 (: state-start-play : (->* (State) (Flonum) State-Play))
 (define (state-start-play s [t 0.0])

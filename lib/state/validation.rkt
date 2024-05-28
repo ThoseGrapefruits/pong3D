@@ -2,7 +2,7 @@
 
 (require "./state.rkt")
 
-(provide (all-defined-out))
+(provide valid-state?)
 
 (: valid-state? : State Natural Flonum -> Boolean)
 (define (valid-state? s n t)
