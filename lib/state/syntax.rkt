@@ -29,12 +29,14 @@
 ; just use struct-copy.
 ; https://stackoverflow.com/a/77208704/2883258
 (define-syntax-rule (State-update-parent s [t #:parent State v] ...)
-  (cond [(State-Game-Over? s)
-         (struct-copy State-Game-Over s [t #:parent State v] ...)]
+  (cond [(State-Play? s)
+         (struct-copy State-Play       s [t #:parent State v] ...)]
+        [(State-Game-Over? s)
+         (struct-copy State-Game-Over  s [t #:parent State v] ...)]
         [(State-Main-Menu? s)
-         (struct-copy State-Main-Menu s [t #:parent State v] ...)]
+         (struct-copy State-Main-Menu  s [t #:parent State v] ...)]
         [(State-Pause-Menu? s)
          (struct-copy State-Pause-Menu s [t #:parent State v] ...)]
-        [(State-Play? s)
-         (struct-copy State-Play s [t #:parent State v] ...)]
-        [else (error (~s "Invalid state: " s))]))
+        [(State-Stop? s)
+         (struct-copy State-Stop       s [t #:parent State v] ...)]
+        [else (error 'State-update-parent "invalid state ~s" s)]))

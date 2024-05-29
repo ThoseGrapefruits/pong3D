@@ -42,3 +42,4 @@
             #:height SCREEN-HEIGHT)
 
 (rs-stop)
+(exit 0)

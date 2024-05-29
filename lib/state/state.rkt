@@ -8,6 +8,7 @@
 (provide Bounds
          bounds?
          State-Any
+         State-Any?
          (struct-out Ball)
          (struct-out Menu)
          (struct-out Menu-Item)
@@ -56,6 +57,15 @@
                           State-Pause-Menu
                           State-Play
                           State-Stop))
+
+(: State-Any? : Any -> Boolean : State-Any)
+(define (State-Any? o)
+  (and (State? o)
+       (or (State-Game-Over? o)
+           (State-Main-Menu? o)
+           (State-Pause-Menu? o)
+           (State-Play? o)
+           (State-Stop? o))))
 
 ; The player ran out of lives.
 (struct State-Game-Over State

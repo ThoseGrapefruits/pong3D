@@ -14,8 +14,8 @@
 
 (: Main-Menu-activate : State-Main-Menu Natural Flonum Tags -> State-Any)
 (define (Main-Menu-activate s n t path)
-  (cond [(path=? path (list 'root-main 'start))
-         (state-reset-play s n t)]
+  (cond [(path=? path (list 'root-main 'start))  (state-reset-play s n t)]
+        [(path=? path (list 'root-main 'exit)) (State-transition State-Stop s)]
         [else s]))
 
 (: Main-Menu-go-out : State-Main-Menu Natural Flonum -> (U State-Main-Menu State-Stop))
