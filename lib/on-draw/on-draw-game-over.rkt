@@ -41,7 +41,7 @@
                      #:wrap 15.0
                      #:onchar (get-on-char-jiggle s))
                (affine-compose
-                (position-screen-space-relative s -0.8 -0.85 0.9)
+                (position-screen-space-pixels s -300.0 -350.0 0.9)
                 (scale 0.06)))))
 
 (: render-game-over-score : State-Game-Over -> Pict3D)
@@ -57,5 +57,5 @@
                       #:onchar (get-on-char-jiggle s)
                       #:ondraw (get-on-draw-game-score s))
                 (affine-compose
-                 (position-screen-space-relative s 0.0 -0.5 0.9)
+                 (position-screen-space-pixels s 0.0 -200.0 0.9)
                  (scale 0.06))))))

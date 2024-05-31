@@ -24,7 +24,13 @@
          (State-transition
           State-Pause-Menu s
           (make-Menu (make-Menu-Item ; menu
-                      #:children '()
+                      #:children
+                      (list (make-Menu-Item #:label "Resume"
+                                            #:tag 'resume)
+                            (make-Menu-Item #:label "Main menu"
+                                            #:tag 'main-menu)
+                            (make-Menu-Item #:label "Exit"
+                                            #:tag 'exit))
                       #:label "Pause"
                       #:tag 'root-pause))
           resume-state))]            ; resume-state

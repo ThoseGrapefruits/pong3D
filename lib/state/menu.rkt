@@ -7,6 +7,7 @@
          make-Menu
          (struct-out Menu-Item)
          make-Menu-Item
+         Menu-Item-active-transition!
          Menu-ref)
 
 ;; STRUCTS & TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,20 +15,20 @@
 (struct Menu
    ; The active/focused menu item. Defaults to path to root.
   ([active-path   : (Boxof (Listof Tag))]
-   ; When the active menu item started being active
-   [active-since  : (Boxof Flonum)]
 
    ; The hovered menu item, if any.
    [hovered-path  : (Boxof (U #f (Listof Tag)))]
-   ; When the hovered menu item started being hovered.
-   [hovered-since : (Boxof Flonum)]
 
    ; The root menu item, whose parent is this Menu
    [root          : Menu-Item]))
 
 (struct Menu-Item
+   ; When this Menu-Item started being active or hovered.
+  ([active-start : (Boxof (U #f Flonum))]
+   ; When this Menu-Item stopped being active or hovered.
+   [active-end : (Boxof (U #f Flonum))]
    ; The direct descendents of this Menu-Item in the tree.
-  ([children : (Listof Menu-Item)]
+   [children : (Listof Menu-Item)]
    ; The direct descendants of this Menu-Item, organized by tag for fast access.
    [children-map : (HashTable Tag Menu-Item)]
    [draw : (-> Menu-Item Pict3D)]
@@ -44,12 +45,11 @@
 
 (: make-Menu : Menu-Item -> Menu)
 (define (make-Menu root)
+  (define root-tag (Menu-Item-tag root))
   (define menu
-    (Menu (box (list (Menu-Item-tag root))) ; active-path
-          (box 0.0)    ; active-since
-          (box #f)     ; hovered-path
-          (box 0.0)    ; hovered-since
-          root)) ; root
+    (Menu (box (list root-tag)) ; active-path
+          (box #f)              ; hovered-path
+          root))                ; root
   (Menu-update-parents! menu)
   menu)
 
@@ -61,7 +61,8 @@
 (define (Menu-ref menu path)
   (define root (Menu-root menu))
   (define root-tag (Menu-Item-tag root))
-  (cond [(not (equal? root-tag (first path)))
+  (cond [(empty? path) #f]
+        [(not (equal? root-tag (first path)))
          (error 'Menu-ref
                 "got path starting at ~s for menu ~s"
                 root-tag (first path))]
@@ -82,13 +83,15 @@
                         #:label label
                         #:tag tag)
   (Menu-Item
-   children             ; children
-   (make-hash           ; children-map
+   (box 0.0)  ; active-start
+   (box 0.0)  ; active-end
+   children   ; children
+   (make-hash ; children-map
     (map Menu-Item->Pair children))
-   draw                 ; draw
-   label                ; label
-   (box #f)
-   tag))
+   draw       ; draw
+   label      ; label
+   (box #f)   ; parent
+   tag))      ; tag
 
 ;; UTIL ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -103,3 +106,11 @@
    (for ([child (Menu-Item-children parent)])
      (set-box! (Menu-Item-parent child) parent)
      (Menu-Item-update-parents! child)))
+
+(: Menu-Item-active-transition! : (U #f Menu-Item) Menu-Item Flonum -> Void)
+(define (Menu-Item-active-transition! old new t)
+  ; TODO use existing start and end values on new if within ANIMATION-TIME.
+  ; Needs math that I can't think about right now, probably should draw it out.
+  (and old (set-box! (Menu-Item-active-end   old) t))
+  (set-box! (Menu-Item-active-start new) t)
+  (set-box! (Menu-Item-active-end   new) #f))

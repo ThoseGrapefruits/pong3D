@@ -19,7 +19,7 @@
                       (Menu-Item-parent active-menu-item)))
   (cond [(Menu-Item? parent)
          (set-box! active-path-box (drop-right active-path 1))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item parent t)
          s]
         [else (struct-copy
                State-Play (State-Pause-Menu-resume-state s)
@@ -43,7 +43,7 @@
   (cond [(Menu-Item? first-child)
          (set-box! active-path-box (append active-path
                                            (list (Menu-Item-tag first-child))))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item first-child t)
          s]
         [else s]))
 
@@ -61,6 +61,6 @@
   (cond [(Menu-Item? active-new)
          (set-box! active-path-box (swap-last active-path
                                               (Menu-Item-tag active-new)))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item active-new t)
          s]
         [else s]))

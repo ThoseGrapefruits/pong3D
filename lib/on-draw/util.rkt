@@ -1,8 +1,7 @@
 #lang typed/racket/base
 
-(provide
- scale--1-1
- wrap-within)
+(provide scale--1-1
+         wrap-within)
 
 ; Scale a [-1,1] value up to a range of the given width.
 (: scale--1-1 : Flonum Integer -> Flonum)

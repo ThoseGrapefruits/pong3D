@@ -8,7 +8,8 @@
          "../util/list.rkt"
          "../util/tag.rkt")
 
-(provide Main-Menu-go-out
+(provide Main-Menu-activate
+         Main-Menu-go-out
          Main-Menu-go-in
          Main-Menu-go-vertical)
 
@@ -23,11 +24,11 @@
   (define menu (State-Main-Menu-menu s))
   (define active-path-box (Menu-active-path menu))
   (define active-path (unbox active-path-box))
-  (define menu-item (Menu-ref menu active-path))
-  (define parent (and menu-item (Menu-Item-parent menu-item)))
+  (define active-menu-item (Menu-ref menu active-path))
+  (define parent (and active-menu-item (Menu-Item-parent active-menu-item)))
   (cond [(Menu-Item? parent)
          (set-box! active-path-box (drop-right active-path 1))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item parent t)
          s]
         [(Menu? parent) (State-transition State-Stop s)]
         [else s]))
@@ -43,10 +44,13 @@
   (define first-child (and active-children
                            (not (empty? active-children))
                            (first active-children)))
-  (cond [(Menu-Item? first-child)
+  (define first-child-is-terminal (and first-child
+                                       (empty? (Menu-Item-children first-child))))
+  (cond [(and (Menu-Item? first-child)
+              (not first-child-is-terminal))
          (set-box! active-path-box (append active-path
                                            (list (Menu-Item-tag first-child))))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item first-child t)
          s]
         [else (Main-Menu-activate s n t active-path)]))
 
@@ -64,7 +68,7 @@
   (cond [(Menu-Item? active-new)
          (set-box! active-path-box (swap-last active-path
                                               (Menu-Item-tag active-new)))
-         (set-box! (Menu-active-since menu) t)
+         (Menu-Item-active-transition! active-menu-item active-new t)
          s]
         [else s]))
 

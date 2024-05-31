@@ -102,7 +102,7 @@
 (define char:E
   (make-Char-3D-memoized
    #\E
-   WIDTH-EM-9/16
+   WIDTH-EM-1/2
    (λ ()
      (combine
       ; left ascender
