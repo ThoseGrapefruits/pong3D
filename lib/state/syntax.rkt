@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
-(require racket/format
-         "./state.rkt")
+(require "./state.rkt")
 
 (provide State-transition
          State-update-parent)

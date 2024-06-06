@@ -6,6 +6,7 @@
          "../state/state.rkt"
          "../state/syntax.rkt"
          "../util/list.rkt"
+         "../util/number.rkt"
          "../util/tag.rkt")
 
 (provide Main-Menu-activate
@@ -61,13 +62,27 @@
   (define active-path (unbox active-path-box))
   (define active-menu-item (Menu-ref menu active-path))
   (define parent     (and active-menu-item    (unbox (Menu-Item-parent active-menu-item))))
-  (define siblings   (and (Menu-Item? parent) (Menu-Item-children parent)))
-  (define index      (and siblings            (index-of siblings active-menu-item)))
-  (define index-new  (and index               (+ offset index)))
-  (define active-new (and index-new           (list-ref siblings index-new)))
+  (define root? (Menu? parent))
+  (define siblings   (cond [(Menu-Item? parent) (Menu-Item-children parent)]
+                           [root?               (Menu-Item-children active-menu-item)]
+                           [else #f]))
+  (define index      (cond [(not siblings) #f]
+                           [root?          0]
+                           [else           (index-of siblings active-menu-item)]))
+  (define index-new  (and index (+ offset index)))
+  (define index-new-wrapped (cond [(not index-new) #f]
+                                  [(< index-new 0) (- (length siblings) 1)]
+                                  [(>= index-new (length siblings)) 0]
+                                  [else index-new]))
+  (define active-new (and index-new-wrapped (list-ref siblings index-new-wrapped)))
+  (printf "active-path: ~s~nactive-menu-item: ~s~nparent: ~s~nsiblings: ~s index:~s~n~n"
+           active-path      active-menu-item      parent      siblings     index)
   (cond [(Menu-Item? active-new)
-         (set-box! active-path-box (swap-last active-path
-                                              (Menu-Item-tag active-new)))
+         (set-box! active-path-box (if root?
+                                       (append active-path
+                                               (list (Menu-Item-tag active-new)))
+                                       (swap-last active-path
+                                                  (Menu-Item-tag active-new))))
          (Menu-Item-active-transition! active-menu-item active-new t)
          s]
         [else s]))

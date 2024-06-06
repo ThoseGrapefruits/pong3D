@@ -58,7 +58,7 @@
      (combine
       ; header
       (transform
-       (text (Menu-Item-label menu-item))
+       (text (Menu-Item-label parent-usable))
        (affine-compose
         (position-screen-space-relative s -0.8 -0.8 0.6)
         (scale TEXT-SCALE)))
@@ -70,9 +70,9 @@
         (define-values (bound1 bound2) (bounding-rectangle label-rendered))
         (transform
          (group (combine
-                 (parameterize ([current-emitted (emitted "oldlace" 2.0)])
+                 (parameterize ([current-emitted (emitted "oldlace" 0.1)])
                    (text (Menu-Item-label menu-item)))
-                 (parameterize ([current-emitted (emitted 0.5 0.5 0.5 0.5)])
+                 (parameterize ([current-emitted (Menu-Item-emitted menu-item)])
                    (if (and bound1 bound2)
                        (rectangle (pos+ bound1 (dir -0.2 -0.2 0.1))
                                   (pos+ bound2 (dir  0.2  0.2 0.1)))

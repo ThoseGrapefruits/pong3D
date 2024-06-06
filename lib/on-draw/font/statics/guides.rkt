@@ -15,7 +15,6 @@
 ; { LINE/CAP, LINE/MID, LINE/MEAN, LINE/MID-X, LINE/BASE, LINE/DESC }
 ; for common character widths.
 
-
 ; LINE/CAP ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Top of most characters. We might support a RISELINE at some point but not now.
 

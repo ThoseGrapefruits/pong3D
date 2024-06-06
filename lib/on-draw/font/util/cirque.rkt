@@ -44,15 +44,17 @@
            (* adjacent (/ radius-x radius-at)))))
 
 (: cirque Cirque-Maker-Base)
-(define (cirque center radius-x radius-y #:arc arc #:basis basis)
-  (define radius-basis (cond [(not basis)                 (* 0.5 (+ radius-x radius-y))]
-                             [(equal? basis 'x)                                radius-x]
-                             [(equal? basis 'y)                                radius-y]
-                             [(flonum? basis)   (cirque-radius basis radius-x radius-y)]))
+(define (cirque center
+                radius-x radius-y
+                #:arc arc
+                #:basis basis)
+  (define radius-basis
+    (cond [(not basis)                  (* 0.5 (+ radius-x radius-y))]
+          [(equal? basis 'x)                      radius-x           ]
+          [(equal? basis 'y)                               radius-y  ]
+          [(flonum? basis)   (cirque-radius basis radius-x radius-y) ]))
   (pipe center
-        (dir radius-x
-             radius-y
-             DEPTH-Z-1/2)
+        (dir radius-x radius-y DEPTH-Z-1/2)
         #:arc arc
         #:bottom-radii (interval (/ (- radius-basis WIDTH-STROKE) radius-basis) 1.0)))
 
