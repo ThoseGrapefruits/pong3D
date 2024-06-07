@@ -22,6 +22,10 @@
               null
               (digits q radix))))
 
+(: lerp : Flonum Flonum Flonum -> Flonum)
+(define (lerp start end ratio)
+  (+ start (* ratio (- end start))))
+
 (: random/0-1 : -> Flonum)
 (define (random/0-1)
   (/ (exact->inexact (random 4294967087))

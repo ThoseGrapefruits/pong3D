@@ -5,6 +5,7 @@
   racket/list
   racket/set
   "../config.rkt"
+  "../on-draw/types.rkt"
   "../util/ball.rkt"
   "../util/number.rkt"
   "../util/pid.rkt"
@@ -48,9 +49,13 @@
                #:label "pong3D"
                #:tag   'root-main
                #:children
-               (list (make-Menu-Item #:label "Start"
+               (list (make-Menu-Item #:color-active
+                                     (Score-Section-color-emitted (second SCORE-SECTIONS))
+                                     #:label "Start"
                                      #:tag   'start)
-                     (make-Menu-Item #:label "Exit"
+                     (make-Menu-Item #:color-active
+                                     (Score-Section-color-emitted (third SCORE-SECTIONS))
+                                     #:label "Exit"
                                      #:tag   'exit))))))
 
 (: state-start-play : (->* (State) (Flonum) State-Play))

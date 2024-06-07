@@ -31,10 +31,10 @@
    [children : (Listof Menu-Item)]
    ; The direct descendants of this Menu-Item, organized by tag for fast access.
    [children-map : (HashTable Tag Menu-Item)]
+   ; The emitted color for this menu item when it's active.
+   [color-active : Emitted]
    ; The custom draw function, if any.
    [draw : (-> Menu-Item Pict3D)]
-   ; The emitted color for this menu item
-   [emitted : Emitted]
    ; The text label displayed on this menu item.
    [label : String]
    ; The direct parent of this Menu-Item in the tree. If it is a Menu, this
@@ -78,26 +78,25 @@
 (: make-Menu-Item :
    [#:children (Listof Menu-Item)]
    [#:draw (-> Menu-Item Pict3D)]
-   [#:emitted Emitted]
+   [#:color-active Emitted]
    #:label String
    #:tag Tag
    -> Menu-Item)
 (define (make-Menu-Item #:children [children '()]
                         #:draw [draw (λ (_) empty-pict3d)]
-                        #:emitted [emitted (emitted "oldlace" 1.5)]
+                        #:color-active [color-active (emitted "oldlace" 1.5)]
                         #:label label
                         #:tag tag)
-  (Menu-Item
-   (box 0.0)  ; active-start
-   (box 0.0)  ; active-end
-   children   ; children
-   (make-hash ; children-map
-    (map Menu-Item->Pair children))
-   draw       ; draw
-   emitted    ; emitted
-   label      ; label
-   (box #f)   ; parent
-   tag))      ; tag
+  (Menu-Item (box 0.0)    ; active-start
+             (box 0.0)    ; active-end
+             children     ; children
+             (make-hash   ; children-map
+              (map Menu-Item->Pair children))
+             color-active ; color-active
+             draw         ; draw
+             label        ; label
+             (box #f)     ; parent
+             tag))        ; tag
 
 ;; UTIL ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
