@@ -6,7 +6,7 @@
 
 (provide on-key-immediate-pause-menu)
 
-(: on-key-immediate-pause-menu : State-Pause-Menu Natural Flonum String -> State)
+(: on-key-immediate-pause-menu : State-Pause-Menu Natural Flonum String -> State-Any)
 (define (on-key-immediate-pause-menu s n t k)
   (cond
     [(just-pressed? s k "escape" "a")           (Pause-Menu-go-out      s n t   )]

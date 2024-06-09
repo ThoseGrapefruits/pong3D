@@ -16,7 +16,7 @@
 
 (provide on-frame-play)
 
-(: on-frame-play : State -> State)
+(: on-frame-play : State-Any -> State-Any)
 (define (on-frame-play s)
   (cond [(State-Play? s)
          (on-frame-play-endgame

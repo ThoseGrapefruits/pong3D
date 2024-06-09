@@ -9,7 +9,7 @@
 
 (provide (all-defined-out))
 
-(: State-set-key-pressed : State String Boolean -> State)
+(: State-set-key-pressed : State-Any String Boolean -> State-Any)
 (define (State-set-key-pressed s key pressed?)
   (cond
     ; ignore mouse wheel events (optimization)
@@ -22,8 +22,8 @@
                  [pressed? (set-add (State-pressed s) key)]
                  [else (set-remove (State-pressed s) key)])])]))
 
-(: State-set-player-position (->* (State-Play Flonum) (Flonum) State-Play))
-(define (State-set-player-position s y [y-desired #f])
+(: State-Play-set-player-position (->* (State-Play Flonum) (Flonum) State-Play))
+(define (State-Play-set-player-position s y [y-desired #f])
   (struct-copy
    State-Play s
    [player (struct-copy

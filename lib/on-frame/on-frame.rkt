@@ -10,12 +10,14 @@
 
 (provide on-frame)
 
-(: on-frame : State Natural Flonum -> State)
+(: on-frame : State-Any Natural Flonum -> State-Any)
 (define (on-frame s n t)
   (match-define (cons mouse-x mouse-y) (State-mouse-pos-last s))
   ((compose-n ; bottom-to-top
     on-frame-pause-menu
     on-frame-play
-    (λ ([s : State]) (State-update-trace-mouse s mouse-x mouse-y))
-    (λ ([s : State]) (State-update-counters s n t)))
+    (λ ([s : State-Any]) : State-Any
+      (State-update-trace-mouse s mouse-x mouse-y))
+    (λ ([s : State-Any]) : State-Any
+      (State-update-counters s n t)))
    s))

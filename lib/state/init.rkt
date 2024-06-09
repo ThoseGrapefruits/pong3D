@@ -25,7 +25,7 @@
    [n  #:parent State n]
    [t  #:parent State t]))
 
-(: state-start : (->* () (Flonum) State))
+(: state-start : (->* () (Flonum) State-Any))
 (define (state-start [t 0.0])
   (State-Main-Menu
    ; State
@@ -45,7 +45,8 @@
     (if (index? SCREEN-HEIGHT) SCREEN-HEIGHT 0))
 
    ; State-Main-Menu
-   (make-Menu (make-Menu-Item
+   (make-Menu         ; menu
+   (make-Menu-Item
                #:label "pong3D"
                #:tag   'root-main
                #:children

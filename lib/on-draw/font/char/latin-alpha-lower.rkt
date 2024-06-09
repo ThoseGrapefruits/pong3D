@@ -281,7 +281,7 @@
 (define char:s
   (make-Char-3D-memoized
    #\s
-   WIDTH-EM-3/8
+   WIDTH-EM-7/16
    (λ ()
      (define position-angle      : Flonum  115.0)
      (define position-angle-r (degrees->radians position-angle))

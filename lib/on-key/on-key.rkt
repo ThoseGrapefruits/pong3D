@@ -14,13 +14,13 @@
 (provide on-key
          on-release)
 
-(: on-key : State Natural Flonum String -> State)
+(: on-key : State-Any Natural Flonum String -> State-Any)
 (define (on-key s n t k)
   ((compose-n ; bottom-to-top
-    (λ ([s : State]) (State-set-key-pressed s k #t))
-    (λ ([s : State]) (on-key-immediate s n t k))) s))
+    (λ ([s : State-Any]) : State-Any (State-set-key-pressed s k #t))
+    (λ ([s : State-Any]) : State-Any (on-key-immediate s n t k))) s))
 
-(: on-key-immediate : State Natural Flonum String -> State)
+(: on-key-immediate : State-Any Natural Flonum String -> State-Any)
 ; Immediate reactions to keypresses
 (define (on-key-immediate s n t k)
   (cond
@@ -30,6 +30,6 @@
     [(State-Pause-Menu? s) (on-key-immediate-pause-menu s n t k)]
     [else s]))
 
-(: on-release : State Natural Flonum String -> State)
+(: on-release : State-Any Natural Flonum String -> State-Any)
 (define (on-release s n t k)
   (State-set-key-pressed s k #f))

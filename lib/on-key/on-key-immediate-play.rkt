@@ -1,14 +1,16 @@
 #lang typed/racket/base
 
 (require
+  racket/list
   "./util.rkt"
+  "../on-draw/game-score.rkt"
   "../state/menu.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt")
 
 (provide on-key-immediate-play)
 
-(: on-key-immediate-play : State-Play Natural Flonum String -> State)
+(: on-key-immediate-play : State-Play Natural Flonum String -> State-Any)
 (define (on-key-immediate-play s n t k)
   (cond
     [(just-pressed? s k "escape")
@@ -25,12 +27,21 @@
           State-Pause-Menu s
           (make-Menu (make-Menu-Item ; menu
                       #:children
-                      (list (make-Menu-Item #:label "Resume"
-                                            #:tag 'resume)
-                            (make-Menu-Item #:label "Main menu"
-                                            #:tag 'main-menu)
-                            (make-Menu-Item #:label "Exit"
-                                            #:tag 'exit))
+                      (list (make-Menu-Item
+                             #:color-active
+                             (Score-Section-color-emitted (second SCORE-SECTIONS))
+                             #:label "Resume"
+                             #:tag 'resume)
+                            (make-Menu-Item
+                             #:color-active
+                             (Score-Section-color-emitted (fourth SCORE-SECTIONS))
+                             #:label "Main menu"
+                             #:tag 'main-menu)
+                            (make-Menu-Item
+                             #:color-active
+                             (Score-Section-color-emitted (third SCORE-SECTIONS))
+                             #:label "Exit"
+                             #:tag 'exit))
                       #:label "Pause"
                       #:tag 'root-pause))
           resume-state))]            ; resume-state

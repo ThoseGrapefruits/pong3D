@@ -9,7 +9,7 @@
 
 (provide (all-defined-out))
 
-(: State-update-counters : State Natural Flonum -> State)
+(: State-update-counters : State-Any Natural Flonum -> State-Any)
 (define (State-update-counters s n t)
   (State-update-parent
    s
@@ -17,7 +17,7 @@
    [n #:parent State n]
    [t #:parent State t]))
 
-(: State-update-trace-mouse : State Integer Integer -> State)
+(: State-update-trace-mouse : State-Any Integer Integer -> State-Any)
 (define (State-update-trace-mouse s x y)
   (match-define (cons width height) (State-window-dims s))
   (define direction   ((camera-ray-dir (camera-transform-pong s)
