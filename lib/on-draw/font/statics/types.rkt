@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require pict3d
+         "../../../util/nested-hash.rkt")
 
 (provide (all-defined-out))
 
@@ -18,31 +19,26 @@
    [draw : Draw]
    [draw-raw : Draw-Raw]))
 
-(module draw-memoized racket/base
-  (require nested-hash pict3d)
-  (provide draw-memoize)
+(: draw-cache-box : (Boxof HashTableTop))
+(define draw-cache-box (box (make-immutable-hasheq)))
 
-  (define (draw-memoize char draw)
-    (define cache-box (box (make-immutable-hasheq)))
-    (λ ([ondraw apply] [c char] [i 0])
-      (ondraw (λ ()
-                (define cache-key '(char (current-emitted)))
-                (define cached-value
-                  (apply nested-hash-ref
-                         (unbox cache-box)
-                         cache-key
-                         #:default #f))
-                (cond [cached-value cached-value]
-                      [else (define drawn (freeze (draw))) ; the freeze-draw cycle
-                            (set-box! cache-box
-                                      (apply nested-hash-set
-                                             (unbox cache-box)
-                                             cache-key
-                                             '(drawn)))
-                            drawn])) c i))))
-
-(require/typed 'draw-memoized
-  [draw-memoize (-> Char Draw-Raw Draw)])
+(: draw-memoize : Char Draw-Raw -> Draw)
+(define (draw-memoize char draw)
+  (define default-on-draw : On-Draw-Handler (λ (draw c i) (draw)))
+  (λ ([ondraw default-on-draw] [c char] [i 0])
+    (ondraw (λ ()
+              (define cache-key (list char (current-emitted)))
+              (define cached-value
+                (nested-hash-ref* (unbox draw-cache-box)
+                                  cache-key
+                                  #:default #f))
+              (cond [cached-value cached-value]
+                    [else (define drawn (freeze (draw))) ; the freeze-draw cycle
+                          (set-box! draw-cache-box
+                                    (nested-hash-set* (unbox draw-cache-box)
+                                                      cache-key
+                                                      drawn))
+                          drawn])) c i)))
 
 (: make-Char-3D-memoized (-> Char Flonum Draw-Raw Char-3D))
 (define (make-Char-3D-memoized char width draw)
