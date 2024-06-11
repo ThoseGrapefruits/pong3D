@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require "../statics/measurements.rkt"
-         "../statics/types.rkt"
+         "../statics/memoize.rkt"
          "../util/cirque.rkt")
 
 (provide (all-defined-out))

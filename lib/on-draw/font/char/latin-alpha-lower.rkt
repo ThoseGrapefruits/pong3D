@@ -4,7 +4,7 @@
          racket/math
          "../statics/guides.rkt"
          "../statics/measurements.rkt"
-         "../statics/types.rkt"
+         "../statics/memoize.rkt"
          "../util/cirque.rkt"
          "../util/quad-thicc.rkt")
 

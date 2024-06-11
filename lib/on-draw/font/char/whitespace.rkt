@@ -2,7 +2,7 @@
 
 (require pict3d
          "../statics/measurements.rkt"
-         "../statics/types.rkt")
+         "../statics/memoize.rkt")
 
 (provide (all-defined-out))
 
