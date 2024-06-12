@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require racket/file
+(require racket/bool
+         racket/file
          racket/list
          racket/math
          typed/racket/gui/base
@@ -22,8 +23,19 @@
    (prefix-out rs: synth-note)
    (prefix-out rs: stop)))
 
-(: volume-master : Flonum)
-(define volume-master (get-preference-pong3d-flonum 'volume-master (λ () 0.5)))
+; Fixed global volume scale, since generated sounds are very very loud.
+(: volume-global : Flonum)
+(define volume-global 0.5)
+
+; User-configurable main volume
+(: volume-main : -> Flonum)
+(define (volume-main) (get-pref-flonum 'volume-main (λ () 0.7)))
+
+(: volume-for : Sound-Category -> Flonum)
+(define (volume-for category)
+  (cond [(symbol=? 'effect category) (get-pref-flonum 'volume-effects (λ () 0.7))]
+        [(symbol=? 'music  category) (get-pref-flonum 'volume-music   (λ () 1.0))]
+        [else (error 'volume-for "unknown category: ~s" category)]))
 
 (require/typed
  'wrapper
@@ -48,7 +60,7 @@
  rs-stop
 
  SOUND-ENDGAME
- SOUND-MUSIC
+ SOUND-MUSIC-BACKGROUND
  SOUND-SCORE-ON-OPPONENT
  SOUND-SCORE-ON-PLAYER
  SOUND-STARTUP
@@ -56,7 +68,10 @@
  SOUNDS-BALL-BOUNCE-PLAYER
  SOUNDS-BALL-BOUNCE-WALL)
 
-(struct PongSound ([name : Symbol]
+(define-type Sound-Category (U 'effect 'music))
+
+(struct PongSound ([category : Sound-Category]
+                   [name : Symbol]
                    [sound : RSound]))
 
 (define-type PongSounds (Listof PongSound))
@@ -71,12 +86,22 @@
   ; TODO would be good to pull this over but it's an internal function in rsound
   ; (rs:check-below-threshold sound 2.0)
   (define (get-path)
-    (define volume volume-master)
-    (define cache-key (format "~s-~s" (symbol->string (PongSound-name sound)) volume))
+    (define volume (* volume-global
+                      (min 1.0 (volume-main))
+                      (min 1.0 (volume-for (PongSound-category sound)))))
+    (define cache-key (format "~s-~s"
+                              (symbol->string (PongSound-name sound))
+                              volume))
     (define cached-path (hash-ref path-cache cache-key #f))
-    (define path (or cached-path
-                     (make-temporary-file (format "pong3d-sound-~s-~~a.wav" cache-key))))
-    (hash-set! path-cache cache-key path)
+    (define path (cond [cached-path cached-path]
+                       [else
+                        ; ~a gets used by make-temporary-file
+                        (define filename
+                          (format "pong3d-sound-~s-~~a.wav" cache-key))
+                        (define path
+                          (make-temporary-file filename))
+                        (hash-set! path-cache cache-key path)
+                        path]))
     (rs:write (rs:scale volume (PongSound-sound sound)) path)
     path)
 
@@ -132,26 +157,30 @@
 (define SOUNDS-BALL-BOUNCE-OPPONENT
   (for/list : PongSounds
     ([n (in-range -5 5)])
-    (PongSound 'ball-bounce-player
+    (PongSound 'effect
+               'ball-bounce-player
                (rs:make-ding (+ (note-to-frequency -1) (* n 1))))))
 
 (: SOUNDS-BALL-BOUNCE-PLAYER PongSounds)
 (define SOUNDS-BALL-BOUNCE-PLAYER
   (for/list : PongSounds
     ([n (in-range -5 5)])
-    (PongSound 'ball-bounce-player
+    (PongSound 'effect
+               'ball-bounce-player
                (rs:make-ding (+ (note-to-frequency 3) (* n 1))))))
 
 (: SOUNDS-BALL-BOUNCE-WALL PongSounds)
 (define SOUNDS-BALL-BOUNCE-WALL
 (for/list : PongSounds
   ([n (in-range -5 5)])
-  (PongSound 'ball-bounce-wall
+  (PongSound 'effect
+             'ball-bounce-wall
              (rs:make-ding (+ (note-to-frequency 5) (* n 1))))))
 
 (: SOUND-ENDGAME PongSound)
 (define SOUND-ENDGAME
-  (PongSound 'endgame
+  (PongSound 'music
+             'endgame
              (rs:append*
               (for*/list : (Listof RSound)
                 ([note-dur (in-list '((8 0.5) (7 0.5) (1 0.5) (3 1)))])
@@ -161,9 +190,10 @@
                                (exact-round
                                 (* (rs:default-sample-rate) dur)))))))
 
-(: SOUND-MUSIC PongSound)
-(define SOUND-MUSIC
+(: SOUND-MUSIC-BACKGROUND PongSound)
+(define SOUND-MUSIC-BACKGROUND
   (PongSound 'music
+             'music-background
              (rs:overlay
               (rs:append*
                (for*/list : (Listof RSound) ([i (in-range 20)]
@@ -180,7 +210,8 @@
 
 (: SOUND-SCORE-ON-OPPONENT PongSound)
 (define SOUND-SCORE-ON-OPPONENT
-  (PongSound 'score-on-opponent
+  (PongSound 'effect
+             'score-on-opponent
              (rs:append*
               (for*/list : (Listof RSound)
                 ([j (in-list '(2 3 7))])
@@ -190,7 +221,8 @@
 
 (: SOUND-SCORE-ON-PLAYER PongSound)
 (define SOUND-SCORE-ON-PLAYER
-  (PongSound 'score-on-player
+  (PongSound 'effect
+             'score-on-player
              (rs:append*
               (for*/list : (Listof RSound)
                 ([j (in-list '(7 3 2))])
@@ -200,7 +232,8 @@
 
 (: SOUND-STARTUP PongSound)
 (define SOUND-STARTUP
-  (PongSound 'startup
+  (PongSound 'music
+             'startup
              (rs:append*
               (for*/list : (Listof RSound)
                 ([j (in-list '(2 3 7 6))])
