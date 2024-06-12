@@ -40,7 +40,8 @@
    [pos : Pos]))
 
 (struct Opponent
-  ([y : Flonum ]))
+  ([pid-position : PID]
+   [y : Flonum ]))
 
 (struct Player
   ([lives : Nonnegative-Integer]

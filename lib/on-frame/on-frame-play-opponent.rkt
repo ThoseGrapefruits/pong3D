@@ -10,15 +10,12 @@
 
 (provide on-frame-play-opponent)
 
-(define pid-position (make-pid #:tuning-p 0.2
-                               #:tuning-i 0.0001
-                               #:tuning-d 0.0002))
-
 (: on-frame-play-opponent : State-Play -> State-Play)
 (define (on-frame-play-opponent s)
   (define ball (State-Play-ball s))
   (define ball-y (pos-y (Ball-pos ball)))
   (define opponent (State-Play-opponent s))
+  (define pid-position (Opponent-pid-position opponent))
   (define opponent-y (Opponent-y opponent))
   (define pos-predicted-maybe
     (findf (λ ([p : Pos]) (negative? (pos-x p)))

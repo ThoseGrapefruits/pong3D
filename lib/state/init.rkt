@@ -63,12 +63,15 @@
 (define (state-start-play s [t 0.0])
   (define ball (state-start-play-ball))
   (define ball-ppe (predict-ball-pos-ends-2 ball))
-  (define predicted-ball-y (pos-y (second ball-ppe)))
+  (define predicted-ball-y (pos-y (first ball-ppe)))
   (State-transition
    State-Play s
    ball      ; ball
    ball-ppe  ; ball-predicted-pos-ends
    (Opponent ; opponent
+    (make-pid #:tuning-p 0.2
+              #:tuning-i 0.0001
+              #:tuning-d 0.0002)
     predicted-ball-y) ; y
    #f        ; pause-state
    (Player   ; player

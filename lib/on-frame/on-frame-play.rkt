@@ -58,10 +58,14 @@
          (define state-fresh (state-reset-play s (State-n s) (State-t s)))
          (define player-lives-next (max 0 (sub1 (Player-lives player))))
          (if (positive? player-lives-next) (rs-play SOUND-SCORE-ON-PLAYER) null)
+         ; Feels a bit excessive to generate an entire new fresh state, but we
+         ; are using most of it here.
          (struct-copy
           State-Play s
           [ball (State-Play-ball state-fresh)]
           [ball-predicted-pos-ends (State-Play-ball-predicted-pos-ends state-fresh)]
+          ; Get updated position & PID
+          [opponent (State-Play-opponent state-fresh)]
           [player
            (struct-copy
             Player player
