@@ -1,11 +1,14 @@
 #lang info
 
 (define name "pong-racket")
-(define deps '("file-watchers"
+(define deps '("base"
+               "file-watchers"
+               "math-lib"
                "nested-hash"
-               ; Using fork for my own non-backwards-compatible changes
-               "git@github.com:ThoseGrapefruits/pict3d.git:main"
                "pict3d"
                "rsound"
+               "srfi-lite-lib"
                "typed-compose"
+               "typed-racket-lib"
+               "typed-racket-more"
                "typed-racket-stream"))

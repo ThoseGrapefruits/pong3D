@@ -18,9 +18,9 @@
                (list->string '(#\newline))
                (list->string '(#\return #\newline))
                (list->string '(#\space)))
-     (Main-Menu-go-in s n t)]
+     (Main-Menu-go-in s n t 'active)]
     [(pressed? "escape" (list->string '(#\b)))
-     (Main-Menu-go-in s n t)]
+     (Main-Menu-go-out s n t)]
     [(pressed? "up" "w")
      (Main-Menu-go-vertical s n t -1)]
     [(pressed? "down" "s")

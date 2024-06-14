@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require pict3d
+         "./palette.rkt")
 
 (provide (struct-out Score-Section)
          SCORE-SECTIONS)
@@ -12,7 +13,7 @@
    [place-high : Integer]))
 
 (define SCORE-SECTIONS : (Listof Score-Section)
-  (list (Score-Section (emitted 1.0 1.0 1.0 2.0) 0.0  10       1)   ; ones
-        (Score-Section (emitted 0.5 0.7 1.0 2.0) 0.03 100     10)   ; tens
-        (Score-Section (emitted 1.0 0.8 0.0 2.0) 0.06 1000   100)   ; hundreds
-        (Score-Section (emitted 1.3 1.0 2.0 1.5) 0.09 10000 1000))) ; thousands
+  (list (Score-Section EMITTED-WHITE  0.0  10       1)   ; ones
+        (Score-Section EMITTED-BLUE   0.03 100     10)   ; tens
+        (Score-Section EMITTED-YELLOW 0.06 1000   100)   ; hundreds
+        (Score-Section EMITTED-PURPLE 0.09 10000 1000))) ; thousands

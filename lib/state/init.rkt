@@ -2,10 +2,9 @@
 
 (require
   pict3d
-  racket/list
   racket/set
   "../config.rkt"
-  "../on-draw/types.rkt"
+  "../on-draw/palette.rkt"
   "../util/ball.rkt"
   "../util/number.rkt"
   "../util/pid.rkt"
@@ -45,32 +44,21 @@
     (if (index? SCREEN-HEIGHT) SCREEN-HEIGHT 0))
 
    ; State-Main-Menu
-   (make-Menu         ; menu
-   (make-Menu-Item
-               #:label "pong3D"
-               #:tag   'root-main
-               #:children
-               (list (make-Menu-Item #:color-active
-                                     (Score-Section-color-emitted (second SCORE-SECTIONS))
-                                     #:label "Start"
-                                     #:tag   'start)
-                     (make-Menu-Item #:color-active
-                                     (Score-Section-color-emitted (third SCORE-SECTIONS))
-                                     #:label "Exit"
-                                     #:tag   'exit))))))
+   (make-Menu ; menu
+    (get-main-menu-root))))
 
 (: state-start-play : (->* (State) (Flonum) State-Play))
 (define (state-start-play s [t 0.0])
   (define ball (state-start-play-ball))
   (define ball-ppe (predict-ball-pos-ends-2 ball))
-  (define predicted-ball-y (pos-y (first ball-ppe)))
+  (define predicted-ball-y (pos-y (car ball-ppe)))
   (State-transition
    State-Play s
    ball      ; ball
    ball-ppe  ; ball-predicted-pos-ends
    (Opponent ; opponent
     (make-pid #:tuning-p 0.2
-              #:tuning-i 0.0001
+              #:tuning-i 0.00007
               #:tuning-d 0.0002)
     predicted-ball-y) ; y
    #f        ; pause-state
@@ -90,3 +78,31 @@
   (define y (* 1.5 (- 0.5 (random/0-1))))
   (Ball (dir -1.0 y 0.0)    ; dir
         (pos 0.0 0.0 0.0))) ; pos
+
+(: get-main-menu-root : -> Menu-Item)
+(define (get-main-menu-root)
+  (make-Menu-Item
+   #:label "pong3D"
+   #:tag   'root-main
+   #:children
+   (list (make-Menu-Item
+          #:color-active EMITTED-BLUE
+          #:label "Start"
+          #:tag   'start)
+         (make-Menu-Item
+          #:color-active EMITTED-PURPLE
+          #:label "Settings"
+          #:tag   'settings
+          #:children
+          (list (make-Menu-Item
+                 #:color-active EMITTED-BLUE
+                 #:label "Lights"
+                 #:tag   'display)
+                (make-Menu-Item
+                 #:color-active EMITTED-PURPLE
+                 #:label "Sound"
+                 #:tag   'sound)))
+         (make-Menu-Item
+          #:color-active EMITTED-YELLOW
+          #:label "Exit"
+          #:tag   'exit))))

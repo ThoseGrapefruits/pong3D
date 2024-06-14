@@ -1,9 +1,8 @@
 #lang typed/racket/base
 
 (require
-  racket/list
   "./util.rkt"
-  "../on-draw/game-score.rkt"
+  "../on-draw/palette.rkt"
   "../state/menu.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt")
@@ -25,24 +24,21 @@
          ; fall back to making a new one
          (State-transition
           State-Pause-Menu s
-          (make-Menu (make-Menu-Item ; menu
-                      #:children
-                      (list (make-Menu-Item
-                             #:color-active
-                             (Score-Section-color-emitted (second SCORE-SECTIONS))
-                             #:label "Resume"
-                             #:tag 'resume)
-                            (make-Menu-Item
-                             #:color-active
-                             (Score-Section-color-emitted (fourth SCORE-SECTIONS))
-                             #:label "Main menu"
-                             #:tag 'main-menu)
-                            (make-Menu-Item
-                             #:color-active
-                             (Score-Section-color-emitted (third SCORE-SECTIONS))
-                             #:label "Exit"
-                             #:tag 'exit))
-                      #:label "Pause"
-                      #:tag 'root-pause))
-          resume-state))]            ; resume-state
+          (make-Menu      ; menu
+           (get-pause-menu-root))
+          resume-state))] ; resume-state
     [else s]))
+
+(define (get-pause-menu-root)
+  (make-Menu-Item
+   #:children (list (make-Menu-Item #:color-active EMITTED-BLUE
+                                    #:label "Resume"
+                                    #:tag 'resume)
+                    (make-Menu-Item #:color-active EMITTED-PURPLE
+                                    #:label "Main menu"
+                                    #:tag 'main-menu)
+                    (make-Menu-Item #:color-active EMITTED-YELLOW
+                                    #:label "Exit"
+                                    #:tag 'exit))
+   #:label "Pause"
+   #:tag 'root-pause))

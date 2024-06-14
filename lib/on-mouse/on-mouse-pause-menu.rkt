@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require "../menus/pause-menu.rkt"
+(require "../menus/navigation.rkt"
+         "../menus/pause-menu.rkt"
          "../state/state.rkt"
          "./menu.rkt")
 
@@ -15,7 +16,10 @@
 (: on-mouse-pause-menu-left-up : State-Pause-Menu Natural Flonum -> State-Any)
 (define (on-mouse-pause-menu-left-up s n t)
   (define menu (State-Pause-Menu-menu s))
-  (Menu-on-mouse-left-up s menu n t Pause-Menu-activate))
+  (define on-activate : (Menu-On-Activate State-Pause-Menu)
+    (λ (s n t _)
+      (Pause-Menu-go-in s n t 'hover)))
+  (Menu-on-mouse-left-up s menu n t on-activate))
 
 (: on-mouse-pause-menu-move : State-Pause-Menu Natural Flonum -> State-Any)
 (define (on-mouse-pause-menu-move s n t)

@@ -15,7 +15,8 @@
 
 (struct Pos-Dir
   ([pos : Pos]
-   [dir : Dir]))
+   [dir : Dir])
+  #:transparent)
 
 (provide
   predict-ball-pos

@@ -37,11 +37,13 @@
 
 (struct Ball
   ([dir : Dir]
-   [pos : Pos]))
+   [pos : Pos])
+  #:transparent)
 
 (struct Opponent
   ([pid-position : PID]
-   [y : Flonum ]))
+   [y : Flonum ])
+  #:transparent)
 
 (struct Player
   ([lives : Nonnegative-Integer]
@@ -49,7 +51,8 @@
    [score-multiplier : Nonnegative-Flonum]
    [y : Flonum]
    [y-desired : (U Flonum #f)]
-   [y-pid : PID]))
+   [y-pid : PID])
+  #:transparent)
 
 ; STRUCTS — STATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
