@@ -1,6 +1,8 @@
 #lang typed/racket/base
 
-(require racket/list
+(require pict3d
+         racket/bool
+         racket/list
          "../state/menu.rkt"
          "../state/state.rkt"
          "../state/syntax.rkt"
@@ -16,44 +18,53 @@
 (define-type (Menu-On-Activate S) (-> (∩ S State-Any) Natural Flonum Tags State-Any))
 (define-type (Menu-On-Exit S)     (-> (∩ S State-Any) Natural Flonum      State-Any))
 
-(: Menu-go-in : (All (S) (∩ S State-Any) Menu Natural Flonum (Menu-On-Activate S) -> State-Any))
-(define (Menu-go-in s menu n t on-activate)
-  (define active-path-box (Menu-active-path menu))
+(: Menu-go-in : (All (S) (∩ S State-Any) Menu Natural Flonum Path-Source (Menu-On-Activate S) -> State-Any))
+(define (Menu-go-in s menu n t path-source on-activate)
+  (define active-path-box
+    (cond [(symbol=? path-source 'active) (Menu-active-path menu)]
+          [(symbol=? path-source 'hover) (Menu-hovered-path menu)]
+          [else (error 'Menu-go-in "unknown Path-Source ~s" path-source)]))
+
+  (: active-path : (U #f Tags))
   (define active-path (unbox active-path-box))
-  (define active-menu-item (Menu-ref menu active-path))
+  (define active-menu-item (and active-path (Menu-ref menu active-path)))
   (define active-children (and active-menu-item
                                (Menu-Item-children active-menu-item)))
   (define first-child (and active-children
                            (not (empty? active-children))
                            (first active-children)))
-  (define first-child-is-terminal (and first-child
-                                       (empty? (Menu-Item-children first-child))))
-  (cond [(and (Menu-Item? first-child)
-              (not first-child-is-terminal))
+  (printf "Menu-go-in. active-path: ~a, active-menu-item: ~a, first-child: ~a ~n"
+                       active-path      active-menu-item      first-child)
+  (cond [(and active-path
+              (Menu-Item? first-child))
          (set-box! active-path-box (append active-path
                                            (list (Menu-Item-tag first-child))))
          (Menu-Item-active-transition! active-menu-item first-child t)
          s]
-        [else (on-activate s n t active-path)]))
+        [active-path (on-activate s n t active-path)]
+        [else s]))
 
 (: Menu-go-out : (All (S) (∩ S State-Any) Menu Natural Flonum (Menu-On-Exit S) -> State-Any))
 (define (Menu-go-out s menu n t on-exit)
   (define active-path-box (Menu-active-path menu))
   (define active-path (unbox active-path-box))
-  (define active-menu-item (Menu-ref menu active-path))
-  (define parent (and active-menu-item (Menu-Item-parent active-menu-item)))
+  (define active-menu-item (and active-path (Menu-ref menu active-path)))
+  (define parent (and active-menu-item (unbox (Menu-Item-parent active-menu-item))))
+  (printf "Menu-go-out. parent: ~s"
+                        parent    )
   (cond [(Menu-Item? parent)
          (set-box! active-path-box (drop-right active-path 1))
          (Menu-Item-active-transition! active-menu-item parent t)
          s]
-        [(Menu? parent) (State-transition State-Stop s)]
-        [else (on-exit s n t)]))
+        [(Menu? parent)
+         (on-exit s n t)]
+        [else (error 'Menu-go-out "weird parent: ~s" parent)]))
 
 (: Menu-go-vertical : State-Any Menu Natural Flonum (U -1 1) -> State-Any)
 (define (Menu-go-vertical s menu n t offset)
   (define active-path-box (Menu-active-path menu))
   (define active-path (unbox active-path-box))
-  (define active-menu-item (Menu-ref menu active-path))
+  (define active-menu-item (and active-path (Menu-ref menu active-path)))
   (define parent     (and active-menu-item    (unbox (Menu-Item-parent active-menu-item))))
   (define root? (Menu? parent))
   (define siblings   (cond [(Menu-Item? parent) (Menu-Item-children parent)]
@@ -68,7 +79,7 @@
                                   [(>= index-new (length siblings)) 0]
                                   [else index-new]))
   (define active-new (and index-new-wrapped (list-ref siblings index-new-wrapped)))
-  (cond [(Menu-Item? active-new)
+  (cond [(and active-path (Menu-Item? active-new))
          (set-box! active-path-box (if root?
                                        (append active-path
                                                (list (Menu-Item-tag active-new)))

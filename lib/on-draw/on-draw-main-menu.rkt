@@ -34,11 +34,13 @@
    (affine-compose
     (position-screen-space-relative s 0.0 0.0 1.0))))
 
+; TODO this needs to render the structure above the current active menu so the
+; trace paths are correct
 (: render-menu : State-Main-Menu -> Pict3D)
 (define (render-menu s)
   (define menu (State-Main-Menu-menu s))
   (define active-path (unbox (Menu-active-path menu)))
-  (define active-menu-item (Menu-ref menu active-path))
+  (define active-menu-item (and active-path (Menu-ref menu active-path)))
   (cond [(not active-menu-item) empty-pict3d]
         [else
          (combine
@@ -49,10 +51,11 @@
 
 (: render-menu-items : State-Main-Menu Menu Menu-Item -> Pict3D)
 (define (render-menu-items s menu menu-item)
-  (define parent (unbox (Menu-Item-parent menu-item)))
+  (define parents (get-parents menu-item))
+  (define parent (and (not (null? parents)) (car parents)))
   (define parent-usable (if (Menu-Item? parent) parent menu-item))
   (define siblings (Menu-Item-children parent-usable))
-  (parameterize
+  (define rendered (parameterize
       ([current-emitted (emitted "oldlace" 2.0)])
     (group
      (combine
@@ -86,27 +89,28 @@
           (position-screen-space-relative s -0.8 (+ -0.55 (* (exact->inexact i) 0.25)) 0.6)
           (scale (* (Menu-Item-scale s menu menu-item) TEXT-SCALE))))))
      (Menu-Item-tag parent-usable))))
-
+     (foldr (λ ([parent : Menu-Item] [pict : Pict3D])
+              (group pict (Menu-Item-tag parent)))
+            rendered
+            parents))
 
 ;; PARENTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: get-parents (->* (Menu-Item) ((Listof Menu-Item)) (Listof Menu-Item)))
+(define (get-parents menu-item [results '()])
+  (define parent (unbox (Menu-Item-parent menu-item)))
+  (cond [(Menu-Item? parent) (get-parents parent (cons parent results))]
+        [else                results                                   ]))
+
 (: render-menu-header : State-Main-Menu Menu Menu-Item -> Pict3D)
 (define (render-menu-header s menu menu-item)
-  (define-values (pict _) (render-menu-header-parents menu-item 0))
-  pict)
+  (render-menu-header-parents menu-item))
 
-(: render-menu-header-parents : (U Menu Menu-Item) Integer ->
-   (Values Pict3D Integer))
-(define (render-menu-header-parents menu-item index)
-  (define parent (and (Menu-Item? menu-item)
-                      (unbox (Menu-Item-parent menu-item))))
-  (define index-new (+ index 1))
-  (define (draw [index-offset : Integer])
-    (cube (pos+ origin -y (- 1.0 (exact->inexact index-offset))) 0.1))
-  (cond [parent
-         (define-values (pict-parents index-max)
-           (render-menu-header-parents parent index-new))
-         (define index-offset (- index-max index))
-         (values (combine (draw index-offset) pict-parents) index-max)]
-        [else
-         (values (draw 0) index-new)]))
+(: render-menu-header-parents : Menu-Item -> Pict3D)
+(define (render-menu-header-parents menu-item)
+  (define parents (get-parents menu-item))
+  (define index-max (- (length parents) 1))
+  (combine (for/list : (Listof Pict3D)
+             ([index (in-range 0 (- (length parents) 1))])
+             (define index-offset (- index-max index))
+             (cube (pos+ origin -y (- 1.0 (exact->inexact index-offset))) 0.1))))

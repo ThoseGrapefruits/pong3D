@@ -38,7 +38,7 @@
 (define (render-menu s)
   (define menu (State-Pause-Menu-menu s))
   (define active-path (unbox (Menu-active-path menu)))
-  (define active-menu-item (Menu-ref menu active-path))
+  (define active-menu-item (and active-path (Menu-ref menu active-path)))
   (cond [(not active-menu-item) empty-pict3d]
         [else
          (combine

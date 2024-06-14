@@ -17,20 +17,24 @@
   (define mouse-down-path (and mouse-down (surface-data-path mouse-down)))
   (define trace-path      (and trace      (surface-data-path trace)))
 
+  (printf "Menu-on-mouse-left-up: mouse-down-path: ~s, trace-path: ~s~n"
+                                  mouse-down-path      trace-path)
+
   (cond [(and mouse-down-path
               trace-path
               (not (empty? trace-path))
               (path=? mouse-down-path trace-path))
          (set-box! (Menu-active-path menu) trace-path)
+         (set-box! (Menu-hovered-path menu) trace-path)
          (on-activate s n t trace-path)]
         [else s]))
 
 (: Menu-on-mouse-move : (All (S) (∩ S State-Any) Menu Natural Flonum -> State-Any))
 (define (Menu-on-mouse-move s menu n t)
-  (define trace           (State-trace-mouse      s))
-  (define trace-path      (and trace (surface-data-path trace)))
   (define hover-path      (unbox (Menu-hovered-path menu)))
   (define hover-item      (and hover-path (Menu-ref menu hover-path)))
+  (define trace           (State-trace-mouse      s))
+  (define trace-path      (and trace (surface-data-path trace)))
   (define trace-item      (and trace-path (Menu-ref menu trace-path)))
 
   (cond [(and trace-path

@@ -6,8 +6,6 @@
   "./on-key-immediate-main-menu.rkt"
   "./on-key-immediate-pause-menu.rkt"
   "./on-key-immediate-play.rkt"
-  "./util.rkt"
-  "../state/init.rkt"
   "../state/setters.rkt"
   "../state/state.rkt")
 

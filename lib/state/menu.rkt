@@ -1,26 +1,31 @@
 #lang typed/racket/base
 
 (require pict3d
-         racket/list)
+         racket/list
+         "../util/tag.rkt")
 
 (provide (struct-out Menu)
          make-Menu
          (struct-out Menu-Item)
          make-Menu-Item
          Menu-Item-active-transition!
-         Menu-ref)
+         Menu-ref
+         Path-Source)
 
 ;; STRUCTS & TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define-type Path-Source (U 'active 'hover))
+
 (struct Menu
    ; The active/focused menu item. Defaults to path to root.
-  ([active-path   : (Boxof (Listof Tag))]
+  ([active-path   : (Boxof (U #f Tags))]
 
    ; The hovered menu item, if any.
-   [hovered-path  : (Boxof (U #f (Listof Tag)))]
+   [hovered-path  : (Boxof (U #f Tags))]
 
    ; The root menu item, whose parent is this Menu
-   [root          : Menu-Item]))
+   [root          : Menu-Item])
+  #:transparent)
 
 (struct Menu-Item
    ; When this Menu-Item started being active or hovered.
@@ -41,7 +46,8 @@
    ; Menu-Item is the root of a Menu.
    [parent : (Boxof (U #f Menu Menu-Item))]
    ; The tag for this Menu-Item. Used to look up menu items from raytraces.
-   [tag : Tag]))
+   [tag : Tag])
+  #:transparent)
 
 
 ;; CONSTRUCTORS & HELPERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +74,7 @@
         [(not (equal? root-tag (first path)))
          (error 'Menu-ref
                 "got path starting at ~s for menu ~s"
-                root-tag (first path))]
+                (first path) root-tag)]
         [else
          (foldl (λ ([tag : Tag] [mi : (U #f Menu-Item)])
                   (and mi (hash-ref (Menu-Item-children-map mi) tag #f)))

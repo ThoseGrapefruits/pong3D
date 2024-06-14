@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
 (require "../state/init.rkt"
+         "../state/menu.rkt"
          "../state/state.rkt"
          "../state/syntax.rkt"
          "../state/updaters.rkt"
@@ -41,10 +42,10 @@
   (define menu (State-Pause-Menu-menu s))
   (Menu-go-out s menu n t Pause-Menu-exit))
 
-(: Pause-Menu-go-in : State-Pause-Menu Natural Flonum -> State-Any)
-(define (Pause-Menu-go-in s n t)
+(: Pause-Menu-go-in : State-Pause-Menu Natural Flonum Path-Source -> State-Any)
+(define (Pause-Menu-go-in s n t path-source)
   (define menu (State-Pause-Menu-menu s))
-  (Menu-go-in s menu n t Pause-Menu-activate))
+  (Menu-go-in s menu n t path-source Pause-Menu-activate))
 
 (: Pause-Menu-go-vertical : State-Pause-Menu Natural Flonum (U -1 1) -> State-Any)
 (define (Pause-Menu-go-vertical s n t offset)

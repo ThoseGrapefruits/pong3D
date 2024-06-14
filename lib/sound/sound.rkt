@@ -70,9 +70,11 @@
 
 (define-type Sound-Category (U 'effect 'music))
 
-(struct PongSound ([category : Sound-Category]
-                   [name : Symbol]
-                   [sound : RSound]))
+(struct PongSound
+  ([category : Sound-Category]
+   [name : Symbol]
+   [sound : RSound])
+  #:transparent)
 
 (define-type PongSounds (Listof PongSound))
 
