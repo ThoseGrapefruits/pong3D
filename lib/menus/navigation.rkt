@@ -33,7 +33,7 @@
   (define first-child (and active-children
                            (not (empty? active-children))
                            (first active-children)))
-  (printf "Menu-go-in. active-path: ~a, active-menu-item: ~a, first-child: ~a ~n"
+  (printf "Menu-go-in. active-path: ~s, active-menu-item: ~s, first-child: ~s ~n"
                        active-path      active-menu-item      first-child)
   (cond [(and active-path
               (Menu-Item? first-child))

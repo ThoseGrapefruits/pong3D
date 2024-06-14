@@ -47,8 +47,13 @@
    [parent : (Boxof (U #f Menu Menu-Item))]
    ; The tag for this Menu-Item. Used to look up menu items from raytraces.
    [tag : Tag])
+   #:property prop:custom-write (λ (menu-item out mode)
+                                  (fprintf out "#0=#(struct:Menu-Item )"))
   #:transparent)
 
+(: Menu-Item-custom-write : Menu-Item Output-Port (U Boolean 0 1) Positive-Integer -> Void)
+(define (Menu-Item-custom-write menu-item out mode [depth 0])
+  (fprintf out "~s#0=#(struct:Menu-Item )" (build-string depth (λ (_) #\space))))
 
 ;; CONSTRUCTORS & HELPERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

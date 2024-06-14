@@ -14,7 +14,7 @@
 
 (: Main-Menu-activate : (Menu-On-Activate State-Main-Menu))
 (define (Main-Menu-activate s n t path)
-  (printf "Main-Menu-activate: ~s~n" path)
+  (printf "Main-Menu-activate: ~v~n" path)
   (cond [(not (State-Main-Menu? s)) s]
         [(path=? path (list 'root-main 'start))  (state-reset-play s n t)]
         [(path=? path (list 'root-main 'exit)) (State-transition State-Stop s)]

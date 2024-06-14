@@ -97,9 +97,9 @@
     (define cached-path (hash-ref path-cache cache-key #f))
     (define path (cond [cached-path cached-path]
                        [else
-                        ; ~a gets used by make-temporary-file
+                        ; ~v gets used by make-temporary-file
                         (define filename
-                          (format "pong3d-sound-~s-~~a.wav" cache-key))
+                          (format "pong3d-sound-~s-~~v.wav" cache-key))
                         (define path
                           (make-temporary-file filename))
                         (hash-set! path-cache cache-key path)

@@ -9,7 +9,7 @@
 
 (: on-mouse-main-menu : State-Main-Menu Natural Flonum Integer Integer String -> State-Any)
 (define (on-mouse-main-menu s n t x y e)
-  (printf "on-mouse-main-menu. e: ~s, x: ~.s, y: ~.s~n"
+  (printf "on-mouse-main-menu. e: ~v, x: ~.s, y: ~.s~n"
                                e      x       y)
   (cond [(string=? e "move")    (on-mouse-main-menu-move s n t)]
         [(string=? e "left-up") (on-mouse-main-menu-left-up s n t)]
