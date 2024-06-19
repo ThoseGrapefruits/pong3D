@@ -37,6 +37,9 @@
   (define trace-path      (and trace (surface-data-path trace)))
   (define trace-item      (and trace-path (Menu-ref menu trace-path)))
 
+  (printf "Menu-on-mouse-move hover-path: ~s, trace-path: ~s~n"
+                              hover-path      trace-path)
+
   (cond [(and trace-path
               trace-item
               (or (not hover-path)

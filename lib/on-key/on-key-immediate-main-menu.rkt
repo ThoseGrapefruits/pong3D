@@ -12,8 +12,6 @@
   (: pressed? : String * -> Boolean)
   (define pressed? (curry (curry just-pressed? s) k))
 
-  (printf "on-key-immediate-main-menu. k: ~v~n" k)
-
   (cond
     [(pressed? "return" "enter" "space"
                (list->string '(#\return))

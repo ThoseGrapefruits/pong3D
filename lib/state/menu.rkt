@@ -2,6 +2,7 @@
 
 (require pict3d
          racket/list
+         racket/string
          "../util/tag.rkt")
 
 (provide (struct-out Menu)
@@ -47,13 +48,31 @@
    [parent : (Boxof (U #f Menu Menu-Item))]
    ; The tag for this Menu-Item. Used to look up menu items from raytraces.
    [tag : Tag])
-   #:property prop:custom-write (λ (menu-item out mode)
-                                  (fprintf out "#0=#(struct:Menu-Item )"))
+  #:property prop:custom-write (λ (menu-item out mode)
+                                 (Menu-Item-custom-write menu-item out mode))
   #:transparent)
 
-(: Menu-Item-custom-write : Menu-Item Output-Port (U Boolean 0 1) Positive-Integer -> Void)
+(: Menu-Item-custom-write : (->* (Menu-Item Output-Port (U Boolean 0 1))
+                                 (Positive-Integer)
+                                 Void))
 (define (Menu-Item-custom-write menu-item out mode [depth 0])
-  (fprintf out "~s#0=#(struct:Menu-Item )" (build-string depth (λ (_) #\space))))
+  ; indentation/newline (if child)
+  (write (build-string depth (λ (i) (if (= 0 i) #\r #\space))) out)
+
+  ; data on this Menu-Item
+  (write "(struct:Menu-Item " out)
+  (write (Menu-Item-tag menu-item) out)
+  (write " " out)
+  (write (Menu-Item-label menu-item) out)
+
+  ; extra 1 for newline at start
+  (define child-depth (+ 2 (max 1 depth)))
+
+  ; children
+  (for ([child (Menu-Item-children menu-item)])
+    (Menu-Item-custom-write child out mode child-depth))
+
+  (write ")" out))
 
 ;; CONSTRUCTORS & HELPERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -78,8 +97,8 @@
   (cond [(empty? path) #f]
         [(not (equal? root-tag (first path)))
          (error 'Menu-ref
-                "got path starting at ~s for menu ~s"
-                (first path) root-tag)]
+                "got path ~s in menu ~s"
+                path root-tag)]
         [else
          (foldl (λ ([tag : Tag] [mi : (U #f Menu-Item)])
                   (and mi (hash-ref (Menu-Item-children-map mi) tag #f)))
