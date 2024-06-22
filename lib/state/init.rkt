@@ -96,12 +96,19 @@
           #:children
           (list (make-Menu-Item
                  #:color-active EMITTED-BLUE
-                 #:label "Lights"
+                 #:label "Display"
                  #:tag   'display)
                 (make-Menu-Item
                  #:color-active EMITTED-PURPLE
                  #:label "Sound"
-                 #:tag   'sound)))
+                 #:tag   'sound
+                 #:children
+                 (list (make-Menu-Item
+                   #:color-active EMITTED-BLUE
+                   #:label "Main volume"
+                   #:tag 'volume-main
+                   #:type  (Menu-Item-Type-Slider 'volume-main 0.0 1.0
+                                                  (λ (mi) (void))))))))
          (make-Menu-Item
           #:color-active EMITTED-YELLOW
           #:label "Exit"

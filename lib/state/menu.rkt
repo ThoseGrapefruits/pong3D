@@ -2,24 +2,29 @@
 
 (require pict3d
          racket/list
-         racket/string
+         "./menu-item-type-slider.rkt"
          "../util/tag.rkt")
 
 (provide (struct-out Menu)
-         make-Menu
          (struct-out Menu-Item)
+         make-Menu
          make-Menu-Item
+         Menu-Item-Type
          Menu-Item-active-transition!
          Menu-ref
          Path-Source)
 
 ;; STRUCTS & TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define-type Menu-Item-Type (U 'text Menu-Item-Type-Slider-Flonum))
 (define-type Path-Source (U 'active 'hover))
 
 (struct Menu
-   ; The active/focused menu item. Defaults to path to root.
+   ; The active/focused menu item. Defaults to path to root, #f only on init.
   ([active-path   : (Boxof (U #f Tags))]
+
+   ; The menu item currently being dragged by the mouse, if any.
+   [dragged-path  : (Boxof (U #f Tags))]
 
    ; The hovered menu item, if any.
    [hovered-path  : (Boxof (U #f Tags))]
@@ -32,22 +37,23 @@
    ; When this Menu-Item started being active or hovered.
   ([active-start : (Boxof (U #f Flonum))]
    ; When this Menu-Item stopped being active or hovered.
-   [active-end : (Boxof (U #f Flonum))]
+   [active-end   : (Boxof (U #f Flonum))]
    ; The direct descendents of this Menu-Item in the tree.
-   [children : (Listof Menu-Item)]
+   [children     : (Listof Menu-Item)]
    ; The direct descendants of this Menu-Item, organized by tag for fast access.
    [children-map : (HashTable Tag Menu-Item)]
    ; The emitted color for this menu item when it's active.
    [color-active : Emitted]
    ; The custom draw function, if any.
-   [draw : (-> Menu-Item Pict3D)]
+   [draw         : (-> Menu-Item Pict3D)]
    ; The text label displayed on this menu item.
-   [label : String]
+   [label        : String]
    ; The direct parent of this Menu-Item in the tree. If it is a Menu, this
    ; Menu-Item is the root of a Menu.
-   [parent : (Boxof (U #f Menu Menu-Item))]
+   [parent       : (Boxof (U #f Menu Menu-Item))]
    ; The tag for this Menu-Item. Used to look up menu items from raytraces.
-   [tag : Tag])
+   [tag          : Tag]
+   [type         : Menu-Item-Type])
   #:property prop:custom-write (λ (menu-item out mode)
                                  (Menu-Item-custom-write menu-item out mode))
   #:transparent)
@@ -82,6 +88,7 @@
   (define root-tag (Menu-Item-tag root))
   (define menu
     (Menu (box (list root-tag)) ; active-path
+          (box #f)              ; dragged-path
           (box #f)              ; hovered-path
           root))                ; root
   (Menu-update-parents! menu)
@@ -110,12 +117,14 @@
    [#:children (Listof Menu-Item)]
    [#:draw (-> Menu-Item Pict3D)]
    [#:color-active Emitted]
+   [#:type Menu-Item-Type]
    #:label String
    #:tag Tag
    -> Menu-Item)
 (define (make-Menu-Item #:children [children '()]
                         #:draw [draw (λ (_) empty-pict3d)]
                         #:color-active [color-active (emitted "oldlace" 1.5)]
+                        #:type [type 'text]
                         #:label label
                         #:tag tag)
   (Menu-Item (box 0.0)    ; active-start
@@ -127,7 +136,8 @@
              draw         ; draw
              label        ; label
              (box #f)     ; parent
-             tag))        ; tag
+             tag          ; tag
+             type))       ; type
 
 ;; UTIL ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

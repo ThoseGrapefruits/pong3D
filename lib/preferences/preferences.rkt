@@ -4,7 +4,8 @@
 
 (provide get-pref-flonum
          get-pref-real
-         get-pref-string)
+         get-pref-string
+         Pref-Key)
 
 (define path-base  (build-path (find-system-path 'pref-dir) (string->path "pong3d")))
 (define path-prefs (build-path path-base (string->path "pong3d.ss")))

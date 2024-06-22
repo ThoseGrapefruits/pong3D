@@ -30,8 +30,6 @@
 (define EMITTED-MENU-ITEM-TEXT-ACTIVE (emitted "oldlace" 0.1))
 (define EMITTED-MENU-ITEM-BACKGROUND  (emitted "oldlace" 0.0))
 
-(define-type State-Menu (U State-Main-Menu State-Pause-Menu))
-
 ; Recursively groups the given pict based on the tags in the given list of
 ; parents (produced by Menu-Item-parents).
 (: group-within : Pict3D (Listof Menu-Item) -> Pict3D)

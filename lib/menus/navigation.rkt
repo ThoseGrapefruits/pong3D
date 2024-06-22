@@ -1,21 +1,22 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/bool
+(require racket/bool
          racket/list
          "../state/menu.rkt"
          "../state/state.rkt"
-         "../state/syntax.rkt"
          "../util/list.rkt"
          "../util/tag.rkt")
 
 (provide Menu-On-Activate
+         Menu-On-Drag
          Menu-On-Exit
          Menu-go-in
          Menu-go-out
          Menu-go-vertical)
 
+(define-type Drag-State (U 'start 'change 'end))
 (define-type (Menu-On-Activate S) (-> (∩ S State-Any) Natural Flonum Tags State-Any))
+(define-type (Menu-On-Drag S)     (-> (∩ S State-Any) Natural Flonum Tags Drag-State State-Any))
 (define-type (Menu-On-Exit S)     (-> (∩ S State-Any) Natural Flonum      State-Any))
 
 (: Menu-go-in : (All (S) (∩ S State-Any) Menu Natural Flonum Path-Source (Menu-On-Activate S) -> State-Any))
@@ -33,8 +34,8 @@
   (define first-child (and active-children
                            (not (empty? active-children))
                            (first active-children)))
-  (printf "Menu-go-in. active-path: ~s, active-menu-item: ~s, first-child: ~s ~n"
-                       active-path      active-menu-item      first-child)
+  (printf "Menu-go-in. active-path: ~s, active-menu-item: ~s~n"
+                       active-path      active-menu-item)
   (cond [(and active-path
               (Menu-Item? first-child))
          (set-box! active-path-box (append active-path

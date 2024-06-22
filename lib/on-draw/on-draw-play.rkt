@@ -192,7 +192,6 @@
                (move-y (- 0.0 WALL-Y BALL-RADIUS))
                (scale (dir 10 1/256 1/256))))))
 
-
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
@@ -204,7 +203,6 @@
     #:range 1)
    (with-emitted (emitted "oldlace" 1.5)
      (sphere (Ball-pos ball) BALL-RADIUS))))
-
 
 (: render-game-play-ball-predicted : State-Play -> Pict3D)
 (define (render-game-play-ball-predicted s)
