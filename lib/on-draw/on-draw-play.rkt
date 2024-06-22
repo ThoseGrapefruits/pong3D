@@ -24,7 +24,7 @@
           [else #f]))
   (if state-play
       (combine (render-game-play-opponent state-play)
-               ; (render-sample-text state-play)
+               (render-sample-text state-play)
                (render-game-play-player state-play)
                (render-game-play-ball state-play)
                (render-game-play-hud state-play)
@@ -40,7 +40,7 @@
               "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\n"
               "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ "
               "{one} [two] (three) \"some\" 'thing' \n"
-              "012345678910 +=!@$#%^&* ()[]{} -—_? a/b\\c| :;., '\" 2+2=5"))
+              "012345678910 +=!@$#%^&* ()[]{}<>><<> -—_? a/b\\c| :;., '\" 2+2=5"))
 
 (define cor (string-append-immutable
              "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT. "
@@ -192,7 +192,6 @@
                (move-y (- 0.0 WALL-Y BALL-RADIUS))
                (scale (dir 10 1/256 1/256))))))
 
-
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
@@ -204,7 +203,6 @@
     #:range 1)
    (with-emitted (emitted "oldlace" 1.5)
      (sphere (Ball-pos ball) BALL-RADIUS))))
-
 
 (: render-game-play-ball-predicted : State-Play -> Pict3D)
 (define (render-game-play-ball-predicted s)

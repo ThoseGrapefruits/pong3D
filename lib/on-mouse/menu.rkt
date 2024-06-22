@@ -7,18 +7,25 @@
          "../state/state.rkt"
          "../util/tag.rkt")
 
-(provide Menu-on-mouse-left-up
+(provide Menu-on-mouse-left-down
+         Menu-on-mouse-left-up
          Menu-on-mouse-move)
 
-(: Menu-on-mouse-left-up : (All (S) (∩ S State-Any) Menu Natural Flonum (Menu-On-Activate S) -> State-Any))
-(define (Menu-on-mouse-left-up s menu n t on-activate)
-  (define mouse-down (State-trace-mouse-down s))
-  (define trace      (State-trace-mouse      s))
+(: Menu-on-mouse-left-down : (All (S) (∩ S State-Any) Menu Natural Flonum -> State-Any))
+(define (Menu-on-mouse-left-down s menu n t)
+  (define trace      (State-trace-mouse s))
+  (define trace-path (and trace (surface-data-path trace)))
+  (define trace-item (and trace-path (Menu-ref menu trace-path)))
+  s)
+
+(: Menu-on-mouse-left-up : (All (S) (∩ S State-Any) Menu Natural Flonum
+                                #:on-activate (Menu-On-Activate S)
+                                -> State-Any))
+(define (Menu-on-mouse-left-up s menu n t #:on-activate on-activate)
+  (define mouse-down      (State-trace-mouse-down s))
+  (define trace           (State-trace-mouse      s))
   (define mouse-down-path (and mouse-down (surface-data-path mouse-down)))
   (define trace-path      (and trace      (surface-data-path trace)))
-
-  (printf "Menu-on-mouse-left-up: mouse-down-path: ~s, trace-path: ~s~n"
-                                  mouse-down-path      trace-path)
 
   (cond [(and mouse-down-path
               trace-path
@@ -36,9 +43,6 @@
   (define trace           (State-trace-mouse      s))
   (define trace-path      (and trace (surface-data-path trace)))
   (define trace-item      (and trace-path (Menu-ref menu trace-path)))
-
-  (printf "Menu-on-mouse-move hover-path: ~s, trace-path: ~s~n"
-                              hover-path      trace-path)
 
   (cond [(and trace-path
               trace-item

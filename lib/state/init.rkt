@@ -2,6 +2,7 @@
 
 (require
   pict3d
+  racket/math
   racket/set
   "../config.rkt"
   "../on-draw/palette.rkt"
@@ -9,6 +10,7 @@
   "../util/number.rkt"
   "../util/pid.rkt"
   "./menu.rkt"
+  "./menu-item-types.rkt"
   "./state.rkt"
   "./syntax.rkt")
 
@@ -96,12 +98,22 @@
           #:children
           (list (make-Menu-Item
                  #:color-active EMITTED-BLUE
-                 #:label "Lights"
+                 #:label "Display"
                  #:tag   'display)
                 (make-Menu-Item
                  #:color-active EMITTED-PURPLE
                  #:label "Sound"
-                 #:tag   'sound)))
+                 #:tag   'sound
+                 #:children
+                 (list (make-Menu-Item
+                   #:color-active EMITTED-BLUE
+                   #:label "Main volume"
+                   #:tag   'volume-main
+                   #:type  (make-Menu-Item-Type-Slider-Flonum
+                            #:key 'volume-main
+                            #:min 0.0
+                            #:max 1.0
+                            #:step 0.1))))))
          (make-Menu-Item
           #:color-active EMITTED-YELLOW
           #:label "Exit"

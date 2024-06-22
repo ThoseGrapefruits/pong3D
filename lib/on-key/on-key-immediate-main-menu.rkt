@@ -22,7 +22,11 @@
     [(pressed? "escape" (list->string '(#\b)))
      (Main-Menu-go-out s n t)]
     [(pressed? "up" "w")
-     (Main-Menu-go-vertical s n t -1)]
+     (Main-Menu-go-vertical   s n t -1)]
     [(pressed? "down" "s")
-     (Main-Menu-go-vertical s n t 1)]
+     (Main-Menu-go-vertical   s n t  1)]
+    [(pressed? "left" "a")
+     (Main-Menu-go-horizontal s n t -1)]
+    [(pressed? "right" "d")
+     (Main-Menu-go-horizontal s n t  1)]
     [else s]))

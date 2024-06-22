@@ -9,6 +9,8 @@
          bounds?
          State-Any
          State-Any?
+         State-Menu
+         State-Menu?
          (struct-out Ball)
          (struct-out Menu)
          (struct-out Menu-Item)
@@ -32,6 +34,14 @@
                         (or (not  (cdr o))
                             (pos? (cdr o))))]
         [else      #f]))
+
+(define-type State-Menu (U State-Main-Menu State-Pause-Menu))
+
+(: State-Menu? : Any -> Boolean : State-Menu)
+(define (State-Menu? o)
+  (and (State? o)
+       (or (State-Main-Menu? o)
+           (State-Pause-Menu? o))))
 
 ; STRUCTS — CHILDREN / SHARED ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
