@@ -3,23 +3,25 @@
 (require racket/bool
          racket/list
          "../state/menu.rkt"
+         "../state/menu-item-types.rkt"
          "../state/state.rkt"
          "../util/list.rkt"
          "../util/tag.rkt")
 
 (provide Menu-On-Activate
-         Menu-On-Drag
+         Menu-On-Change
          Menu-On-Exit
          Menu-go-in
+         Menu-go-horizontal
          Menu-go-out
          Menu-go-vertical)
 
-(define-type Drag-State (U 'start 'change 'end))
-(define-type (Menu-On-Activate S) (-> (∩ S State-Any) Natural Flonum Tags State-Any))
-(define-type (Menu-On-Drag S)     (-> (∩ S State-Any) Natural Flonum Tags Drag-State State-Any))
-(define-type (Menu-On-Exit S)     (-> (∩ S State-Any) Natural Flonum      State-Any))
+(define-type (Menu-On-Activate S) (-> (∩ S State-Any) Natural Flonum Tags           State-Any))
+(define-type (Menu-On-Change S)   (-> (∩ S State-Any) Natural Flonum Tags Menu-Item State-Any))
+(define-type (Menu-On-Exit S)     (-> (∩ S State-Any) Natural Flonum                State-Any))
 
-(: Menu-go-in : (All (S) (∩ S State-Any) Menu Natural Flonum Path-Source (Menu-On-Activate S) -> State-Any))
+(: Menu-go-in : (All (S) (∩ S State-Any) Menu Natural Flonum Path-Source (Menu-On-Activate S)
+                     -> State-Any))
 (define (Menu-go-in s menu n t path-source on-activate)
   (define active-path-box
     (cond [(symbol=? path-source 'active) (Menu-active-path menu)]
@@ -45,6 +47,21 @@
         [active-path (on-activate s n t active-path)]
         [else s]))
 
+(: Menu-go-horizontal : (All (S) (∩ S State-Any) Menu Natural Flonum (U -1 1)
+                             #:on-change (Menu-On-Change S) -> State-Any))
+(define (Menu-go-horizontal s menu n t offset #:on-change on-change)
+  (define active-path-box (Menu-active-path menu))
+  (define active-path (unbox active-path-box))
+  (define active-mi (and active-path (Menu-ref menu active-path)))
+  (define active-type (and active-mi (Menu-Item-type active-mi)))
+  (cond [(Menu-Item-Type-Slider-Flonum? active-type)
+         (define value-set! (Menu-Item-Type-Slider-Flonum-value-setter active-type))
+         (value-set! (+ ((Menu-Item-Type-Slider-Flonum-value-getter  active-type))
+                        (* offset (Menu-Item-Type-Slider-Flonum-step active-type))))
+         (on-change s n t active-path active-mi)
+         s]
+        [else s]))
+
 (: Menu-go-out : (All (S) (∩ S State-Any) Menu Natural Flonum (Menu-On-Exit S) -> State-Any))
 (define (Menu-go-out s menu n t on-exit)
   (define active-path-box (Menu-active-path menu))
@@ -61,7 +78,7 @@
          (on-exit s n t)]
         [else (error 'Menu-go-out "weird parent: ~s" parent)]))
 
-(: Menu-go-vertical : State-Any Menu Natural Flonum (U -1 1) -> State-Any)
+(: Menu-go-vertical : (All (S) (∩ S State-Any) Menu Natural Flonum (U -1 1) -> State-Any))
 (define (Menu-go-vertical s menu n t offset)
   (define active-path-box (Menu-active-path menu))
   (define active-path (unbox active-path-box))

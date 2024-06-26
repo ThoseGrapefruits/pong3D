@@ -19,7 +19,8 @@
   (define on-activate : (Menu-On-Activate State-Pause-Menu)
     (λ (s n t _)
       (Pause-Menu-go-in s n t 'hover)))
-  (Menu-on-mouse-left-up s menu n t on-activate))
+  (Menu-on-mouse-left-up s menu n t
+                         #:on-activate on-activate))
 
 (: on-mouse-pause-menu-move : State-Pause-Menu Natural Flonum -> State-Any)
 (define (on-mouse-pause-menu-move s n t)

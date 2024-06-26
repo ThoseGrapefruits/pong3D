@@ -24,7 +24,7 @@
           [else #f]))
   (if state-play
       (combine (render-game-play-opponent state-play)
-               ; (render-sample-text state-play)
+               (render-sample-text state-play)
                (render-game-play-player state-play)
                (render-game-play-ball state-play)
                (render-game-play-hud state-play)
@@ -40,7 +40,7 @@
               "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\n"
               "aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ "
               "{one} [two] (three) \"some\" 'thing' \n"
-              "012345678910 +=!@$#%^&* ()[]{} -—_? a/b\\c| :;., '\" 2+2=5"))
+              "012345678910 +=!@$#%^&* ()[]{}<>><<> -—_? a/b\\c| :;., '\" 2+2=5"))
 
 (define cor (string-append-immutable
              "EVERY MORNING I WAKE UP & OPEN PALM SLAM A VHS INTO THE SLOT. "

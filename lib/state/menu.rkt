@@ -2,29 +2,24 @@
 
 (require pict3d
          racket/list
-         "./menu-item-type-slider.rkt"
+         "./menu-item-types.rkt"
          "../util/tag.rkt")
 
 (provide (struct-out Menu)
          (struct-out Menu-Item)
          make-Menu
          make-Menu-Item
-         Menu-Item-Type
          Menu-Item-active-transition!
          Menu-ref
          Path-Source)
 
 ;; STRUCTS & TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-type Menu-Item-Type (U 'text Menu-Item-Type-Slider-Flonum))
 (define-type Path-Source (U 'active 'hover))
 
 (struct Menu
    ; The active/focused menu item. Defaults to path to root, #f only on init.
   ([active-path   : (Boxof (U #f Tags))]
-
-   ; The menu item currently being dragged by the mouse, if any.
-   [dragged-path  : (Boxof (U #f Tags))]
 
    ; The hovered menu item, if any.
    [hovered-path  : (Boxof (U #f Tags))]
@@ -88,7 +83,6 @@
   (define root-tag (Menu-Item-tag root))
   (define menu
     (Menu (box (list root-tag)) ; active-path
-          (box #f)              ; dragged-path
           (box #f)              ; hovered-path
           root))                ; root
   (Menu-update-parents! menu)
