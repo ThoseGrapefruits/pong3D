@@ -473,6 +473,40 @@
                   #:arc (arc bottom-arc-angle 110.0)
                   #:basis #f)))))
 
+(define symbol:<
+  (make-Char-3D-memoized
+  #\<
+  WIDTH-EM-1/2
+  ; top
+  (λ ()
+    (define height-1/2 HEIGHT-FULL-1/4)
+    (combine (quad-thicc (pos+ LINE/MID-FULL/START   -y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/START   +y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/END-3/8 -y (- height-1/2 WIDTH-DIAGONAL-BASE))
+                         (pos+ LINE/MID-FULL/END-3/8 -y height-1/2))
+             ; bottom
+             (quad-thicc (pos+ LINE/MID-FULL/START  -y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/START  +y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/END-3/8 +y height-1/2)
+                         (pos+ LINE/MID-FULL/END-3/8 +y (- height-1/2 WIDTH-DIAGONAL-BASE)))))))
+
+(define symbol:>
+  (make-Char-3D-memoized
+  #\>
+  WIDTH-EM-1/2
+  ; top
+  (λ ()
+    (define height-1/2 HEIGHT-FULL-1/4)
+    (combine (quad-thicc (pos+ LINE/MID-FULL/END-3/8   +y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/END-3/8   -y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/START -y height-1/2)
+                         (pos+ LINE/MID-FULL/START -y (- height-1/2 WIDTH-DIAGONAL-BASE)))
+             ; bottom
+             (quad-thicc (pos+ LINE/MID-FULL/END-3/8  +y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/END-3/8  -y WIDTH-DIAGONAL-BASE-1/2)
+                         (pos+ LINE/MID-FULL/START +y (- height-1/2 WIDTH-DIAGONAL-BASE))
+                         (pos+ LINE/MID-FULL/START +y height-1/2))))))
+
 (define symbol:-
   (make-Char-3D-memoized
    #\-

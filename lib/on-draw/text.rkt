@@ -97,6 +97,8 @@
         font:symbol:bracket-square-right
         font:symbol:bracket-curly-left
         font:symbol:bracket-curly-right
+        font:symbol:<
+        font:symbol:>
         font:symbol:-
         font:symbol:—
         font:symbol:_
