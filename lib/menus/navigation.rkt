@@ -68,7 +68,7 @@
   (define active-path (unbox active-path-box))
   (define active-menu-item (and active-path (Menu-ref menu active-path)))
   (define parent (and active-menu-item (unbox (Menu-Item-parent active-menu-item))))
-  (printf "Menu-go-out. parent: ~s"
+  (printf "Menu-go-out. parent: ~s~n"
                         parent    )
   (cond [(Menu-Item? parent)
          (set-box! active-path-box (drop-right active-path 1))
@@ -97,12 +97,12 @@
                                   [(>= index-new (length siblings)) 0]
                                   [else index-new]))
   (define active-new (and index-new-wrapped (list-ref siblings index-new-wrapped)))
-  (cond [(and active-path (Menu-Item? active-new))
-         (set-box! active-path-box (if root?
-                                       (append active-path
-                                               (list (Menu-Item-tag active-new)))
-                                       (swap-last active-path
-                                                  (Menu-Item-tag active-new))))
-         (Menu-Item-active-transition! active-menu-item active-new t)
-         s]
-        [else s]))
+  (when (and active-path (Menu-Item? active-new))
+    (set-box! active-path-box (if root?
+                                  (append active-path
+                                          (list (Menu-Item-tag active-new)))
+                                  (swap-last active-path
+                                             (Menu-Item-tag active-new))))
+    (Menu-Item-active-transition! active-menu-item active-new t))
+
+  s)

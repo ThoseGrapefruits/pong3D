@@ -31,8 +31,8 @@
          (define trace (State-trace-mouse/last s))
          (define player (State-Play-player s))
          (define player-pid (Player-y-pid player))
-         (or (Player-y-desired player)
-             (pid-reset! player-pid))
+         (unless (Player-y-desired player)
+           (pid-reset! player-pid))
          (if (surface-data? trace)
              (struct-copy
               State-Play s

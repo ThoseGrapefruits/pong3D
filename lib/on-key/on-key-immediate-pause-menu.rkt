@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require "./util.rkt"
-         "../menus/pause-menu.rkt"
+         "../menus/menu-pause.rkt"
          "../state/state.rkt")
 
 (provide on-key-immediate-pause-menu)

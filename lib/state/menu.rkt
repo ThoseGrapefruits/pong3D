@@ -58,7 +58,7 @@
                                  Void))
 (define (Menu-Item-custom-write menu-item out mode [depth 0])
   (define active-start (unbox (Menu-Item-active-start menu-item)))
-  (define active-end (unbox (Menu-Item-active-end     menu-item)))
+  (define active-end   (unbox (Menu-Item-active-end     menu-item)))
   ; data on this Menu-Item
   (fprintf out "~a(struct:Menu-Item ~a ~s [active s:~a\te:~a]"
            ; newline & indentation (if child)
@@ -74,7 +74,7 @@
                             ; extra 1 for newline at start
                             (+ 2 (max 1 depth))))
 
-  (display ")" out))
+  (fprintf out ")"))
 
 ;; CONSTRUCTORS & HELPERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -151,6 +151,6 @@
 (define (Menu-Item-active-transition! old new t)
   ; TODO use existing start and end values on new if within ANIMATION-TIME.
   ; Needs math that I can't think about right now, probably should draw it out.
-  (and old (set-box! (Menu-Item-active-end   old) t))
+  (when old (set-box! (Menu-Item-active-end   old) t))
   (set-box! (Menu-Item-active-start new) t)
   (set-box! (Menu-Item-active-end   new) #f))

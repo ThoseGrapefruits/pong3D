@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require racket/function
-         "../menus/main-menu.rkt"
+         "../menus/menu-main.rkt"
          "../state/state.rkt"
          "./util.rkt")
 
