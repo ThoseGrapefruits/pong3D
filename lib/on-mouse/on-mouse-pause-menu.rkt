@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require "../menus/navigation.rkt"
-         "../menus/pause-menu.rkt"
+         "../menus/menu-pause.rkt"
          "../state/state.rkt"
          "./menu.rkt")
 

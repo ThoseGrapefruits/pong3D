@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require "../menus/main-menu.rkt"
+(require "../menus/menu-main.rkt"
          "../menus/navigation.rkt"
          "../state/state.rkt"
          "./menu.rkt")
