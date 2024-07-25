@@ -8,7 +8,8 @@
   "../state/accessors.rkt"
   "../state/state.rkt"
   "../util/ball.rkt"
-  "../util/number.rkt")
+  "../util/number.rkt"
+  "../util/player.rkt")
 
 (provide on-frame-play-ball)
 
@@ -39,7 +40,10 @@
 ; Given the current state and a predicted future ball position, if that position
 ; is past a bound that should have reflected the ball, return the reflection
 ; axis and the current state of the ball
-(: get-bound-passed : State-Play Pos -> (Values (U Dir #f) Flonum))
+(: get-bound-passed : State-Play Pos ->
+   (Values (U Dir #f) ; canonical axis w/o messing with paddle offset
+           (U Dir #f) ; reflection axis (includes paddle offset)
+           Flonum))   ; how much ball travel distance remains
 (define (get-bound-passed s ball-pos-next)
   (define player (State-Play-player s))
   (define opponent (State-Play-opponent s))
@@ -58,7 +62,7 @@
      (define dist-past-wall-y (- (- BALL-MAX-Y) ball-y))
      (define dist-past-wall (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-wall-y (abs (dir-dy ball-moved)))))
-     (values +y dist-past-wall)]
+     (values +y +y dist-past-wall)]
 
     ; right wall collision
     [(and (positive? (dir-dy ball-dir))
@@ -67,7 +71,7 @@
      (define dist-past-wall-y (- ball-y BALL-MAX-Y))
      (define dist-past-wall (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-wall-y (abs (dir-dy ball-moved)))))
-     (values -y dist-past-wall)]
+     (values -y -y dist-past-wall)]
 
     ; opponent collision
     [(and (negative? (dir-dx ball-dir))
@@ -83,7 +87,7 @@
      (define dist-past-bumper (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-bumper-x (abs (dir-dx ball-moved)))))
      (rs-play-random SOUNDS-BALL-BOUNCE-OPPONENT)
-     (values reflection-axis dist-past-bumper)]
+     (values +x reflection-axis dist-past-bumper)]
 
     ; player collision
     [(and (positive? (dir-dx ball-dir))
@@ -99,16 +103,16 @@
      (define dist-past-bumper (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-bumper-x (abs (dir-dx ball-moved)))))
      (rs-play-random SOUNDS-BALL-BOUNCE-PLAYER)
-     (values reflection-axis dist-past-bumper)]
-    [else (values #f 0.0)]))
+     (values -x reflection-axis dist-past-bumper)]
+    [else (values #f #f 0.0)]))
 
 (: move-reflect : State-Play -> State-Play)
 (define (move-reflect s)
-  (define-values (reflected ball-new)
+  (define-values (state-new reflected ball-new)
     (move-reflect-ball s (State-Play-ball s)
                        (* (State-dt s) BALL-SPEED)))
   (struct-copy
-   State-Play s
+   State-Play state-new
    [ball ball-new]
    [ball-predicted-pos-ends (if reflected
                                 (predict-ball-pos-ends-2 ball-new)
@@ -117,29 +121,42 @@
 (: FLONUM-SMOL : Flonum)
 (define FLONUM-SMOL 0.00000001)
 
-(: move-reflect-ball : State-Play Ball Flonum -> (Values Boolean Ball))
+(: move-reflect-ball : State-Play Ball Flonum -> (Values State-Play Boolean Ball))
 (define (move-reflect-ball s ball move-remaining)
   (define ball-dir (Ball-dir ball))
   (define ball-pos (Ball-pos ball))
   (define ball-pos-next (pos+ ball-pos
                               (dir-scale ball-dir move-remaining)))
-  (define-values (axis dist-past) (get-bound-passed s ball-pos-next))
-  (define is-out-of-movement (or (not axis)
+  (define-values
+    (axis-perpendicular axis-reflection dist-past)
+    (get-bound-passed s ball-pos-next))
+  (define is-out-of-movement (or (not axis-perpendicular)
+                                 (not axis-reflection)
                                  (<= move-remaining 0.0)))
   (cond
     [is-out-of-movement
-     (values #f (struct-copy Ball ball [pos ball-pos-next]))]
+     (values s #f (struct-copy Ball ball [pos ball-pos-next]))]
     [else
      (define move-before-reflection (- move-remaining dist-past FLONUM-SMOL))
-     (define-values (_ ball-new)
+     (define-values (state-new _ ball-new)
        (move-reflect-ball
-        s
+        (increment-score-maybe s axis-perpendicular)
         (struct-copy
          Ball ball
-         [dir (dir-reflect ball-dir axis)]
+         [dir (dir-reflect ball-dir axis-reflection)]
          [pos
           (pos+ ball-pos
                 (dir-scale (Ball-dir ball)
                            move-before-reflection))])
         dist-past))
-     (values #t ball-new)]))
+     (values state-new #t ball-new)]))
+
+(: increment-score-maybe : State-Play Dir -> State-Play)
+(define (increment-score-maybe s axis-perpendicular)
+  (cond [(eq? axis-perpendicular -x)
+         (define player (State-Play-player s))
+         (struct-copy State-Play s
+                      [player (struct-copy
+                               Player player
+                               [score (get-new-player-score player 1)])])]
+        [else s]))

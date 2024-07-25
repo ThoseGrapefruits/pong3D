@@ -53,7 +53,8 @@
           [player
            (struct-copy
             Player player
-            [score (get-new-player-score player 10)])])]
+            [score-multiplier (+ 1.0 (Player-score-multiplier player))]
+            [score            (get-new-player-score player 10)])])]
         [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
          (define state-fresh (state-reset-play s (State-n s) (State-t s)))
          (define player-lives-next (max 0 (sub1 (Player-lives player))))
