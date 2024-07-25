@@ -53,16 +53,26 @@
                                  (Menu-Item-custom-write menu-item out mode))
   #:transparent)
 
+; display — ~a, ~A
+; write   — ~s, ~S
+; print   — ~v, ~V
 (: Menu-Item-custom-write : (->* (Menu-Item Output-Port (U Boolean 0 1))
                                  (Positive-Integer)
                                  Void))
 (define (Menu-Item-custom-write menu-item out mode [depth 0])
   (define active-start (unbox (Menu-Item-active-start menu-item)))
   (define active-end   (unbox (Menu-Item-active-end     menu-item)))
+  (define print-string
+    (case mode
+      [(#t) "~a(struct:Menu-Item ~s ~s [active s:~a\te:~a]"]   ; write
+      [(#f) "~a(struct:Menu-Item ~a ~a [active s:~a\te:~a]"]   ; display
+      [else "~a(struct:Menu-Item ~a ~s [active s:~a\te:~a]"])) ; print
+  (define indent
+    (if mode "" (build-string depth (λ (i) (if (= 0 i) #\newline #\space)))))
   ; data on this Menu-Item
-  (fprintf out "~a(struct:Menu-Item ~a ~s [active s:~a\te:~a]"
+  (fprintf out print-string
            ; newline & indentation (if child)
-           (build-string depth (λ (i) (if (= 0 i) #\newline #\space)))
+           indent
            (Menu-Item-tag menu-item)
            (Menu-Item-label menu-item)
            (and active-start (inexact->exact (round active-start)))
