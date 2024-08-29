@@ -121,46 +121,67 @@
 
 (: render-menu-item : State-Menu Menu Menu-Item Integer (Listof Menu-Item) -> Pict3D)
 (define (render-menu-item s menu menu-item i siblings)
-  (define label-rendered (text (Menu-Item-label menu-item)) )
-  (define-values (bound1 bound2) (bounding-rectangle label-rendered))
-  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
   (define type (Menu-Item-type menu-item))
-
   (cond [(and (symbol? type) (symbol=? 'text type))
          (render-menu-item-text   s menu menu-item i siblings type)]
         [(Menu-Item-Type-Slider? type)
          (render-menu-item-slider s menu menu-item i siblings type)]))
 
+
+(: bounding-box-cache : (HashTable String Bounds))
+(define bounding-box-cache (make-hasheq))
+
 (: render-menu-item-slider :
    State-Menu Menu Menu-Item Integer (Listof Menu-Item)
    Menu-Item-Type-Slider -> Pict3D)
 (define (render-menu-item-slider s menu menu-item i siblings type)
-  (define label-rendered (text (Menu-Item-label menu-item)) )
-  ; (define buttons-rendered)
-  (define-values (bound1 bound2) (bounding-rectangle label-rendered))
-  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
+  (define label (Menu-Item-label menu-item))
+  (define label-rendered (text label) )
 
-  (transform
-   (group (combine
-           (parameterize ([current-emitted emitted-text])
-             (text (Menu-Item-label menu-item)
-                   #:onchar (get-on-char-jiggle s)))
-           (parameterize ([current-emitted emitted-bg])
-             (if (and bound1 bound2)
-                 (rectangle (pos+ bound1 (dir -0.2 -0.2 0.2))
-                            (pos+ bound2 (dir  0.2  0.2 0.2)))
-                 empty-pict3d)))
-          (Menu-Item-tag menu-item))
-   (affine-compose
-    (position-screen-space-relative s -0.8 (+ -0.55 (* (exact->inexact i) 0.25)) 0.6)
-    (scale (* (Menu-Item-scale s menu menu-item) TEXT-SCALE)))))
+  (define bounds
+    (hash-ref
+     bounding-box-cache label
+     (λ ()
+       (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
+       (define bounds : Bounds (assert '(b1 b2) bounds?))
+       (hash-set! bounding-box-cache label bounds)
+       bounds)))
+  (define bound1 (car bounds))
+  (define bound2 (cdr bounds))
+
+  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
+  (define y (+ -0.55 (* (exact->inexact i) 0.25)))
+  (transform (group (combine
+                     (parameterize ([current-emitted emitted-text])
+                       (text (Menu-Item-label menu-item)
+                             #:onchar (get-on-char-jiggle s)))
+                     (parameterize ([current-emitted emitted-bg])
+                       (if (and bound1 bound2)
+                           (rectangle (pos+ bound1 (dir -0.2 -0.2 0.2))
+                                      (pos+ bound2 (dir  0.2  0.2 0.2)))
+                           empty-pict3d)))
+                    (Menu-Item-tag menu-item))
+             (affine-compose (position-screen-space-relative s -0.8 y 0.6)
+                             (scale (* (Menu-Item-scale s menu menu-item)
+                                       TEXT-SCALE)))))
 
 (: render-menu-item-text :
    State-Menu Menu Menu-Item Integer (Listof Menu-Item)
    'text -> Pict3D)
 (define (render-menu-item-text s menu menu-item i siblings type)
-  (define label-rendered (text (Menu-Item-label menu-item)) )
-  (define-values (bound1 bound2) (bounding-rectangle label-rendered))
+  (define label (Menu-Item-label menu-item))
+  (define label-rendered (text label) )
+  (define bounds
+    (hash-ref
+     bounding-box-cache label
+     (λ ()
+       (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
+       (printf "~n~nPOOP~s ~s~n~n~n" b1 b2)
+       (define bounds : Bounds (assert (cons b1 b2) bounds?))
+       (hash-set! bounding-box-cache label bounds)
+       bounds)))
+  (define bound1 (car bounds))
+  (define bound2 (cdr bounds))
   (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
 
   (transform

@@ -29,11 +29,11 @@
 
 (: bounds? : Any -> Boolean : Bounds)
 (define (bounds? o)
-  (cond [(pair? o) (and (or (not  (car o))
-                            (pos? (car o)))
-                        (or (not  (cdr o))
-                            (pos? (cdr o))))]
-        [else      #f]))
+  (and (pair? o)
+       (or (not  (car o))
+           (pos? (car o)))
+       (or (not  (cdr o))
+           (pos? (cdr o)))))
 
 (define-type State-Menu (U State-Main-Menu State-Pause-Menu))
 
