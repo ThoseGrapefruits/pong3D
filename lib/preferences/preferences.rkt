@@ -2,7 +2,8 @@
 
 (require racket/file)
 
-(provide get-pref-flonum
+(provide get-pref-boolean
+         get-pref-flonum
          get-pref-real
          get-pref-string
          put-pref
@@ -13,7 +14,8 @@
 
 ; Main list of all preference keys
 (define-type Pref-Key
-  (U 'volume-effects
+  (U 'gameplay-guides
+     'volume-effects
      'volume-main
      'volume-music))
 
@@ -23,6 +25,18 @@
   (cond [(not result) #f]
         [(string? result) result]
         [else (error 'get-preference-pong3d "non-string result: ~s" result)]))
+
+(: get-pref-boolean : Pref-Key (-> Boolean) -> Boolean)
+(define (get-pref-boolean symbol failure)
+  (define result-string (get-preference-string symbol))
+  (define result-boolean (and result-string
+                              (cond [(eq? result-string "#t")    #t]
+                                    [(eq? result-string "true")  #t]
+                                    [(eq? result-string "#f")    #f]
+                                    [(eq? result-string "false") #f]
+                                    [else                        null])))
+  (cond [(boolean? result-boolean) result-boolean]
+        [else (failure)]))
 
 (: get-pref-string : (case-> [Pref-Key             -> (U String #f)]
                              [Pref-Key (-> String) ->    String    ]))

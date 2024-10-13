@@ -15,16 +15,20 @@
   "./lib/state/validation.rkt")
 
 ;
-;                                  ═══
-;
-;     ⊖
-;    /                             ╭─╮
-;   x                              ╰─╯
-;  /                                                                        ⊕
-; ⊕                                                                         |
-;                               ╓───────╖                                   z 
-;                               ╙───────╜                                   |
-;                             ⊖ ——— y ——— ⊕                                 ⊖
+;             /                    ═══                    \
+;            /                                             \
+;     ⊖     /                                               \
+;    /     /                       ╭─╮                       \
+;   x     /                        ╰─╯                        \
+;  /     /                                                     \            ⊕
+; ⊕     /                                                       \           |
+;      /                        ╓───────╖                        \          z 
+;     /                         ╙───────╜                         \         |
+;    /                        ⊖ ——— y ——— ⊕                        \        ⊖
+
+; Names:
+; - Bumper: the glowing rails along the sides of the arena, off of which the balls bounce
+; - Paddle: the rectangular prisms controlled by the player and opponent
 
 (rs-play SOUND-STARTUP)
 

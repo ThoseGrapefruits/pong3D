@@ -12,8 +12,8 @@
 (: clamp-bumper-y : Flonum -> Flonum)
 (define (clamp-bumper-y y)
   (clamp y
-         (+ (- WALL-Y) (dir-dy BUMPER-SCALE))
-         (- WALL-Y         (dir-dy BUMPER-SCALE))))
+         (+ (- WALL-Y) (dir-dy PADDLE-SCALE))
+         (- WALL-Y         (dir-dy PADDLE-SCALE))))
 
 (: get-new-player-score : Player Nonnegative-Integer -> Nonnegative-Integer)
 (define (get-new-player-score player n)

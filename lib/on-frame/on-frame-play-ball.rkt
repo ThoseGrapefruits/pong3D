@@ -19,7 +19,7 @@
     on-frame-play-ball-direction
     on-frame-play-ball-position) s))
 
-(define BUMPER-SCALE-Y (dir-dy BUMPER-SCALE))
+(define PADDLE-SCALE-Y (dir-dy PADDLE-SCALE))
 
 (: on-frame-play-ball-direction : State-Play -> State-Play)
 (define (on-frame-play-ball-direction s)
@@ -77,8 +77,8 @@
     [(and (negative? (dir-dx ball-dir))
           (< ball-x OPPONENT-X-COLLISION)
           (within? (State-get-contact-offset-y s (Opponent-y opponent))
-                   (- BUMPER-SCALE-Y)
-                   BUMPER-SCALE-Y))
+                   (- PADDLE-SCALE-Y)
+                   PADDLE-SCALE-Y))
      (define reflection-yaw
        (* (- 180 REDIRECT-FACTOR)
           (State-get-contact-offset-y s (Opponent-y opponent))))
@@ -93,8 +93,8 @@
     [(and (positive? (dir-dx ball-dir))
           (> ball-x PLAYER-X-COLLISION)
           (within? (State-get-contact-offset-y s (Player-y player))
-                   (- BUMPER-SCALE-Y)
-                   BUMPER-SCALE-Y))
+                   (- PADDLE-SCALE-Y)
+                   PADDLE-SCALE-Y))
      (define reflection-yaw
        (* (- REDIRECT-FACTOR)
           (State-get-contact-offset-y s (Player-y player))))

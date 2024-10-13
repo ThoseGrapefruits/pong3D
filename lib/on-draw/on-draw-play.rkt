@@ -8,10 +8,13 @@
          "./render-player-score.rkt"
          "./text.rkt"
          "../config.rkt"
+         "../preferences/preferences.rkt"
          "../state/state.rkt")
 
 (provide on-draw-play)
 
+(define BALL-RADIUS-PREVIEW (/ BALL-RADIUS 2.0))
+(define PADDLE-SCALE-PREVIEW (dir (dir-dx PADDLE-SCALE) BALL-RADIUS-PREVIEW BALL-RADIUS-PREVIEW))
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
@@ -182,15 +185,51 @@
 
 (: render-game-play-arena-bumpers : State-Play -> Pict3D)
 (define (render-game-play-arena-bumpers s)
+  (define ball (State-Play-ball s))
+  (define y+ (+ WALL-Y BALL-RADIUS))
+  (define y- (- 0.0 WALL-Y BALL-RADIUS))
+  (define ball-pos (Ball-pos ball))
+  (define oldlace-preview (emitted "oldlace" 1.0))
+  (define should-draw-guides (get-pref-boolean 'gameplay-guides (λ () #f)))
+  (define guides
+    (if (not should-draw-guides)
+        empty-pict3d
+        (combine
+         ; ball x-position
+         (with-emitted oldlace-preview
+           (sphere (pos (pos-x ball-pos) y+ 0.0) BALL-RADIUS-PREVIEW))
+         (with-emitted oldlace-preview
+           (sphere (pos (pos-x ball-pos) y- 0.0) BALL-RADIUS-PREVIEW))
+
+         (freeze
+          (combine
+           ; opponent x-position
+           (parameterize
+               ([current-material (material #:ambient 0.0
+                                            #:diffuse 0.0
+                                            #:specular 0.0
+                                            #:roughness 0.3)]
+                [current-emitted oldlace-preview])
+             (combine
+              (rectangle (pos OPPONENT-X y+ 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos OPPONENT-X y- 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos PLAYER-X y+ 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos PLAYER-X y- 0.0) PADDLE-SCALE-PREVIEW)))
+           )))))
+
   (combine
-   (transform render-arena-bumper
-              (affine-compose
-               (move-y (+ WALL-Y BALL-RADIUS))
-               (scale (dir 10 1/256 1/256))))
-   (transform render-arena-bumper
-              (affine-compose
-               (move-y (- 0.0 WALL-Y BALL-RADIUS))
-               (scale (dir 10 1/256 1/256))))))
+   guides
+   (freeze
+    (combine
+     ; actual bumpers
+     (transform render-arena-bumper
+                (affine-compose
+                 (move-y y+)
+                 (scale (dir 10 1/256 1/256))))
+     (transform render-arena-bumper
+                (affine-compose
+                 (move-y y-)
+                 (scale (dir 10 1/256 1/256))))))))
 
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
@@ -243,7 +282,7 @@
                                    #:roughness 0.3)]
        [current-emitted COLOR-OPPONENT-EMITTED])
     (rectangle (pos OPPONENT-X (Opponent-y (State-Play-opponent s)) 0.0)
-               BUMPER-SCALE)))
+               PADDLE-SCALE)))
 
 (: render-game-play-player : State-Play -> Pict3D)
 (define (render-game-play-player s)
@@ -254,7 +293,7 @@
                                    #:roughness 0.3)]
        [current-emitted COLOR-PLAYER-EMITTED])
     (rectangle (pos PLAYER-X (Player-y (State-Play-player s)) 0.0)
-               BUMPER-SCALE)))
+               PADDLE-SCALE)))
 
 (: render-game-play-lights+camera : State-Play -> Pict3D)
 (define (render-game-play-lights+camera s)

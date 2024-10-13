@@ -176,7 +176,6 @@
      bounding-box-cache label
      (λ ()
        (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
-       (printf "~n~nPOOP~s ~s~n~n~n" b1 b2)
        (define bounds : Bounds (assert (cons b1 b2) bounds?))
        (hash-set! bounding-box-cache label bounds)
        bounds)))
