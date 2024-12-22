@@ -3,7 +3,9 @@
 (require racket/bool
          racket/file
          racket/list
+         racket/match
          racket/math
+         typed-map
          typed/racket/gui/base
          "../preferences/preferences.rkt")
 
@@ -15,6 +17,7 @@
    (struct-out rsound)
    (prefix-out rs: ding)
    (prefix-out rs: make-ding)
+   (prefix-out rs: make-tone)
    (prefix-out rs: play)
    (rename-out [rs-overlay rs:overlay]
                [rs-append* rs:append*]
@@ -151,9 +154,119 @@
 ; │   │   │   │   │   │   │   │   │
 ; └───┴───┴───┴───┴───┴───┴───┴───┘
 
+(: note-name : Nonnegative-Integer -> String)
+(define (note-name n)
+  (cond [(= n 0)  "C_" ]
+        [(= n 1)  "C#"]
+        [(= n 2)  "D_"]
+        [(= n 3)  "D#"]
+        [(= n 4)  "E_"]
+        [(= n 5)  "F_"]
+        [(= n 6)  "F#"]
+        [(= n 7)  "G_"]
+        [(= n 8)  "G#"]
+        [(= n 9)  "A_"]
+        [(= n 10) "A#"]
+        [(= n 11) "B_"]
+        [else (error "Unknown note index: ~a" n)]))
+
+(: octave-name : Integer -> String)
+(define (octave-name n)
+  (cond [(= n -2)  "-2" ]
+        [(= n -1)  "-1"]
+        [(= n 0)   "+0"]
+        [(= n 1)   "+1"]
+        [(= n 2)   "+2"]
+        [else (error "Unknown octave index: ~a" n)]))
+
+(: NOTES : (Listof Nonnegative-Integer))
+(define NOTES (list 0 1 2 3 4 5 6 7 8 9 10 11))
+
+(: OCTAVES : (Listof Integer))
+(define OCTAVES (list -2 -1 0 1 2))
+
 (: note-to-frequency : Integer -> Nonnegative-Integer)
 (define (note-to-frequency n)
   (exact-round (* 440 (expt 2 (/ (exact->inexact n) 12)))))
+
+; TODO we'll probably want this to just be a list of referencable frequencies,
+; rather than a list of rendered sounds, that get mapped by different synth
+; sound options in some library to be able to have a sort of "tracker" in a cod
+; file.
+(match-define
+  (list NOTE:C_:-2
+        NOTE:C#:-2
+        NOTE:D_:-2
+        NOTE:D#:-2
+        NOTE:E_:-2
+        NOTE:F_:-2
+        NOTE:F#:-2
+        NOTE:G_:-2
+        NOTE:G#:-2
+        NOTE:A_:-2
+        NOTE:A#:-2
+        NOTE:B_:-2
+
+        NOTE:C_:-1
+        NOTE:C#:-1
+        NOTE:D_:-1
+        NOTE:D#:-1
+        NOTE:E_:-1
+        NOTE:F_:-1
+        NOTE:F#:-1
+        NOTE:G_:-1
+        NOTE:G#:-1
+        NOTE:A_:-1
+        NOTE:A#:-1
+        NOTE:B_:-1
+
+        NOTE:C_:+0
+        NOTE:C#:+0
+        NOTE:D_:+0
+        NOTE:D#:+0
+        NOTE:E_:+0
+        NOTE:F_:+0
+        NOTE:F#:+0
+        NOTE:G_:+0
+        NOTE:G#:+0
+        NOTE:A_:+0
+        NOTE:A#:+0
+        NOTE:B_:+0
+
+        NOTE:C_:+1
+        NOTE:C#:+1
+        NOTE:D_:+1
+        NOTE:D#:+1
+        NOTE:E_:+1
+        NOTE:F_:+1
+        NOTE:F#:+1
+        NOTE:G_:+1
+        NOTE:G#:+1
+        NOTE:A_:+1
+        NOTE:A#:+1
+        NOTE:B_:+1
+
+        NOTE:C_:+2
+        NOTE:C#:+2
+        NOTE:D_:+2
+        NOTE:D#:+2
+        NOTE:E_:+2
+        NOTE:F_:+2
+        NOTE:F#:+2
+        NOTE:G_:+2
+        NOTE:G#:+2
+        NOTE:A_:+2
+        NOTE:A#:+2
+        NOTE:B_:+2
+  )
+  (flatten (map (λ (octave)
+                  (map (λ (note)
+                         (define name (string->symbol (format "note:~a:~a" (note-name note) octave)))
+                         (PongSound 'music
+                                    name
+                                    (rs:make-ding (note-to-frequency -1))))
+                       NOTES))
+                OCTAVES)))
 
 (: SOUNDS-BALL-BOUNCE-OPPONENT PongSounds)
 (define SOUNDS-BALL-BOUNCE-OPPONENT
