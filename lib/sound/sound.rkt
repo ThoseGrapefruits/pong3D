@@ -257,8 +257,7 @@
         NOTE:G#:+2
         NOTE:A_:+2
         NOTE:A#:+2
-        NOTE:B_:+2
-  )
+        NOTE:B_:+2)
   (flatten (map (λ (octave)
                   (map (λ (note)
                          (define name (string->symbol (format "note:~a:~a" (note-name note) octave)))

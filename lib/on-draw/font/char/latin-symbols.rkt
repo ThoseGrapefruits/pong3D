@@ -347,7 +347,7 @@
   (make-Char-3D-memoized
    #\u007b
    WIDTH-EM-3/8
-   (λ () 
+   (λ ()
      (define top-arc-angle 125.0)
      (define top-arc-angle-r (degrees->radians top-arc-angle))
      (define top-arc-radius-x WIDTH-EM-1/4)
@@ -411,7 +411,7 @@
   (make-Char-3D-memoized
    #\u007d
    WIDTH-EM-3/8
-   (λ () 
+   (λ ()
      (define offset-x (- WIDTH-EM-1/4))
      (define arc-radius-x WIDTH-EM-1/4)
 
@@ -541,7 +541,7 @@
                      (pos+ LINE/CAP/END-3/8
                            (dir (- WIDTH-DIAGONAL-SLIGHT-BASE) (+ WIDTH-STROKE) 0.0))))))
 
-(define symbol:\
+(define symbol:backslash
   (make-Char-3D-memoized
    #\\
    WIDTH-EM-1/2

@@ -27,7 +27,7 @@
           [else #f]))
   (if state-play
       (combine (render-game-play-opponent state-play)
-               ; (render-sample-text state-play)
+               (render-sample-text state-play)
                (render-game-play-player state-play)
                (render-game-play-ball state-play)
                (render-game-play-hud state-play)
@@ -85,10 +85,10 @@
 (define (render-sample-text s)
   (combine
     empty-pict3d
-    ; (render-sample-text-cor s)
-    (render-sample-text-smol s "s")
-    (render-sample-text-tqbf s)
-    (render-sample-text-wop s)
+    (render-sample-text-cor s)
+    ; (render-sample-text-smol s "s")
+    ; (render-sample-text-tqbf s)
+    ; (render-sample-text-wop s)
     ))
 
 (: render-sample-text-cor : State-Play -> Pict3D)
@@ -152,36 +152,42 @@
                                    #:specular 0.3
                                    #:roughness 0.3)]
        [current-color (rgba 0.6 0.6 0.6)])
-    (transform
-     ; tunnel
-     (combine (cylinder origin 1
-                        #:arc (arc 180 360)
-                        #:inside? #t
-                        #:top-cap? #f
-                        #:bottom-cap? #f)
-              ; sun
-              (transform
-               (light origin (emitted "goldenrod" 0.0001))
-               (affine-compose
-                (rotate-z (- 135.0 (* 0.003 (State-t s))))
-                (move-y -0.5)
-                (move-z -0.99)
-                (scale 40)))
-              ; sky
-              (with-emitted
-                  (emitted 0 0 0.01 20)
-                (cylinder origin 1
-                          #:arc (arc 180 360)
-                          #:inside? #t
-                          #:top-cap? #f
-                          #:bottom-cap? #t
-                          #:start-cap? #f
-                          #:end-cap? #f
-                          #:outer-wall? #f)))
-     (affine-compose (scale-x 10)
-                     (move-z -0.1)
-                     (rotate-x -90)
-                     (rotate-y 90)))))
+    (transform (combine (render-game-play-arena-tunnel s)
+                        (render-game-play-arena-sun s)
+                        (render-game-play-arena-sky s))
+               (affine-compose (scale-x 10)
+                               (move-z -0.1)
+                               (rotate-x -90)
+                               (rotate-y 90)))))
+
+(: render-game-play-arena-sky : State-Play -> Pict3D)
+(define (render-game-play-arena-sky s)
+  (with-emitted (emitted 0 0 0.01 20)
+    (cylinder origin 1
+              #:arc (arc 180 360)
+              #:inside? #t
+              #:top-cap? #f
+              #:bottom-cap? #t
+              #:start-cap? #f
+              #:end-cap? #f
+              #:outer-wall? #f)))
+
+(: render-game-play-arena-sun : State-Play -> Pict3D)
+(define (render-game-play-arena-sun s)
+  (transform (light origin (emitted "goldenrod" 0.0001))
+             (affine-compose
+              (rotate-z (- 135.0 (* 0.003 (State-t s))))
+              (move-y -0.5)
+              (move-z -0.99)
+              (scale 40))))
+
+(: render-game-play-arena-tunnel : State-Play -> Pict3D)
+(define (render-game-play-arena-tunnel s)
+  (cylinder origin 1
+            #:arc (arc 180 360)
+            #:inside? #t
+            #:top-cap? #f
+            #:bottom-cap? #f))
 
 (: render-game-play-arena-bumpers : State-Play -> Pict3D)
 (define (render-game-play-arena-bumpers s)

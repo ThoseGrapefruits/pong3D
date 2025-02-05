@@ -103,11 +103,10 @@
         font:symbol:—
         font:symbol:_
         font:symbol:/
-        font:symbol:\
+        font:symbol:backslash
         font:symbol:vertical-line
         font:symbol:quote-single
         font:symbol:quote-double
-        font:symbol::
         font:symbol:semicolon
         font:symbol:comma
         font:symbol:dot))
@@ -116,7 +115,7 @@
 (define (char-to-pair char)
   (cons (font:Char-3D-char char) char))
 
-; TODO it would be nice to use something like parser-tools/lex to 
+; TODO it would be nice to use something like parser-tools/lex to
 ; pull out multi-character things and allow for e.g. ligatures.
 (: char-map : (Immutable-HashTable Char font:Char-3D))
 (define char-map (make-immutable-hash (map char-to-pair char-list)))
