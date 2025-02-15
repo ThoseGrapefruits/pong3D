@@ -39,7 +39,7 @@
   (with-emitted (emitted "oldlace" 1.5)
     (transform (text "GAME OVER"
                      #:wrap 15.0
-                     #:onchar (get-on-char-jiggle s))
+                     #:onchar (get-on-char s 'jiggle))
                (affine-compose
                 (position-screen-space-pixels s -300.0 -350.0 0.9)
                 (scale 0.06)))))
@@ -54,7 +54,7 @@
    (with-emitted (emitted "oldlace" 1.5)
      (transform (text score-text
                       #:wrap 15.0
-                      #:onchar (get-on-char-jiggle s)
+                      #:onchar (get-on-char s 'jiggle)
                       #:ondraw (get-on-draw-game-score s))
                 (affine-compose
                  (position-screen-space-pixels s 0.0 -200.0 0.9)

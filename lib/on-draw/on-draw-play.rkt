@@ -99,7 +99,7 @@
      (transform
       (text cor
             #:wrap 9.0
-            #:onchar (get-on-char-jiggle s))
+            #:onchar (get-on-char s 'jiggle))
       (affine-compose
        (move-x (+ 9.0 (* t -0.0002)))
        (rotate-y -90.0)
@@ -114,7 +114,7 @@
   (parameterize
       ([current-emitted (emitted "pink" 1.0)])
     (transform
-     (text str #:onchar (get-on-char-jiggle s))
+     (text str #:onchar (get-on-char s 'jiggle))
      (affine-compose
       (position-screen-space-relative s 0.0 -3.5 0.6)
       (scale 0.8)))))
@@ -126,7 +126,7 @@
     (transform
      (text tqbf
            #:wrap 15.0
-           #:onchar (get-on-char-jiggle s))
+           #:onchar (get-on-char s 'jiggle))
      (affine-compose
       (position-screen-space-relative s -0.6 -0.85 0.8)
       (scale 0.05)))))
@@ -139,7 +139,7 @@
      (text wop
            #:wrap 40.0
            #:spacing-paragraph 0.0
-           #:onchar (get-on-char-jiggle s))
+           #:onchar (get-on-char s 'jiggle))
      (affine-compose
       (position-screen-space-relative s -0.8 -0.85 0.7)
       (scale 0.04)))))

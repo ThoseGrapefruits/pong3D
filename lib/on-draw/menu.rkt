@@ -131,6 +131,16 @@
 (: bounding-box-cache : (HashTable String Bounds))
 (define bounding-box-cache (make-hasheq))
 
+(: get-bounds : String Pict3D -> Bounds)
+(define (get-bounds label label-rendered)
+  (hash-ref
+   bounding-box-cache label
+   (λ ()
+     (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
+     (define bounds : Bounds (assert (cons b1 b2) bounds?))
+     (hash-set! bounding-box-cache label bounds)
+     bounds)))
+
 (: render-menu-item-slider :
    State-Menu Menu Menu-Item Integer (Listof Menu-Item)
    Menu-Item-Type-Slider -> Pict3D)
@@ -138,27 +148,19 @@
   (define label (Menu-Item-label menu-item))
   (define label-rendered (text label) )
 
-  (define bounds
-    (hash-ref
-     bounding-box-cache label
-     (λ ()
-       (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
-       (define bounds : Bounds (assert '(b1 b2) bounds?))
-       (hash-set! bounding-box-cache label bounds)
-       bounds)))
-  (define bound1 (car bounds))
-  (define bound2 (cdr bounds))
+  (define bounds (get-bounds label label-rendered))
+  (match-define (cons bound1 bound2) bounds)
 
   (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
   (define y (+ -0.55 (* (exact->inexact i) 0.25)))
   (transform (group (combine
                      (parameterize ([current-emitted emitted-text])
                        (text (Menu-Item-label menu-item)
-                             #:onchar (get-on-char-jiggle s)))
+                             #:onchar (get-on-char s 'wave)))
                      (parameterize ([current-emitted emitted-bg])
                        (if (and bound1 bound2)
-                           (rectangle (pos+ bound1 (dir -0.2 -0.2 0.2))
-                                      (pos+ bound2 (dir  0.2  0.2 0.2)))
+                           (rectangle (pos+ bound1 (dir -0.2 -0.2 0.25))
+                                      (pos+ bound2 (dir  0.2  0.2 0.5)))
                            empty-pict3d)))
                     (Menu-Item-tag menu-item))
              (affine-compose (position-screen-space-relative s -0.8 y 0.6)
@@ -171,27 +173,19 @@
 (define (render-menu-item-text s menu menu-item i siblings type)
   (define label (Menu-Item-label menu-item))
   (define label-rendered (text label) )
-  (define bounds
-    (hash-ref
-     bounding-box-cache label
-     (λ ()
-       (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
-       (define bounds : Bounds (assert (cons b1 b2) bounds?))
-       (hash-set! bounding-box-cache label bounds)
-       bounds)))
-  (define bound1 (car bounds))
-  (define bound2 (cdr bounds))
+  (define bounds (get-bounds label label-rendered))
+  (match-define (cons bound1 bound2) bounds)
   (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
 
   (transform
    (group (combine
            (parameterize ([current-emitted emitted-text])
              (text (Menu-Item-label menu-item)
-                   #:onchar (get-on-char-jiggle s)))
+                   #:onchar (get-on-char s 'wave)))
            (parameterize ([current-emitted emitted-bg])
              (if (and bound1 bound2)
-                 (rectangle (pos+ bound1 (dir -0.2 -0.2 0.2))
-                            (pos+ bound2 (dir  0.2  0.2 0.2)))
+                 (rectangle (pos+ bound1 (dir -0.25 -0.25 0.25))
+                            (pos+ bound2 (dir  0.25  0.25 0.5)))
                  empty-pict3d)))
           (Menu-Item-tag menu-item))
    (affine-compose
@@ -210,7 +204,7 @@
        ; header
        (transform
         (text (Menu-Item-label parent-usable)
-              #:onchar (get-on-char-jiggle s))
+              #:onchar (get-on-char s 'wave))
         (affine-compose
          (position-screen-space-relative s -0.8 -1.2 0.6)
          (scale (* 2.0 TEXT-SCALE))))
