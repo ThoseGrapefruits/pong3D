@@ -10,6 +10,7 @@
   "./lib/on-key/on-key.rkt"
   "./lib/on-mouse/on-mouse.rkt"
   "./lib/sound/sound.rkt"
+  "./lib/sound/song-background.rkt"
   "./lib/state/init.rkt"
   "./lib/state/stop.rkt"
   "./lib/state/validation.rkt")
