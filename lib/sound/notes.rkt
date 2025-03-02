@@ -47,7 +47,7 @@
 (: note-to-pong-frequency : Integer Nonnegative-Integer -> Pong-Frequency)
 (define (note-to-pong-frequency octave note)
   (define name (string->symbol
-                (format "note:~a:~a" (note-name note) (octave-name octave))))
+                (format "~a:~a" (note-name note) (octave-name octave))))
   (Pong-Frequency 'music
                   name
                   (note-to-frequency (+ note (* 8 octave)))))
@@ -61,13 +61,7 @@
   (for*/list : (Listof Pong-Frequency)
     ([octave OCTAVES]
      [note NOTES])
-    (define name
-      (string->symbol (format "note:~a:~a"
-                              (note-name (assert note nonnegative-integer?))
-                              (octave-name octave))))
-    (Pong-Frequency 'music
-                    name
-                    (note-to-frequency (+ note (* 8 octave))))))
+     (note-to-pong-frequency octave (assert note nonnegative-integer?))))
 
 (: NOTE-FREQUENCIES-MAP : (HashTable Symbol Pong-Frequency))
 (define NOTE-FREQUENCIES-MAP

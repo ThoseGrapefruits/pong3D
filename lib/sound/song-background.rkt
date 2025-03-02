@@ -1,14 +1,16 @@
 #lang typed/racket/base
 
 (require
-  "./notes.rkt"
-  "./sound.rkt"
-  racket/list)
+  racket/list
+  "./song.rkt")
 
-(provide SONG-BACKGROUND)
+(provide SONG-MENU)
 
-(define-type Song (Listof (Listof Symbol)));
-
-(: SONG-BACKGROUND : Song)
-(define SONG-BACKGROUND
-  (list (list 'test)))
+(: SONG-MENU : Song)
+(define SONG-MENU
+  (Song
+   'loop
+   10
+   '((C_:-1 A_:+2)
+     (B_:-1 B_:+2)
+     (A_:-1 A_:+1))))

@@ -7,7 +7,9 @@
          racket/math
          typed-map
          typed/racket/gui/base
-         "../preferences/preferences.rkt")
+         "../preferences/preferences.rkt"
+         "./song.rkt"
+         "./rsound.rkt")
 
 (provide
  note-to-frequency
@@ -26,23 +28,6 @@
  SOUNDS-BALL-BOUNCE-PLAYER
  SOUNDS-BALL-BOUNCE-WALL)
 
-(module wrapper racket/base
-  (require rsound)
-  (provide
-   (prefix-out rs: andplay)
-   (prefix-out rs: default-sample-rate)
-   (struct-out rsound)
-   (prefix-out rs: ding)
-   (prefix-out rs: make-ding)
-   (prefix-out rs: make-tone)
-   (prefix-out rs: play)
-   (rename-out [rs-overlay rs:overlay]
-               [rs-append* rs:append*]
-               [rs-write   rs:write]
-               [rs-scale   rs:scale])
-   (prefix-out rs: synth-note)
-   (prefix-out rs: stop)))
-
 ; Fixed global volume scale, since generated sounds are very very loud.
 (: volume-global : Flonum)
 (define volume-global 0.5)
@@ -56,23 +41,6 @@
   (cond [(symbol=? 'effect category) (get-pref-flonum 'volume-effects (λ () 0.7))]
         [(symbol=? 'music  category) (get-pref-flonum 'volume-music   (λ () 1.0))]
         [else (error 'volume-for "unknown category: ~s" category)]))
-
-(require/typed
- 'wrapper
- [#:struct rsound ([data : (Vectorof Real)]
-                   [start : Nonnegative-Real]
-                   [stop : Nonnegative-Real]
-                   [sample-rate : Nonnegative-Real])
-  #:type-name RSound]
- [rs:default-sample-rate (-> Positive-Real)]
- [rs:ding RSound]
- [rs:make-ding (-> Integer RSound)]
- [rs:append* (-> (Sequenceof RSound) RSound)]
- [rs:overlay (-> RSound RSound RSound)]
- [rs:write (-> RSound Path Void)]
- [rs:scale (-> Real RSound RSound)]
- [rs:stop (-> Void)]
- [rs:synth-note (-> String Number Natural Natural RSound)])
 
 (define-type Sound-Category (U 'effect 'music))
 
