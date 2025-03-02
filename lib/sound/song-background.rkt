@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
 (require
-  racket/list
   "./song.rkt")
 
 (provide SONG-MENU)

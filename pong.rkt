@@ -9,6 +9,8 @@
   "./lib/on-frame/on-frame.rkt"
   "./lib/on-key/on-key.rkt"
   "./lib/on-mouse/on-mouse.rkt"
+  "./lib/sound/song.rkt"
+  "./lib/sound/song-background.rkt"
   "./lib/sound/sound.rkt"
   "./lib/sound/song-background.rkt"
   "./lib/state/init.rkt"
@@ -31,7 +33,8 @@
 ; - Bumper: the glowing rails along the sides of the arena, off of which the balls bounce
 ; - Paddle: the rectangular prisms controlled by the player and opponent
 
-(rs-play SOUND-STARTUP)
+(define thread-sound-startup (rs-play SOUND-STARTUP))
+(define song-stream-menu (rs-play-song SONG-MENU))
 
 (big-bang3d (state-start)
             #:frame-delay FRAME-DELAY-MILLIS

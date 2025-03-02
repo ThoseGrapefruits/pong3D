@@ -72,9 +72,9 @@
  [ps:current-frame (-> PStream Natural)]
  [ps:play (-> PStream RSound PStream)]
  [ps:queue (-> PStream RSound Natural String)]
- [ps:queue-callback (-> PStream Procedure Natural String)]
+ [ps:queue-callback (-> PStream (-> Void) Natural String)]
  [ps:set-volume! (-> PStream Real PStream)]
- [ps:make-pstream (->* () (Positive-Float) PStream)]
+ [ps:make-pstream (->* () (#:buffer-time Positive-Float) PStream)]
 
  [rs:default-sample-rate (-> Positive-Real)]
  [rs:ding RSound]
