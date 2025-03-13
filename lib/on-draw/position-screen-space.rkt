@@ -12,8 +12,8 @@ position-screen-space-relative)
 
 ; Get a transformation that moves an object from the origin to the given (x,y,z)
 ; coordinate in screen-space, where (0,0,1) is the top-left of the camera
-; viewport and (SCREEN-WIDTH,SCREEN-HEIGHT,1) is the bottom-right, placed in a
-; z-plane 1 unit away from the camera.
+; viewport and (width,height,1) is the bottom-right, placed in a z-plane 1 unit
+; away from the camera.
 (: position-screen-space-pixels : State Flonum Flonum Flonum [#:wrap? Boolean] -> Affine)
 (define (position-screen-space-pixels s x y [z 1.0] #:wrap? [wrap? #f])
   (match-define (cons width height) (State-window-dims s))
@@ -23,8 +23,8 @@ position-screen-space-relative)
                                #:width width
                                #:height height
                                #:z-near z-near)
-               (if wrap? (wrap-within x SCREEN-WIDTH-INEXACT) x)
-               (if wrap? (wrap-within y SCREEN-HEIGHT-INEXACT) y)))
+               (if wrap? (wrap-within x (exact->inexact width)) x)
+               (if wrap? (wrap-within y (exact->inexact height)) y)))
   (affine-compose (move dir)
                   cam-t
                   (scale z-near)))
@@ -35,9 +35,10 @@ position-screen-space-relative)
 ; from the camera.
 (: position-screen-space-relative : State Flonum Flonum Flonum [#:wrap? Boolean] -> Affine)
 (define (position-screen-space-relative s x y z #:wrap? [wrap? #f])
+  (match-define (cons width height) (State-window-dims s))
   (position-screen-space-pixels
    s
-   (scale--1-1 x SCREEN-WIDTH)
-   (scale--1-1 y SCREEN-HEIGHT)
+   (scale--1-1 x width)
+   (scale--1-1 y height)
    z
    #:wrap? wrap?))

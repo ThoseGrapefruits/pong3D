@@ -22,7 +22,7 @@
              (State-update-counters resume-state n t)
              (error "pause state with no resume-state"))]
         [(path=? path (list 'root-pause 'main-menu))
-         (state-start t)]
+         (state-start s t)]
         [(path=? path (list 'root-pause 'exit))
          (State-transition State-Stop s)]
         [else s]))

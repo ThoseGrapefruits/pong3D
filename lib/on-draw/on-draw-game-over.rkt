@@ -5,6 +5,7 @@
          "./camera.rkt"
          "./game-score.rkt"
          "./on-char-jiggle.rkt"
+         "./palette.rkt"
          "./position-screen-space.rkt"
          "./render-player-score.rkt"
          "./text.rkt"
@@ -36,13 +37,21 @@
 
 (: render-game-over-message : State-Game-Over -> Pict3D)
 (define (render-game-over-message s)
-  (with-emitted (emitted "oldlace" 1.5)
-    (transform (text "GAME OVER"
-                     #:wrap 15.0
-                     #:onchar (get-on-char s 'jiggle))
-               (affine-compose
-                (position-screen-space-pixels s -300.0 -350.0 0.9)
-                (scale 0.06)))))
+  (combine
+   (with-emitted (emitted "oldlace" 1.5)
+     (transform (text "GAME OVER"
+                      #:wrap 15.0
+                      #:onchar (get-on-char s 'jiggle))
+                (affine-compose
+                 (position-screen-space-relative s 0.0 -0.4 0.9)
+                 (scale 0.06))))
+   (with-emitted EMITTED-YELLOW
+     (transform (text "R to retry"
+                      #:wrap 15.0
+                      #:onchar (get-on-char s 'jiggle))
+                (affine-compose
+                 (position-screen-space-relative s 0.0 0.1 0.9)
+                 (scale 0.06))))))
 
 (: render-game-over-score : State-Game-Over -> Pict3D)
 (define (render-game-over-score s)

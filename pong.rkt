@@ -9,6 +9,7 @@
   "./lib/on-frame/on-frame.rkt"
   "./lib/on-key/on-key.rkt"
   "./lib/on-mouse/on-mouse.rkt"
+  "./lib/on-resize.rkt"
   "./lib/sound/song.rkt"
   "./lib/sound/song-background.rkt"
   "./lib/sound/sound.rkt"
@@ -36,7 +37,7 @@
 (define thread-sound-startup (rs-play SOUND-STARTUP))
 (define song-stream-menu (rs-play-song SONG-MENU))
 
-(big-bang3d (state-start)
+(big-bang3d (state-start #f)
             #:frame-delay FRAME-DELAY-MILLIS
             #:name "Pong3D — Racket"
             #:on-draw on-draw
@@ -44,10 +45,11 @@
             #:on-key on-key
             #:on-mouse on-mouse
             #:on-release on-release
+            #:on-resize on-resize
             #:stop-state? stop-state?
             #:valid-state? valid-state?
-            #:width SCREEN-WIDTH
-            #:height SCREEN-HEIGHT)
+            #:width SCREEN-WIDTH-INIT
+            #:height SCREEN-HEIGHT-INIT)
 
 (rs-stop)
 (exit 0)

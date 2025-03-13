@@ -67,17 +67,11 @@
 (: REDIRECT-FACTOR : Flonum)
 (define REDIRECT-FACTOR 40.0)
 
-(: SCREEN-WIDTH : Positive-Integer)
-(define SCREEN-WIDTH 1200)
+(: SCREEN-WIDTH-INIT : Positive-Integer)
+(define SCREEN-WIDTH-INIT 1200)
 
-(: SCREEN-WIDTH-INEXACT : Flonum)
-(define SCREEN-WIDTH-INEXACT (exact->inexact SCREEN-WIDTH))
-
-(: SCREEN-HEIGHT : Positive-Integer)
-(define SCREEN-HEIGHT 1080)
-
-(: SCREEN-HEIGHT-INEXACT : Flonum)
-(define SCREEN-HEIGHT-INEXACT (exact->inexact SCREEN-HEIGHT))
+(: SCREEN-HEIGHT-INIT : Positive-Integer)
+(define SCREEN-HEIGHT-INIT 1080)
 
 (: WALL-Y : Flonum)
 (define WALL-Y 0.8)

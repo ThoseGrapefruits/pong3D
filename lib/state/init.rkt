@@ -26,14 +26,14 @@
    [n  #:parent State n]
    [t  #:parent State t]))
 
-(: state-start : (->* () (Flonum) State-Any))
-(define (state-start [t 0.0])
+(: state-start : (->* ((U State #f)) (Flonum) State-Any))
+(define (state-start s [t 0.0])
   (State-Main-Menu
    ; State
    0.0                ; dt
    (cons              ; mouse-pos-last
-    (round (/ SCREEN-WIDTH 2))
-    (round (/ SCREEN-HEIGHT 2)))
+    (round (/ SCREEN-WIDTH-INIT 2))
+    (round (/ SCREEN-HEIGHT-INIT 2)))
    0                  ; n
    (box empty-pict3d) ; pict-last
    (set)              ; pressed
@@ -41,9 +41,11 @@
    #f                 ; trace-mouse
    #f                 ; trace-mouse/last
    #f                 ; trace-mouse-down
-   (cons              ; window-dims
-    (if (index? SCREEN-WIDTH)  SCREEN-WIDTH  0)
-    (if (index? SCREEN-HEIGHT) SCREEN-HEIGHT 0))
+   (or                ; window-dims
+    (and s (State-window-dims s))
+    (cons
+     (assert SCREEN-WIDTH-INIT index?)
+     (assert SCREEN-HEIGHT-INIT index?)))
 
    ; State-Main-Menu
    (make-Menu ; menu
@@ -65,7 +67,7 @@
     predicted-ball-y) ; y
    #f        ; pause-state
    (Player   ; player
-    3   ; lives
+    1   ; lives
     0   ; score
     1.0 ; score-multiplier
     0.0 ; y
