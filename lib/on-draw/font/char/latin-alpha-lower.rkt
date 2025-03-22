@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require pict3d
-         racket/math
+         (only-in racket/math degrees->radians)
          "../statics/guides.rkt"
          "../statics/measurements.rkt"
          "../statics/memoize.rkt"

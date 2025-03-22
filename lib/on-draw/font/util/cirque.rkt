@@ -1,8 +1,21 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/flonum
-         racket/math
+(require (only-in pict3d Arc Pict3D Pos)
+         (only-in pict3d
+                  circle-arc
+                  dir
+                  dir-dx
+                  dir-dy
+                  dir-dz
+                  interval
+                  pipe
+                  pos
+                  pos+
+                  rectangle
+                  +x
+                  -y)
+         (only-in racket/flonum flsqrt)
+         (only-in racket/math degrees->radians sqr)
          "../statics/guides.rkt"
          "../statics/measurements.rkt")
 

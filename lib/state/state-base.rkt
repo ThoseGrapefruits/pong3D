@@ -1,6 +1,10 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require (only-in pict3d Pict3D Surface-Data)
+         (only-in pict3d
+                  empty-pict3d
+                  emitted
+                  pos-y))
 
 (provide (struct-out State))
 

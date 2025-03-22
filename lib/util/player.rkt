@@ -1,8 +1,8 @@
 #lang typed/racket/base
 
 (require
-  math/flonum
-  pict3d
+  (only-in math/flonum fl->exact-integer)
+  (only-in pict3d dir-dy)
   "../config.rkt"
   "../state/state.rkt"
   "./number.rkt")
@@ -13,7 +13,7 @@
 (define (clamp-bumper-y y)
   (clamp y
          (+ (- WALL-Y) (dir-dy PADDLE-SCALE))
-         (- WALL-Y         (dir-dy PADDLE-SCALE))))
+         (- WALL-Y     (dir-dy PADDLE-SCALE))))
 
 (: get-new-player-score : Player Nonnegative-Integer -> Nonnegative-Integer)
 (define (get-new-player-score player n)

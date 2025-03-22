@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d current-emitted empty-pict3d freeze)
          "../../../util/nested-hash.rkt"
          "./types.rkt")
 

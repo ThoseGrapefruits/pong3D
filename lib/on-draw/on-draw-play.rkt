@@ -1,6 +1,42 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d Pict3D Pos)
+         (only-in pict3d
+                  affine-compose
+                  arc
+                  combine
+                  cube
+                  current-color
+                  current-emitted
+                  current-material
+                  cylinder
+                  dir
+                  dir-dx
+                  emitted
+                  empty-pict3d
+                  freeze
+                  light
+                  material
+                  move
+                  move-x
+                  move-y
+                  move-z
+                  origin
+                  pos
+                  pos-x
+                  pos+
+                  pos-
+                  quad
+                  rectangle
+                  rgba
+                  rotate-x
+                  rotate-y
+                  rotate-z
+                  scale
+                  scale-x
+                  sphere
+                  transform
+                  with-emitted)
          racket/list
          "./camera.rkt"
          "./on-char-jiggle.rkt"

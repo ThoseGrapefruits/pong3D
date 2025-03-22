@@ -2,9 +2,8 @@
 
 (require "./text.rkt"
          "../state/state.rkt"
-         pict3d
-         racket/bool
-         racket/math)
+         (only-in pict3d move-z rotate-x/center rotate-y/center)
+         (only-in racket/math pi))
 
 (provide get-on-char)
 
@@ -23,8 +22,8 @@
 
 (: get-on-char : State Motion -> font:On-Char-Handler)
 (define (get-on-char s motion)
-  (cond [(symbol=? motion 'jiggle) (get-on-char-jiggle s)]
-        [(symbol=? motion 'wave) (get-on-char-wave s)]))
+  (cond [(eq? motion 'jiggle) (get-on-char-jiggle s)]
+        [(eq? motion 'wave) (get-on-char-wave s)]))
 
 (: get-on-char-jiggle : State -> font:On-Char-Handler)
 (define (get-on-char-jiggle s)

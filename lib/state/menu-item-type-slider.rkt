@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require racket/math
+(require (only-in racket/math exact-floor)
          "../preferences/preferences.rkt")
 
 (provide (struct-out Menu-Item-Type-Slider-Flonum)

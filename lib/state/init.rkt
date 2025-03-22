@@ -1,9 +1,13 @@
 #lang typed/racket/base
 
 (require
-  pict3d
-  racket/math
-  racket/set
+  (only-in pict3d Pict3D Pos)
+  (only-in pict3d
+           dir
+           empty-pict3d
+           pos
+           pos-y)
+  (only-in racket/set set)
   "../config.rkt"
   "../on-draw/palette.rkt"
   "../util/ball.rkt"

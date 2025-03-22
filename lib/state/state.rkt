@@ -1,6 +1,13 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d Dir Pict3D Pos)
+         (only-in pict3d
+                  dir
+                  dir-dx
+                  dir-dy
+                  dir-dz
+                  pos
+                  pos?)
          "./menu.rkt"
          "./state-base.rkt"
          "../util/pid.rkt")

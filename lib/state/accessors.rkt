@@ -1,7 +1,9 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d Pos)
+  (only-in pict3d
+           pos-y)
   "./state.rkt")
 
 (provide (all-defined-out))

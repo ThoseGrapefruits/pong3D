@@ -1,12 +1,15 @@
 #lang typed/racket/base
 
-(require "../state/init.rkt"
-         "../state/menu.rkt"
-         "../state/state.rkt"
-         "../state/syntax.rkt"
-         "../state/updaters.rkt"
-         "../util/tag.rkt"
-         "./navigation.rkt")
+(require (only-in "../state/init.rkt" state-start)
+         (only-in "../state/menu.rkt" Path-Source)
+         (only-in "../state/state.rkt"
+                  State State-Any State-Pause-Menu State-Pause-Menu? State-Pause-Menu-menu State-Pause-Menu-resume-state State-Play State-Stop)
+         (only-in "../state/syntax.rkt" State-transition)
+         (only-in "../state/updaters.rkt" State-update-counters)
+         (only-in "../util/tag.rkt" path=?)
+         (only-in "./navigation.rkt"
+                  Menu-On-Activate Menu-On-Change Menu-On-Exit
+                  Menu-go-horizontal Menu-go-in Menu-go-out Menu-go-vertical))
 
 (provide Pause-Menu-activate
          Pause-Menu-go-out

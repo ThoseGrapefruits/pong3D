@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
-(require racket/system
-         racket/file)
+(require (only-in racket/system system))
 
 (module wrapper-file-watchers racket/base
   (require file-watchers)

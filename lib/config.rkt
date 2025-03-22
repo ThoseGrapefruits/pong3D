@@ -1,6 +1,11 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require (only-in pict3d Dir)
+         (only-in pict3d
+                  dir
+                  dir-dx
+                  dir-dy
+                  dir-dz))
 
 (provide (all-defined-out))
 

@@ -1,7 +1,5 @@
 #lang typed/racket/base
 
-(require pict3d)
-
 (provide (all-defined-out))
 
 ; START   MIDDLE   END

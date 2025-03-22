@@ -1,7 +1,10 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/list
+(require (only-in pict3d Emitted Pict3D Tag)
+         (only-in pict3d
+                  empty-pict3d
+                  emitted)
+         (only-in racket/list empty? first rest)
          "./menu-item-types.rkt"
          "../util/tag.rkt")
 

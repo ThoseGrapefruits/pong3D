@@ -1,8 +1,8 @@
 #lang typed/racket/base
 
 (require
-  racket/set
-  racket/string
+  (only-in racket/set set-add set-remove)
+  (only-in racket/string string-prefix?)
   "../util/player.rkt"
   "./state.rkt"
   "./syntax.rkt")

@@ -1,6 +1,18 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d Pict3D)
+         (only-in pict3d
+                  affine-compose
+                  combine
+                  current-color
+                  current-material
+                  dir
+                  empty-pict3d
+                  material
+                  origin
+                  rectangle
+                  rgba
+                  transform)
          "./camera.rkt"
          "./menu.rkt"
          "./on-char-jiggle.rkt"

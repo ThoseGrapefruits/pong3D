@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d Pos pos-x pos-y pos-z)
          "../state/state.rkt"
          "./number.rkt")
 

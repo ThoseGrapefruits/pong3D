@@ -1,9 +1,12 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d Dir Pict3D Pos)
+  (only-in pict3d
+           camera-ray-dir
+           trace/data)
   (only-in racket/match match-define)
-  "../on-draw/camera.rkt"
+  (only-in "../on-draw/camera.rkt" camera-pos camera-transform-pong)
   "./state.rkt"
   "./syntax.rkt")
 

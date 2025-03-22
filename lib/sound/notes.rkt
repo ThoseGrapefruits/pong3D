@@ -1,9 +1,6 @@
 #lang typed/racket/base
 
 (require "./sound.rkt"
-         racket/bool
-         racket/list
-         racket/function
          (only-in racket/match match-define)
          racket/math)
 

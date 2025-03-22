@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require pict3d
+(require (only-in pict3d Pict3D Pos combine pos+ quad +z -z)
          "../statics/measurements.rkt")
 
 (provide quad-thicc)

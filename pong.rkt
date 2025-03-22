@@ -1,9 +1,7 @@
 #lang typed/racket/base
 
 (require
-  typed/racket/gui
-  pict3d/universe
-
+  (only-in pict3d/universe big-bang3d)
   "./lib/config.rkt"
   "./lib/on-draw/on-draw.rkt"
   "./lib/on-frame/on-frame.rkt"

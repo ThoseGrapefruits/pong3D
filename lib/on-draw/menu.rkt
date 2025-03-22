@@ -2,7 +2,6 @@
 
 (require
   pict3d
-  racket/bool
   (only-in racket/match match-define)
   "../state/menu.rkt"
   "../state/menu-item-types.rkt"
@@ -122,7 +121,7 @@
 (: render-menu-item : State-Menu Menu Menu-Item Integer (Listof Menu-Item) -> Pict3D)
 (define (render-menu-item s menu menu-item i siblings)
   (define type (Menu-Item-type menu-item))
-  (cond [(and (symbol? type) (symbol=? 'text type))
+  (cond [(eq? 'text type)
          (render-menu-item-text   s menu menu-item i siblings type)]
         [(Menu-Item-Type-Slider? type)
          (render-menu-item-slider s menu menu-item i siblings type)]))

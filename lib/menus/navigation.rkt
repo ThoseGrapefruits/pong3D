@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
-(require racket/bool
-         racket/list
+(require racket/list
          "../state/menu.rkt"
          "../state/menu-item-types.rkt"
          "../state/state.rkt"
@@ -24,8 +23,8 @@
                      -> State-Any))
 (define (Menu-go-in s menu n t path-source on-activate)
   (define active-path-box
-    (cond [(symbol=? path-source 'active) (Menu-active-path menu)]
-          [(symbol=? path-source 'hover) (Menu-hovered-path menu)]
+    (cond [(eq? path-source 'active) (Menu-active-path menu)]
+          [(eq? path-source 'hover) (Menu-hovered-path menu)]
           [else (error 'Menu-go-in "unknown Path-Source ~s" path-source)]))
 
   (: active-path : (U #f Tags))

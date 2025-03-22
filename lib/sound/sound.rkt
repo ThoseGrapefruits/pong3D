@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
-(require racket/bool
-         racket/file
+(require racket/file
          racket/list
          (only-in racket/match match-define)
          racket/math
@@ -40,8 +39,8 @@
 
 (: volume-for : Sound-Category -> Flonum)
 (define (volume-for category)
-  (cond [(symbol=? 'effect category) (get-pref-flonum 'volume-effects (λ () 0.7))]
-        [(symbol=? 'music  category) (get-pref-flonum 'volume-music   (λ () 1.0))]
+  (cond [(eq? 'effect category) (get-pref-flonum 'volume-effects (λ () 0.7))]
+        [(eq? 'music  category) (get-pref-flonum 'volume-music   (λ () 1.0))]
         [else (error 'volume-for "unknown category: ~s" category)]))
 
 (define-type Sound-Category (U 'effect 'music))

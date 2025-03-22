@@ -2,7 +2,6 @@
 
 (require
   pict3d
-  racket/bool
   "../config.rkt"
   "../state/state.rkt"
   "../util/player.rkt"
@@ -20,7 +19,7 @@
   (define pos-predicted-maybe
     (findf (λ ([p : Pos]) (negative? (pos-x p)))
            (State-Play-ball-predicted-pos-ends s)))
-  (define pos-predicted (if (false? pos-predicted-maybe) null pos-predicted-maybe));
+  (define pos-predicted (or pos-predicted-maybe null))
   (define pos-y-desired
     (cond [(null? pos-predicted) ball-y]
           [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]

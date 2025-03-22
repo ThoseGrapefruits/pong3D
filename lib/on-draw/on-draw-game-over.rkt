@@ -1,7 +1,18 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/string
+(require (only-in pict3d Pict3D)
+         (only-in pict3d
+                  affine-compose
+                  combine
+                  cube
+                  emitted
+                  empty-pict3d
+                  move-z
+                  origin
+                  rotate-z
+                  scale
+                  transform
+                  with-emitted)
          "./camera.rkt"
          "./game-score.rkt"
          "./on-char-jiggle.rkt"

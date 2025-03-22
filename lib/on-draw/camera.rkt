@@ -1,7 +1,18 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d Affine Dir Pict3D Pos)
+  (only-in pict3d
+           affine-compose
+           basis
+           dir
+           dir-normalize
+           pos
+           pos+
+           pos-
+           origin
+           point-at
+           +x)
   (only-in racket/match match-define)
   "../config.rkt"
   "../state/state.rkt")
