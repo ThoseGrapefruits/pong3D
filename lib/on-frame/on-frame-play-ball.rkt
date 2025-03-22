@@ -1,8 +1,24 @@
 #lang typed/racket/base
 
 (require
-  pict3d
-  typed-compose
+  (only-in pict3d
+           Dir
+           Pos
+           angles->dir
+           dir-dx
+           dir-dy
+           dir-reflect
+           dir-scale
+           pos-dist
+           pos-x
+           pos-y
+           pos+
+           pos-
+           +x
+           -x
+           +y
+           -y)
+  (only-in typed-compose compose-n)
   "../config.rkt"
   "../sound/sound.rkt"
   "../state/accessors.rkt"

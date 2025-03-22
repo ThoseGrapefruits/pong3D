@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require racket/function
+(require (only-in racket/function curry)
          "../menus/menu-main.rkt"
          "../state/state.rkt"
          "./util.rkt")

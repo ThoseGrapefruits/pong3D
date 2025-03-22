@@ -1,7 +1,10 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d
+           Pos
+           pos-x
+           pos-y)
   "../config.rkt"
   "../state/state.rkt"
   "../util/player.rkt"

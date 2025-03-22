@@ -1,7 +1,9 @@
 #lang typed/racket/base
 
-(require racket/list
-         pict3d
+(require (only-in pict3d
+                  Surface-Data
+                  surface-data-path)
+         (only-in racket/list empty? first rest)
          "../menus/navigation.rkt"
          "../state/menu.rkt"
          "../state/state.rkt"

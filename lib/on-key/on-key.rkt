@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  typed-compose
+  (only-in typed-compose compose-n)
   "./on-key-immediate-game-over.rkt"
   "./on-key-immediate-main-menu.rkt"
   "./on-key-immediate-pause-menu.rkt"

@@ -1,9 +1,10 @@
 #lang typed/racket/base
 
 (require
-  racket/set
-  pict3d
-  typed-compose
+  (only-in pict3d
+           Pos
+           pos-x)
+  (only-in typed-compose compose-n)
   "../config.rkt"
   "../sound/sound.rkt"
   "../state/init.rkt"

@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require racket/set
+(require (only-in racket/set set-member?)
          "../state/state.rkt")
 
 (provide just-pressed?)

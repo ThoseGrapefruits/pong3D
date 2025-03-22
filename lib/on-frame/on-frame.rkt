@@ -2,7 +2,7 @@
 
 (require
   (only-in racket/match match-define)
-  typed-compose
+  (only-in typed-compose compose-n)
   "../state/state.rkt"
   "../state/updaters.rkt"
   "./on-frame-pause-menu.rkt"

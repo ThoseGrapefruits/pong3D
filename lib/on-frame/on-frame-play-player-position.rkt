@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  racket/set
+  (only-in racket/set set-member?)
   "../config.rkt"
   "../state/state.rkt"
   "../state/setters.rkt"
