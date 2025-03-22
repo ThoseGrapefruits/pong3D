@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  racket/match
+  (only-in racket/match match-define)
   "../state/state.rkt"
   "./text.rkt"
   "./types.rkt"

@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  racket/match
+  (only-in racket/match match-define)
   typed-compose
   "../state/state.rkt"
   "../state/updaters.rkt"

@@ -3,7 +3,7 @@
 (require
   pict3d
   racket/bool
-  racket/match
+  (only-in racket/match match-define)
   "../state/menu.rkt"
   "../state/menu-item-types.rkt"
   "../state/state.rkt"

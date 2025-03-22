@@ -4,7 +4,7 @@
          racket/bool
          racket/list
          racket/function
-         racket/match
+         (only-in racket/match match-define)
          racket/math)
 
 (provide get-note-frequency

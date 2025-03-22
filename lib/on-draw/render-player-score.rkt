@@ -2,7 +2,7 @@
 
 (require
   racket/list
-  racket/match
+  (only-in racket/match match-define)
   "./game-score.rkt"
   "../util/number.rkt"
   pict3d)

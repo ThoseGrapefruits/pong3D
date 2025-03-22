@@ -1,11 +1,12 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/match
-         "./camera.rkt"
-         "./util.rkt"
-         "../config.rkt"
-         "../state/state.rkt")
+(require
+  pict3d
+  (only-in racket/match match-define)
+  "./camera.rkt"
+  "./util.rkt"
+  "../config.rkt"
+  "../state/state.rkt")
 
 (provide position-screen-space-pixels
 position-screen-space-relative)

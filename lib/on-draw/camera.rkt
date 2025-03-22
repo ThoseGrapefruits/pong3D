@@ -1,9 +1,10 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/match
-         "../config.rkt"
-         "../state/state.rkt")
+(require
+  pict3d
+  (only-in racket/match match-define)
+  "../config.rkt"
+  "../state/state.rkt")
 
 (provide aspect-ratio
          camera

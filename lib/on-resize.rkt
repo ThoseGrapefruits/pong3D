@@ -1,8 +1,6 @@
 #lang typed/racket/base
 
 (require
-  pict3d
-  racket/match
   "./state/state.rkt"
   "./state/syntax.rkt")
 
