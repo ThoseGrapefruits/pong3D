@@ -2,7 +2,7 @@
 
 (require
   pict3d
-  racket/match
+  (only-in racket/match match-define)
   "../on-draw/camera.rkt"
   "./state.rkt"
   "./syntax.rkt")

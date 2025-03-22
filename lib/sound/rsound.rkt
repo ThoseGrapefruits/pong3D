@@ -12,14 +12,19 @@
  ps:queue-callback
  ps:set-volume!
 
+ RNetwork
+ RNetwork/s
+
  RSound
  (struct-out rsound)
  rs:append*
  rs:default-sample-rate
  rs:ding
  rs:make-ding
+ rs:make-tone
  rs:overlay
  rs:scale
+ rs:sine-wave
  rs:stop
  rs:synth-note
  rs:write)
@@ -29,6 +34,8 @@
   (provide
    (struct-out pstream)
    (struct-out rsound)
+   (struct-out network/s)
+   (prefix-out rs: network)
 
    (rename-out [andqueue ps:andqueue]
                [make-pstream ps:make-pstream]
@@ -40,11 +47,12 @@
                [pstream-set-volume! ps:set-volume!])
 
    (prefix-out rs: andplay)
+   (prefix-out rs: build-sound)
    (prefix-out rs: default-sample-rate)
    (prefix-out rs: ding)
    (prefix-out rs: make-ding)
    (prefix-out rs: make-tone)
-   (prefix-out rs: play)
+   (prefix-out rs: sine-wave)
    (prefix-out rs: synth-note)
    (prefix-out rs: stop)
 
@@ -55,6 +63,10 @@
 
 (require/typed
  'wrapper
+ [#:struct network/s ([ins : Positive-Integer]
+                      [outs : Positive-Integer]
+                      [maker : (-> RNetwork)])
+  #:type-name RNetwork/s]
  [#:struct rsound ([data : (Vectorof Real)]
                    [start : Nonnegative-Real]
                    [stop : Nonnegative-Real]
@@ -76,12 +88,17 @@
  [ps:set-volume! (-> PStream Real PStream)]
  [ps:make-pstream (->* () (#:buffer-time Positive-Float) PStream)]
 
+ [rs:append* (-> (Sequenceof RSound) RSound)]
+ [rs:build-sound (-> Positive-Integer RNetwork RSound)]
  [rs:default-sample-rate (-> Positive-Real)]
  [rs:ding RSound]
- [rs:make-ding (-> Integer RSound)]
- [rs:append* (-> (Sequenceof RSound) RSound)]
+ [rs:make-ding (-> Nonnegative-Integer RSound)]
+ [rs:make-tone (-> Nonnegative-Real Nonnegative-Flonum Exact-Nonnegative-Integer RSound)]
  [rs:overlay (-> RSound RSound RSound)]
- [rs:write (-> RSound Path Void)]
  [rs:scale (-> Real RSound RSound)]
+ [rs:sine-wave RNetwork]
  [rs:stop (-> Void)]
- [rs:synth-note (-> String Number Natural Natural RSound)])
+ [rs:synth-note (-> String Number Natural Natural RSound)]
+ [rs:write (-> RSound Path Void)])
+
+(define-type RNetwork (U RNetwork/s RSound))

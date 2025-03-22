@@ -3,12 +3,11 @@
 (require racket/bool
          racket/file
          racket/list
-         racket/match
+         (only-in racket/match match-define)
          racket/math
          typed-map
          typed/racket/gui/base
          "../preferences/preferences.rkt"
-         "./song.rkt"
          "./rsound.rkt")
 
 (provide
@@ -26,10 +25,13 @@
  SOUND-STARTUP
  SOUNDS-BALL-BOUNCE-OPPONENT
  SOUNDS-BALL-BOUNCE-PLAYER
- SOUNDS-BALL-BOUNCE-WALL)
+ SOUNDS-BALL-BOUNCE-WALL
+ volume-for
+ volume-global
+ volume-main)
 
 ; Fixed global volume scale, since generated sounds are very very loud.
-(: volume-global : Flonum)
+(: volume-global : Nonnegative-Flonum)
 (define volume-global 0.5)
 
 ; User-configurable main volume
@@ -135,7 +137,7 @@
     ([n (in-range -5 5)])
     (Pong-Sound 'effect
                 'ball-bounce-player
-                (rs:make-ding (+ (note-to-frequency -1) (* n 1))))))
+                (rs:make-ding (assert (+ (note-to-frequency -1) (* n 1)) nonnegative-integer?)))))
 
 (: SOUNDS-BALL-BOUNCE-PLAYER Pong-Sounds)
 (define SOUNDS-BALL-BOUNCE-PLAYER
@@ -143,7 +145,7 @@
     ([n (in-range -5 5)])
     (Pong-Sound 'effect
                 'ball-bounce-player
-                (rs:make-ding (+ (note-to-frequency 3) (* n 1))))))
+                (rs:make-ding (assert (+ (note-to-frequency 3) (* n 1)) nonnegative-integer?)))))
 
 (: SOUNDS-BALL-BOUNCE-WALL Pong-Sounds)
 (define SOUNDS-BALL-BOUNCE-WALL
@@ -151,7 +153,7 @@
     ([n (in-range -5 5)])
     (Pong-Sound 'effect
                 'ball-bounce-wall
-                (rs:make-ding (+ (note-to-frequency 5) (* n 1))))))
+                (rs:make-ding (assert (+ (note-to-frequency 5) (* n 1)) nonnegative-integer?)))))
 
 (: SOUND-ENDGAME Pong-Sound)
 (define SOUND-ENDGAME

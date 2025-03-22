@@ -8,7 +8,7 @@
 (require
   pict3d
   racket/list
-  racket/match
+  (only-in racket/match match-define)
   typed/racket/stream
   "../config.rkt"
   "../state/state.rkt")

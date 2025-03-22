@@ -7,6 +7,9 @@
          racket/match
          racket/math)
 
+(provide get-note-frequency
+         get-note-frequency-value)
+
 (: note-name : Nonnegative-Integer -> String)
 (define (note-name n)
   (cond [(= n 0)  "C_" ]
@@ -52,10 +55,6 @@
                   name
                   (note-to-frequency (+ note (* 8 octave)))))
 
-(: octave-to-frequencies : Integer -> (Listof Pong-Frequency))
-(define (octave-to-frequencies octave)
-  (map ((curry note-to-pong-frequency) octave) NOTES))
-
 (: NOTE-FREQUENCIES : (Listof Pong-Frequency))
 (define NOTE-FREQUENCIES
   (for*/list : (Listof Pong-Frequency)
@@ -70,7 +69,15 @@
      ([pf NOTE-FREQUENCIES])
      (cons (Pong-Frequency-name pf) pf))))
 
-(displayln NOTE-FREQUENCIES-MAP)
+(: get-note-frequency : Symbol -> (U Pong-Frequency #f))
+(define (get-note-frequency note)
+  (and (not (eq? note '__:__))
+       (hash-ref NOTE-FREQUENCIES-MAP note)))
+
+(: get-note-frequency-value : Symbol -> (U Nonnegative-Integer #f))
+(define (get-note-frequency-value note)
+  (and (not (eq? note '__:__))
+       (Pong-Frequency-frequency (hash-ref NOTE-FREQUENCIES-MAP note))))
 
 ; TODO we'll probably want this to just be a list of referencable frequencies,
 ; rather than a list of rendered sounds, that get mapped by different synth
