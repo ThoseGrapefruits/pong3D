@@ -2,10 +2,10 @@
 
 (require
   (only-in racket/match match-define)
+  (only-in pict3d current-emitted)
   "../state/state.rkt"
   "./text.rkt"
-  "./types.rkt"
-  pict3d)
+  "./types.rkt")
 
 (provide
   (struct-out Score-Section)

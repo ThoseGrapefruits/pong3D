@@ -1,12 +1,23 @@
 #lang typed/racket/base
 
-(require pict3d
-         (only-in racket/math degrees->radians)
-         "../statics/guides.rkt"
-         "../statics/measurements.rkt"
-         "../statics/memoize.rkt"
-         "../util/cirque.rkt"
-         "../util/quad-thicc.rkt")
+(require
+  (only-in pict3d
+           arc
+           combine
+           dir
+           move-x
+           pos+
+           rectangle
+           +x
+           +y
+           -x
+           -y)
+  (only-in racket/math degrees->radians)
+  "../statics/guides.rkt"
+  "../statics/measurements.rkt"
+  "../statics/memoize.rkt"
+  "../util/cirque.rkt"
+  "../util/quad-thicc.rkt")
 
 (provide (all-defined-out))
 

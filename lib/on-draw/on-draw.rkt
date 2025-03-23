@@ -1,7 +1,19 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d
+           Pict3D
+           arrow
+           combine
+           current-pict3d-fov
+           current-material
+           emitted
+           material
+           origin
+           with-emitted
+           -y
+           -x
+           -z)
   "./on-draw-game-over.rkt"
   "./on-draw-main-menu.rkt"
   "./on-draw-pause-menu.rkt"

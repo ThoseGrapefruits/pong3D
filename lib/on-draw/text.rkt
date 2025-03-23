@@ -1,8 +1,21 @@
 #lang typed/racket/base
 
-(require pict3d
-         racket/list
-         racket/string)
+(require
+  (only-in pict3d
+           Pict3D
+           affine-compose
+           combine
+           move
+           move-x
+           move-y
+           transform)
+  (only-in racket/list
+           empty?
+           range)
+  (only-in racket/string
+           string-split
+           string-trim)
+  (only-in racket/match match-define))
 
 (require (prefix-in font: "font.rkt")
          (prefix-in font: "./font/statics/measurements.rkt"))

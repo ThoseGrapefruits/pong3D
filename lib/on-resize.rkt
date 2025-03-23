@@ -1,8 +1,8 @@
 #lang typed/racket/base
 
 (require
-  "./state/state.rkt"
-  "./state/syntax.rkt")
+  (only-in "./state/syntax.rkt" State-update-parent)
+  (only-in "./state/state.rkt" State State-Any))
 
 (provide on-resize)
 

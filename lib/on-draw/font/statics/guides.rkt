@@ -1,7 +1,15 @@
 #lang typed/racket/base
 
-(require (only-in pict3d Pos origin pos+ +x +y -x -y)
-         "./measurements.rkt")
+(require
+  (only-in pict3d
+           Pos
+           origin
+           pos+
+           +x
+           +y
+           -x
+           -y)
+  "./measurements.rkt")
 
 (provide (all-defined-out))
 

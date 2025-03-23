@@ -1,7 +1,12 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d
+           Affine
+           affine-compose
+           camera-ray-dir
+           move
+           scale)
   (only-in racket/match match-define)
   "./camera.rkt"
   "./util.rkt"

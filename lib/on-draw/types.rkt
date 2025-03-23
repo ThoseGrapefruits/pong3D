@@ -1,7 +1,8 @@
 #lang typed/racket/base
 
-(require pict3d
-         "./palette.rkt")
+(require
+  (only-in pict3d Emitted)
+  "./palette.rkt")
 
 (provide (struct-out Score-Section)
          SCORE-SECTIONS)

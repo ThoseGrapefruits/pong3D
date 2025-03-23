@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require pict3d)
+(require (only-in pict3d emitted))
 
 (provide EMITTED-BLUE
          EMITTED-PURPLE

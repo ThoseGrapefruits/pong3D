@@ -1,6 +1,7 @@
 #lang typed/racket/base/optional
 
-(require pict3d)
+(require
+  (only-in pict3d Pict3D))
 
 (module wrapper racket/base
   (require nested-hash)

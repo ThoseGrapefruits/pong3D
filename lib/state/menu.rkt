@@ -5,7 +5,7 @@
                   empty-pict3d
                   emitted)
          (only-in racket/list empty? first rest)
-         "./menu-item-types.rkt"
+         (only-in "./menu-item-types.rkt" Menu-Item-Type)
          "../util/tag.rkt")
 
 (provide (struct-out Menu)

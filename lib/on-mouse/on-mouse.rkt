@@ -1,13 +1,17 @@
 #lang typed/racket/base
 
-(require pict3d
-         typed-compose
-         "../state/state.rkt"
-         "../state/syntax.rkt"
-         "../state/updaters.rkt"
-         "../util/pid.rkt"
-         "./on-mouse-main-menu.rkt"
-         "./on-mouse-pause-menu.rkt")
+(require
+  (only-in pict3d
+           pos-y
+           surface-data-pos
+           surface-data?)
+  (only-in typed-compose compose-n)
+  "../state/state.rkt"
+  "../state/syntax.rkt"
+  "../state/updaters.rkt"
+  "../util/pid.rkt"
+  "./on-mouse-main-menu.rkt"
+  "./on-mouse-pause-menu.rkt")
 
 (provide on-mouse)
 

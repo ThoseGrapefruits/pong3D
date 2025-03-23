@@ -6,8 +6,19 @@
 ; ball without having to rely on fast movement speeds.
 
 (require
-  pict3d
-  racket/list
+  (only-in pict3d
+           Pos
+           Dir
+           dir
+           pos-x
+           pos-y
+           pos+
+           dir-dx
+           dir-dy
+           dir-reflect
+           +x
+           +y)
+  (only-in racket/list empty?)
   (only-in racket/match match-define)
   typed/racket/stream
   "../config.rkt"

@@ -1,11 +1,27 @@
 #lang typed/racket/base
 
-(require pict3d
-         "../statics/guides.rkt"
-         "../statics/measurements.rkt"
-         "../statics/memoize.rkt"
-         "../util/cirque.rkt"
-         "../util/quad-thicc.rkt")
+(require
+  (only-in pict3d
+           arc
+           combine
+           cylinder
+           dir
+           pos
+           pos-x
+           pos-y
+           pos-z
+           pos+
+           pos-
+           rectangle
+           -x
+           -y
+           +x
+           +y)
+  "../statics/guides.rkt"
+  "../statics/measurements.rkt"
+  "../statics/memoize.rkt"
+  "../util/cirque.rkt"
+  "../util/quad-thicc.rkt")
 
 (provide (all-defined-out))
 

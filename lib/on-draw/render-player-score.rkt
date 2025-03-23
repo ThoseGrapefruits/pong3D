@@ -1,11 +1,19 @@
 #lang typed/racket/base
 
 (require
-  racket/list
+  (only-in racket/list range)
   (only-in racket/match match-define)
+  (only-in pict3d
+           Pict3D
+           combine
+           current-emitted
+           pos
+           dir
+           sphere
+           pipe
+           interval)
   "./game-score.rkt"
-  "../util/number.rkt"
-  pict3d)
+  "../util/number.rkt")
 
 (provide render-player-score)
 

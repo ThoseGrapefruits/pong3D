@@ -1,8 +1,12 @@
 #lang typed/racket/base
 
-(require (only-in pict3d current-emitted empty-pict3d freeze)
-         "../../../util/nested-hash.rkt"
-         "./types.rkt")
+(require
+  (only-in pict3d
+           current-emitted
+           empty-pict3d
+           freeze)
+  "../../../util/nested-hash.rkt"
+  "./types.rkt")
 
 (provide make-Char-3D-memoized)
 

@@ -1,7 +1,25 @@
 #lang typed/racket/base
 
 (require
-  pict3d
+  (only-in pict3d
+           Emitted
+           Pict3D
+           affine-compose
+           bounding-rectangle
+           combine
+           cube
+           current-emitted
+           dir
+           empty-pict3d
+           emitted
+           group
+           origin
+           pos+
+           rectangle
+           scale
+           tessellate
+           transform
+           -y)
   (only-in racket/match match-define)
   "../state/menu.rkt"
   "../state/menu-item-types.rkt"
@@ -50,7 +68,7 @@
   (: time-since : Flonum)
   (define time-since
     (cond [active-end
-          ; If Menu-Item stopped being active, we scale back to default.
+           ; If Menu-Item stopped being active, we scale back to default.
            (max 0.0            (- ANIMATION-TIME (- t active-end)))]
           [active-start
            (min ANIMATION-TIME (- t active-start))]
@@ -91,7 +109,7 @@
   (: time-since : Flonum)
   (define time-since
     (cond [active-end
-          ; If Menu-Item stopped being active, we scale back to 1.0.
+           ; If Menu-Item stopped being active, we scale back to 1.0.
            (max 0.0            (- ANIMATION-TIME (- t active-end)))]
           [active-start
            (min ANIMATION-TIME (- t active-start))]
@@ -126,18 +144,17 @@
         [(Menu-Item-Type-Slider? type)
          (render-menu-item-slider s menu menu-item i siblings type)]))
 
-
-(: bounding-box-cache : (HashTable String Bounds))
-(define bounding-box-cache (make-hasheq))
+(: bounds-cache : (HashTable String Bounds))
+(define bounds-cache (make-hasheq))
 
 (: get-bounds : String Pict3D -> Bounds)
 (define (get-bounds label label-rendered)
   (hash-ref
-   bounding-box-cache label
+   bounds-cache label
    (λ ()
      (define-values (b1 b2) (bounding-rectangle (tessellate label-rendered)))
      (define bounds : Bounds (assert (cons b1 b2) bounds?))
-     (hash-set! bounding-box-cache label bounds)
+     (hash-set! bounds-cache label bounds)
      bounds)))
 
 (: render-menu-item-slider :
