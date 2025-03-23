@@ -4,7 +4,9 @@
   (only-in pict3d Pict3D))
 
 (module wrapper racket/base
-  (require nested-hash)
+  (require (only-in nested-hash
+                    nested-hash-ref*
+                    nested-hash-set*))
   (provide
    nested-hash-ref*
    nested-hash-set*))

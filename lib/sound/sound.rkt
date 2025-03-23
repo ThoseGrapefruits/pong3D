@@ -1,10 +1,10 @@
 #lang typed/racket/base
 
 (require racket/file
-         racket/list
+         (only-in racket/list empty? first second)
          (only-in racket/match match-define)
-         racket/math
-         typed-map
+         (only-in racket/math exact-round nonnegative-integer?)
+         (only-in typed-map map)
          typed/racket/gui/base
          "../preferences/preferences.rkt"
          "./rsound.rkt")

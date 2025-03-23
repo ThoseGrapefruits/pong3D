@@ -20,7 +20,13 @@
            +y)
   (only-in racket/list empty?)
   (only-in racket/match match-define)
-  typed/racket/stream
+  (only-in typed/racket/stream
+           stream
+           stream-cons
+           stream-first
+           stream-rest
+           stream->list
+           stream-take)
   "../config.rkt"
   "../state/state.rkt")
 

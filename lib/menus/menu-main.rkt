@@ -1,13 +1,11 @@
 #lang typed/racket/base
 
-(require (only-in "../state/init.rkt" state-reset-play)
-         (only-in "../state/menu.rkt" Path-Source)
-         (only-in "../state/state.rkt" State-Any State-Main-Menu State-Main-Menu-menu State-Main-Menu? State-Stop)
-         (only-in "../state/syntax.rkt" State-transition)
-         (only-in "../util/tag.rkt" path=?)
-         (only-in "./navigation.rkt"
-                  Menu-On-Activate Menu-On-Change Menu-On-Exit
-                  Menu-go-horizontal Menu-go-in Menu-go-out Menu-go-vertical))
+(require "../state/init.rkt"
+         "../state/menu.rkt"
+         "../state/state.rkt"
+         "../state/syntax.rkt"
+         "../util/tag.rkt"
+         "./navigation.rkt")
 
 (provide Main-Menu-activate
          Main-Menu-go-in

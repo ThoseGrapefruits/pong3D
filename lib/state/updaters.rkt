@@ -6,7 +6,7 @@
            camera-ray-dir
            trace/data)
   (only-in racket/match match-define)
-  (only-in "../on-draw/camera.rkt" camera-pos camera-transform-pong)
+  "../on-draw/camera.rkt"
   "./state.rkt"
   "./syntax.rkt")
 

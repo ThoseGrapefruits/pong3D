@@ -3,7 +3,14 @@
 (require (only-in racket/system system))
 
 (module wrapper-file-watchers racket/base
-  (require file-watchers)
+  (require (only-in file-watchers
+                    apathetic-watch
+                    file-activity-channel
+                    file-watcher-channel-get
+                    file-watcher-status-channel
+                    path-on-disk?
+                    suggest-approach
+                    watch))
   (provide apathetic-watch
            file-activity-channel
            file-watcher-channel-get

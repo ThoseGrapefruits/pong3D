@@ -1,12 +1,14 @@
 #lang typed/racket/base
 
-(require (only-in pict3d Emitted Pict3D Tag)
-         (only-in pict3d
+(require (only-in pict3d
+                  Emitted
+                  Pict3D
+                  Tag
                   empty-pict3d
                   emitted)
          (only-in racket/list empty? first rest)
-         (only-in "./menu-item-types.rkt" Menu-Item-Type)
-         "../util/tag.rkt")
+         "../util/tag.rkt"
+         "./menu-item-types.rkt")
 
 (provide (struct-out Menu)
          (struct-out Menu-Item)
