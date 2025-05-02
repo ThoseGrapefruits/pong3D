@@ -5,11 +5,11 @@
                "file-watchers"
                "math-lib"
                "nested-hash"
-               "pict3d"
                "rsound"
                "srfi-lite-lib"
                "typed-compose"
                "typed-map-lib"
                "typed-racket-lib"
                "typed-racket-more"
-               "typed-racket-stream"))
+               "typed-racket-stream"
+               "git://github.com/ThoseGrapefruits/pict3d.git#main"))
