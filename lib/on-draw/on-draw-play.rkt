@@ -63,7 +63,7 @@
           [else #f]))
   (if state-play
       (combine (render-game-play-opponent state-play)
-               (render-sample-text state-play)
+            ;; (render-sample-text state-play)
                (render-game-play-player state-play)
                (render-game-play-ball state-play)
                (render-game-play-hud state-play)
