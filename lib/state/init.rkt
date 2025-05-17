@@ -117,9 +117,9 @@
                    #:tag   'volume-main
                    #:type  (make-Menu-Item-Type-Slider-Flonum
                             #:key 'volume-main
+                            #:decimal-digits 1
                             #:min 0.0
-                            #:max 1.0
-                            #:step 0.1))))))
+                            #:max 1.0))))))
          (make-Menu-Item
           #:color-active EMITTED-YELLOW
           #:label "Exit"

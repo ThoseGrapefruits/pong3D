@@ -120,6 +120,7 @@
         font:symbol:vertical-line
         font:symbol:quote-single
         font:symbol:quote-double
+        font:symbol:colon
         font:symbol:semicolon
         font:symbol:comma
         font:symbol:dot))

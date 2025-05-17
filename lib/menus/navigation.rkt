@@ -55,8 +55,9 @@
   (define active-type (and active-mi (Menu-Item-type active-mi)))
   (cond [(Menu-Item-Type-Slider-Flonum? active-type)
          (define value-set! (Menu-Item-Type-Slider-Flonum-value-setter active-type))
-         (value-set! (+ ((Menu-Item-Type-Slider-Flonum-value-getter  active-type))
-                        (* offset (Menu-Item-Type-Slider-Flonum-step active-type))))
+         (define value-get (Menu-Item-Type-Slider-Flonum-value-getter  active-type))
+         (define decimal-digits (Menu-Item-Type-Slider-Flonum-decimal-digits active-type))
+         (value-set! (+ (value-get) (* offset (expt 10 (- decimal-digits)))))
          (on-change s n t active-path active-mi)
          s]
         [else s]))

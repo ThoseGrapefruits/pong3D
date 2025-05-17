@@ -162,17 +162,24 @@
    Menu-Item-Type-Slider -> Pict3D)
 (define (render-menu-item-slider s menu menu-item i siblings type)
   (define label (Menu-Item-label menu-item))
-  (define label-rendered (text label) )
+  (: value-getter : -> Any)
+  (define value-getter
+  (cond [(Menu-Item-Type-Slider-Flonum? type)
+         (Menu-Item-Type-Slider-Flonum-value-getter type)]
+        [else
+         (λ () "")]))
+  (define label-wrapped (format "~a <~a>" label (value-getter)))
+  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
+  (define label-rendered
+    (parameterize ([current-emitted emitted-text])
+      (text label-wrapped #:onchar (get-on-char s 'wave))))
 
-  (define bounds (get-bounds label label-rendered))
+  (define bounds (get-bounds label-wrapped label-rendered))
   (match-define (cons bound1 bound2) bounds)
 
-  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
   (define y (+ -0.55 (* (exact->inexact i) 0.25)))
   (transform (group (combine
-                     (parameterize ([current-emitted emitted-text])
-                       (text (Menu-Item-label menu-item)
-                             #:onchar (get-on-char s 'wave)))
+                     label-rendered
                      (parameterize ([current-emitted emitted-bg])
                        (if (and bound1 bound2)
                            (rectangle (pos+ bound1 (dir -0.2 -0.2 0.25))
@@ -187,17 +194,17 @@
    State-Menu Menu Menu-Item Integer (Listof Menu-Item)
    'text -> Pict3D)
 (define (render-menu-item-text s menu menu-item i siblings type)
+  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
   (define label (Menu-Item-label menu-item))
-  (define label-rendered (text label) )
+  (define label-rendered
+    (parameterize ([current-emitted emitted-text])
+      (text label #:onchar (get-on-char s 'wave))))
   (define bounds (get-bounds label label-rendered))
   (match-define (cons bound1 bound2) bounds)
-  (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
 
   (transform
    (group (combine
-           (parameterize ([current-emitted emitted-text])
-             (text (Menu-Item-label menu-item)
-                   #:onchar (get-on-char s 'wave)))
+           label-rendered
            (parameterize ([current-emitted emitted-bg])
              (if (and bound1 bound2)
                  (rectangle (pos+ bound1 (dir -0.25 -0.25 0.25))

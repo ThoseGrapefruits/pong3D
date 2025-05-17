@@ -624,7 +624,7 @@
    (λ () (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
                    WIDTH-STROKE-3/4))))
 
-(define symbol::
+(define symbol:colon
   (make-Char-3D-memoized
    #\:
    WIDTH-EM-1/4

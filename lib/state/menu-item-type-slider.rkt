@@ -9,42 +9,46 @@
 ;; STRUCTS & TYPES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (struct Menu-Item-Type-Slider-Flonum
-  ([format       : (-> Flonum String)]
-   [key          : Pref-Key]
-   [max          : Flonum]
-   [min          : Flonum]
-   [step         : Flonum]
-   [value-getter : (-> Flonum)]
-   [value-setter : (-> Flonum Void)])
+  ([decimal-digits : Nonnegative-Integer]
+   [format         : (-> Flonum String)]
+   [key            : Pref-Key]
+   [max            : Flonum]
+   [min            : Flonum]
+   [value-getter   : (-> Flonum)]
+   [value-setter   : (-> Flonum Void)])
   #:transparent)
 
 ;; CONSTRUCTORS & HELPERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (: make-Menu-Item-Type-Slider-Flonum :
+   #:decimal-digits Nonnegative-Integer
    #:key  Pref-Key
    #:max  Flonum
    #:min  Flonum
-   #:step Flonum
    [#:format (-> Flonum String)]
    [#:value-getter (-> Flonum)]
    [#:value-setter (-> Flonum Void)]
    -> Menu-Item-Type-Slider-Flonum)
 (define (make-Menu-Item-Type-Slider-Flonum
+         #:decimal-digits decimal-digits
+         #:key key
+         #:max max-value
+         #:min min-value
          #:format [format #f]
          #:value-getter [value-getter #f]
-         #:key  key
-         #:max  max-value
-         #:min  min-value
-         #:value-setter [value-setter #f]
-         #:step step)
+         #:value-setter [value-setter #f])
   (Menu-Item-Type-Slider-Flonum
-   (or format (λ ([n : Flonum])
-                (number->string (exact-floor (* n 10)))))
+   decimal-digits
+   (or format
+       (λ ([n : Flonum])
+         (real->decimal-string n decimal-digits)))
    key
    max-value
    min-value
-   step
-   (or value-getter (λ ()
-                   (get-pref-flonum key (λ () 0.0))))
-   (or value-setter (λ ([value : Flonum])
-                      (put-pref key (max min-value (min max-value value)))))))
+   (or value-getter
+       (λ ()
+         (get-pref-flonum key (λ () 0.0))))
+   (or value-setter
+       (λ ([value : Flonum])
+         (put-pref key (real->decimal-string (max min-value (min max-value value))
+                                             decimal-digits))))))

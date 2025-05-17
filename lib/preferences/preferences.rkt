@@ -1,6 +1,9 @@
 #lang typed/racket/base
 
-(require racket/file)
+(require
+  (only-in racket/file
+           get-preference
+           put-preferences))
 
 (provide get-pref-boolean
          get-pref-flonum
@@ -20,15 +23,17 @@
      'volume-music))
 
 (: get-preference-string : Pref-Key -> (U String #f))
-(define (get-preference-string symbol)
-  (define result (get-preference symbol (λ () #f) #f path-prefs))
+(define (get-preference-string key)
+  (define result (get-preference key (λ () #f) #f path-prefs))
   (cond [(not result) #f]
         [(string? result) result]
-        [else (error 'get-preference-pong3d "non-string result: ~s" result)]))
+        [else
+         (eprintf "~s: non-string result for ~s: ~s~n" 'get-preference-string key result)
+         #f]))
 
 (: get-pref-boolean : Pref-Key (-> Boolean) -> Boolean)
-(define (get-pref-boolean symbol failure)
-  (define result-string (get-preference-string symbol))
+(define (get-pref-boolean key failure)
+  (define result-string (get-preference-string key))
   (define result-boolean (and result-string
                               (cond [(eq? result-string "#t")    #t]
                                     [(eq? result-string "true")  #t]
@@ -42,30 +47,32 @@
                              [Pref-Key (-> String) ->    String    ]))
 (define get-pref-string
   (case-lambda
-     [([symbol : Pref-Key])
-      (get-preference-string symbol)]
-     [([symbol : Pref-Key]
+     [([key : Pref-Key])
+      (get-preference-string key)]
+     [([key : Pref-Key]
        [failure : (-> String)])
-      (or (get-preference-string symbol) (failure))]))
+      (or (get-preference-string key) (failure))]))
 
 (: get-pref-real : Pref-Key (-> Real) -> Real)
-(define (get-pref-real symbol failure)
-  (define result-string (get-preference-string symbol))
+(define (get-pref-real key failure)
+  (define result-string (get-preference-string key))
   (define result-number (and result-string
                              (string->number result-string)))
   (cond [(real? result-number) result-number]
         [else (failure)]))
 
 (: get-pref-flonum : Pref-Key (-> Flonum) -> Flonum)
-(define (get-pref-flonum symbol failure)
-  (define result-string (get-preference-string symbol))
+(define (get-pref-flonum key failure)
+  (define result-string (get-preference-string key))
   (define result-number (and result-string
                              (string->number result-string)))
   (cond [(flonum? result-number) result-number]
         [else (failure)]))
 
 (: put-pref : Pref-Key Any -> Void)
-(define (put-pref symbol value)
-  (put-preferences (list symbol) (list value)
+(define (put-pref key value)
+  (printf "preference saved: ~v = ~v~n" key value)
+  (put-preferences `(,key)
+                   `(,value)
                    (λ (path) (error 'put-pref "lock is held on prefs file: ~v" path))
                    path-prefs))

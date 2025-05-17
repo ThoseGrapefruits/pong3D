@@ -23,7 +23,7 @@
 
 (: Main-Menu-change : (Menu-On-Change State-Main-Menu))
 (define (Main-Menu-change s n t path menu-item)
-  (printf "Main-Menu-change ~v~n" path menu-item)
+  (printf "Main-Menu-change ~v ~v~n" path menu-item)
   (cond [(not (State-Main-Menu? s)) s]
         [(path=? path (list 'root-main 'settings 'sound 'volume-main))
          ; TODO play demo sounds
