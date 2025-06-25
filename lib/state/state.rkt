@@ -65,6 +65,7 @@
 (struct Player
   ([lives : Nonnegative-Integer]
    [score : Nonnegative-Integer]
+   [score-last-frame : (Boxof (U Nonnegative-Integer #f))]
    [score-multiplier : Nonnegative-Flonum]
    [y : Flonum]
    [y-desired : (U Flonum #f)]

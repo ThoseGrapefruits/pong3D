@@ -13,7 +13,8 @@
    [tuning-i     : Flonum]
    [tuning-d     : Flonum]
    [err-integral : (Boxof Flonum)]
-   [err-last     : (Boxof Flonum)]))
+   [err-last     : (Boxof Flonum)])
+  #:transparent)
 
 (: make-pid :
    [#:tuning-p Flonum]

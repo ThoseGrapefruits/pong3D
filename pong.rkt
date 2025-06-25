@@ -1,5 +1,9 @@
 #lang typed/racket/base
 
+(module profile-wrapper racket/base
+  (require profile)
+  (provide profile-thunk))
+
 (require
   (only-in pict3d/universe big-bang3d)
   "./lib/config.rkt"
@@ -15,6 +19,18 @@
   "./lib/state/init.rkt"
   "./lib/state/stop.rkt"
   "./lib/state/validation.rkt")
+
+(require/typed
+ 'profile-wrapper
+ [profile-thunk (-> (-> Any)
+                    [#:delay Nonnegative-Real]
+                    [#:repeat Exact-Nonnegative-Integer]
+                    [#:threads Boolean]
+                    [#:render Any]
+                    [#:periodic-renderer Any]
+                    [#:use-errortrace? Boolean]
+                    [#:order Symbol]
+                    Any)])
 
 ;
 ;             /                    ═══                    \
@@ -35,19 +51,22 @@
 (define thread-sound-startup (rs-play SOUND-STARTUP))
 (define song-stream-menu (rs-play-song SONG-MENU))
 
-(big-bang3d (state-start #f)
-            #:frame-delay FRAME-DELAY-MILLIS
-            #:name "Pong3D — Racket"
-            #:on-draw on-draw
-            #:on-frame on-frame
-            #:on-key on-key
-            #:on-mouse on-mouse
-            #:on-release on-release
-            #:on-resize on-resize
-            #:stop-state? stop-state?
-            #:valid-state? valid-state?
-            #:width SCREEN-WIDTH-INIT
-            #:height SCREEN-HEIGHT-INIT)
+(define (run)
+  (big-bang3d (state-start #f)
+              #:frame-delay FRAME-DELAY-MILLIS
+              #:name "Pong3D — Racket"
+              #:on-draw on-draw
+              #:on-frame on-frame
+              #:on-key on-key
+              #:on-mouse on-mouse
+              #:on-release on-release
+              #:on-resize on-resize
+              #:stop-state? stop-state?
+              #:valid-state? valid-state?
+              #:width SCREEN-WIDTH-INIT
+              #:height SCREEN-HEIGHT-INIT))
+
+(run)
 
 (rs-stop)
 (exit 0)

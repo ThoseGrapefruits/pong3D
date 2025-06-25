@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require (only-in pict3d Pict3D Pos)
+(require (only-in pict3d Pict3D Pos Tag)
          (only-in pict3d
                   affine-compose
                   arc
@@ -15,7 +15,9 @@
                   emitted
                   empty-pict3d
                   freeze
+                  group
                   light
+                  map-group
                   material
                   move
                   move-x
@@ -38,6 +40,7 @@
                   transform
                   with-emitted)
          racket/list
+         (only-in racket/function identity)
          "./camera.rkt"
          "./on-char-jiggle.rkt"
          "./position-screen-space.rkt"
@@ -54,6 +57,15 @@
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 
+(: get-group : Pict3D (Listof Tag) -> Pict3D)
+(define (get-group pict tags)
+  (: mydentity : Pict3D -> Pict3D)
+  (define mydentity identity)
+  (: results : (Listof Pict3D))
+  (define results (map-group pict tags mydentity))
+  (cond [(empty? results) empty-pict3d]
+        [else             (first results)]))
+
 (: on-draw-play : State -> Pict3D)
 (define (on-draw-play s)
   (: state-play : (U #f State-Play))
@@ -61,7 +73,7 @@
     (cond [(State-Play? s) s]
           [(State-Pause-Menu? s) (State-Pause-Menu-resume-state s)]
           [else #f]))
-  (if state-play
+  (define drawn (if state-play
       (combine (render-game-play-opponent state-play)
             ;; (render-sample-text state-play)
                (render-game-play-player state-play)
@@ -71,6 +83,14 @@
                (render-game-play-arena state-play)
                (render-game-play-arena-bumpers state-play))
       empty-pict3d))
+  (when state-play
+    (define player (State-Play-player state-play))
+    (define score-last-frame (unbox (Player-score-last-frame player)))
+    (define score (Player-score player))
+    (when (or (not score-last-frame)
+              (not (= score score-last-frame)))
+      (set-box! (Player-score-last-frame player) score)))
+  drawn)
 
 (define tqbf (string-append-immutable
               "the quick brown fox jumps over the lazy dog...\n"
@@ -302,18 +322,27 @@
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
   (define player (State-Play-player s))
-  ; player score
-  (combine
-   (transform (render-player-score (Player-score player))
-              (position-screen-space-pixels s 100.0 100.0 1.0))
-   ; player lives
-   (transform
-    (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
-      (combine
-       (for/list : (Listof Pict3D)
-         ([n (range 0 (Player-lives player))])
-         (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
-    (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t))))
+  (define score (Player-score player))
+  (define score-last-frame (unbox (Player-score-last-frame player)))
+  (define pict-last (unbox (State-pict-last s)))
+  (define cached (and pict-last
+                      score-last-frame
+                      (= score score-last-frame)
+                      (get-group pict-last '(hud))))
+  (or cached
+      (group (combine
+              ; player score
+              (transform (render-player-score score)
+                         (position-screen-space-pixels s 100.0 100.0 1.0))
+              ; player lives
+              (transform
+               (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+                 (combine
+                  (for/list : (Listof Pict3D)
+                    ([n (range 0 (Player-lives player))])
+                    (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
+               (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
+             'hud)))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)

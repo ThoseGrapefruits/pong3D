@@ -8,8 +8,12 @@
 
 (define ws:space
   (make-Char-3D-memoized
-#\space WIDTH-EM-1/2 (λ () empty-pict3d)))
+   #\space
+   WIDTH-EM-1/2
+   (λ () empty-pict3d)))
 
 (define ws:tab
   (make-Char-3D-memoized
-#\tab WIDTH-EM-2 (λ () empty-pict3d)))
+   #\tab
+   WIDTH-EM-2
+   (λ () empty-pict3d)))

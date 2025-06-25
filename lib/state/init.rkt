@@ -71,11 +71,12 @@
     predicted-ball-y) ; y
    #f        ; pause-state
    (Player   ; player
-    1   ; lives
-    0   ; score
-    1.0 ; score-multiplier
-    0.0 ; y
-    0.0 ; y-desired
+    1        ; lives
+    0        ; score
+    (box #f) ; score-last-frame
+    1.0      ; score-multiplier
+    0.0      ; y
+    0.0      ; y-desired
     (make-pid #:tuning-p 0.3 ; pid
               #:tuning-i 0.00001
               #:tuning-d 0.00002))
