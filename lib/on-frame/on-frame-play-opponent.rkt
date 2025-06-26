@@ -27,7 +27,7 @@
     (cond [(null? pos-predicted) ball-y]
           [(> (pos-x pos-predicted) OPPONENT-X-COLLISION) ball-y]
           [else (pos-y pos-predicted)]))
-  (define dt (State-dt s))
+  (define dt (unbox (State-dt s)))
   (define max-err (* dt OPPONENT-SPEED))
   ; clamping here helps the pid controller's integral not get mad when it can't
   ; reach the edge of the stage

@@ -20,15 +20,18 @@
    [#:tuning-p Flonum]
    [#:tuning-i Flonum]
    [#:tuning-d Flonum] -> PID)
-(define (make-pid #:tuning-p [tuning-p 0.0]
-                  #:tuning-i [tuning-i 0.0]
-                  #:tuning-d [tuning-d 0.0])
-  (PID tuning-p tuning-i tuning-d (box 0.0) (box 0.0)))
+(define (make-pid #:tuning-p [tuning-p #i0]
+                  #:tuning-i [tuning-i #i0]
+                  #:tuning-d [tuning-d #i0])
+  (PID tuning-p tuning-i tuning-d (box #i0) (box #i0)))
 
 (: pid-reset! : PID -> Void)
 (define (pid-reset! pid)
-  (set-box! (PID-err-integral pid) 0.0)
-  (set-box! (PID-err-last pid) 0.0))
+  (define err-integral (PID-err-integral pid))
+  (define err-last     (PID-err-last pid))
+  (box-cas! err-integral (unbox err-integral) #i0)
+  (box-cas! err-last     (unbox err-last)     #i0)
+  (void))
 
 (: pid-step! : PID Flonum Flonum -> Flonum)
 (define (pid-step! pid err dt)
@@ -37,8 +40,10 @@
                    (* err dt)))
   (define err-d (/ (- err (unbox (PID-err-last pid))) dt))
 
-  (set-box! (PID-err-integral pid) err-i)
-  (set-box! (PID-err-last pid) err)
+  (define err-integral (PID-err-integral pid))
+  (define err-last     (PID-err-last pid))
+  (box-cas! err-integral (unbox err-integral) err-i)
+  (box-cas! err-last     (unbox err-last)     err)
 
   (+ (* (PID-tuning-p pid) err-p)
      (* (PID-tuning-i pid) err-i)

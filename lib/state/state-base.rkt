@@ -10,13 +10,13 @@
 
 (struct State
    ; Delta time from the last frame.
-  ([dt               : Flonum]
+  ([dt               : (Boxof Flonum)]
 
    ; The most recent screenspace position of the mouse.
    [mouse-pos-last   : (Pairof Integer Integer)]
 
    ; The number of elapsed ticks
-   [n                : Natural]
+   [n                : (Boxof Natural)]
 
    ; The last rendered picture. Used for raytracing.
    [pict-last        : (Boxof Pict3D)]
@@ -25,7 +25,7 @@
    [pressed          : (Setof String)]
 
    ; Total elapsed time.
-   [t                : Flonum]
+   [t                : (Boxof Flonum)]
 
    ; The most recent mouse trace. Will be unset if the mouse stops hovering
    ; something raytraceable.

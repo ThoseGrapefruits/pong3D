@@ -24,24 +24,24 @@
 
 (: state-reset-play : State Natural Flonum -> State-Play)
 (define (state-reset-play s n t)
-  (struct-copy
-   State-Play (state-start-play s t)
-   [dt #:parent State 0.0]
-   [n  #:parent State n]
-   [t  #:parent State t]))
+  (define s-play (state-start-play s t))
+  (box-cas! (State-dt s-play) (unbox (State-dt s-play)) 0.0)
+  (box-cas! (State-n s-play)  (unbox (State-n s-play))  n)
+  (box-cas! (State-t s-play)  (unbox (State-t s-play))  t)
+  s-play)
 
 (: state-start : (->* ((U State #f)) (Flonum) State-Any))
 (define (state-start s [t 0.0])
   (State-Main-Menu
    ; State
-   0.0                ; dt
+   (box 0.0)          ; dt
    (cons              ; mouse-pos-last
     (round (/ SCREEN-WIDTH-INIT 2))
     (round (/ SCREEN-HEIGHT-INIT 2)))
-   0                  ; n
+   (box 0)            ; n
    (box empty-pict3d) ; pict-last
    (set)              ; pressed
-   t                  ; t
+   (box t)            ; t
    #f                 ; trace-mouse
    #f                 ; trace-mouse/last
    #f                 ; trace-mouse-down
@@ -71,7 +71,7 @@
     predicted-ball-y) ; y
    #f        ; pause-state
    (Player   ; player
-    1        ; lives
+    3        ; lives
     0        ; score
     (box #f) ; score-last-frame
     1.0      ; score-multiplier

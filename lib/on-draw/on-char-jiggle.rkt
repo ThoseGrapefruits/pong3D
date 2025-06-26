@@ -27,7 +27,7 @@
 
 (: get-on-char-jiggle : State -> font:On-Char-Handler)
 (define (get-on-char-jiggle s)
-  (define t (State-t s))
+  (define t (unbox (State-t s)))
   (define ts (* 0.00001 t))
   (λ (pict char index)
     (define hash-x (hash-char char (- index)))
@@ -40,7 +40,7 @@
 
 (: get-on-char-wave : State -> font:On-Char-Handler)
 (define (get-on-char-wave s)
-  (define t (State-t s))
+  (define t (unbox (State-t s)))
   (define ts (* 0.000007 t))
   (λ (pict char index)
     (define hash-x (/ (+ 400 (modulo (* index 6) 203)) 4.0))

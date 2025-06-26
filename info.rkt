@@ -12,4 +12,6 @@
                "typed-racket-lib"
                "typed-racket-more"
                "typed-racket-stream"
-               "git://github.com/ThoseGrapefruits/pict3d.git#main"))
+               "pict3d" ; useful for installing from a local copy of the repo
+               ; "git://github.com/ThoseGrapefruits/pict3d.git#main"
+               ))

@@ -56,6 +56,47 @@
 (define PADDLE-SCALE-PREVIEW (dir (dir-dx PADDLE-SCALE) BALL-RADIUS-PREVIEW BALL-RADIUS-PREVIEW))
 (define COLOR-OPPONENT-EMITTED (emitted 100 60 10 0.03))
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
+(define WALL-Y+ (+ WALL-Y BALL-RADIUS))
+(define WALL-Y- (- 0.0 WALL-Y BALL-RADIUS))
+
+(define BALL-LIGHT
+  (freeze (light origin
+                 (emitted "oldlace" 0.1)
+                 #:range #i1)))
+
+(define BALL-PLAY
+  (freeze (with-emitted (emitted "oldlace" 1.5)
+            (sphere origin BALL-RADIUS))))
+
+(define BALL-PREVIEW
+  (freeze (parameterize ([current-material (material #:ambient 0.0
+                                                     #:diffuse 0.0
+                                                     #:specular 0.0
+                                                     #:roughness 0.3)]
+                         [current-emitted (emitted "oldlace" 0.3)])
+            (sphere origin BALL-RADIUS))))
+
+(define GLOBAL-LIGHTS
+  (freeze (combine (light (pos 0 1 2)   (emitted "Thistle"))
+                   (light (pos 0 -1 -2) (emitted "PowderBlue")))))
+
+(define OPPONENT-PADDLE
+  (freeze (parameterize
+              ([current-material (material #:ambient 0.0
+                                           #:diffuse 0.0
+                                           #:specular 0.0
+                                           #:roughness 0.3)]
+               [current-emitted COLOR-OPPONENT-EMITTED])
+            (rectangle origin PADDLE-SCALE))))
+
+(define PLAYER-PADDLE
+  (freeze (parameterize
+              ([current-material (material #:ambient 0.0
+                                           #:diffuse 0.0
+                                           #:specular 0.0
+                                           #:roughness 0.3)]
+               [current-emitted COLOR-PLAYER-EMITTED])
+            (rectangle origin PADDLE-SCALE))))
 
 (: get-group : Pict3D (Listof Tag) -> Pict3D)
 (define (get-group pict tags)
@@ -137,6 +178,18 @@
              (light (pos 0.0 0.0 (/ (exact->inexact z) 9.0))
                     (emitted "oldlace" 4.0)))))
 
+(define BUMPERS
+  (freeze
+   (combine
+    (transform render-arena-bumper
+               (affine-compose
+                (move-y WALL-Y+)
+                (scale (dir 10 1/256 1/256))))
+    (transform render-arena-bumper
+               (affine-compose
+                (move-y WALL-Y-)
+                (scale (dir 10 1/256 1/256)))))))
+
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
   (combine
@@ -149,7 +202,7 @@
 
 (: render-sample-text-cor : State-Play -> Pict3D)
 (define (render-sample-text-cor s)
-  (define t (State-t s))
+  (define t (unbox (State-t s)))
   (parameterize
       ([current-emitted (emitted 0.5 0.7 1.0 2.0)])
      (transform
@@ -230,9 +283,10 @@
 
 (: render-game-play-arena-sun : State-Play -> Pict3D)
 (define (render-game-play-arena-sun s)
+  (define t (unbox (State-t s)))
   (transform (light origin (emitted "goldenrod" 0.0001))
              (affine-compose
-              (rotate-z (- 135.0 (* 0.003 (State-t s))))
+              (rotate-z (- 135.0 (* 0.003 t)))
               (move-y -0.5)
               (move-z -0.99)
               (scale 40))))
@@ -248,8 +302,6 @@
 (: render-game-play-arena-bumpers : State-Play -> Pict3D)
 (define (render-game-play-arena-bumpers s)
   (define ball (State-Play-ball s))
-  (define y+ (+ WALL-Y BALL-RADIUS))
-  (define y- (- 0.0 WALL-Y BALL-RADIUS))
   (define ball-pos (Ball-pos ball))
   (define oldlace-preview (emitted "oldlace" 1.0))
   (define should-draw-guides (get-pref-boolean 'gameplay-guides (λ () #f)))
@@ -259,9 +311,9 @@
         (combine
          ; ball x-position
          (with-emitted oldlace-preview
-           (sphere (pos (pos-x ball-pos) y+ 0.0) BALL-RADIUS-PREVIEW))
+           (sphere (pos (pos-x ball-pos) WALL-Y+ 0.0) BALL-RADIUS-PREVIEW))
          (with-emitted oldlace-preview
-           (sphere (pos (pos-x ball-pos) y- 0.0) BALL-RADIUS-PREVIEW))
+           (sphere (pos (pos-x ball-pos) WALL-Y- 0.0) BALL-RADIUS-PREVIEW))
 
          (freeze
           (combine
@@ -273,101 +325,69 @@
                                             #:roughness 0.3)]
                 [current-emitted oldlace-preview])
              (combine
-              (rectangle (pos OPPONENT-X y+ 0.0) PADDLE-SCALE-PREVIEW)
-              (rectangle (pos OPPONENT-X y- 0.0) PADDLE-SCALE-PREVIEW)
-              (rectangle (pos PLAYER-X y+ 0.0) PADDLE-SCALE-PREVIEW)
-              (rectangle (pos PLAYER-X y- 0.0) PADDLE-SCALE-PREVIEW)))
+              (rectangle (pos OPPONENT-X WALL-Y+ 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos OPPONENT-X WALL-Y- 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos PLAYER-X WALL-Y+ 0.0) PADDLE-SCALE-PREVIEW)
+              (rectangle (pos PLAYER-X WALL-Y- 0.0) PADDLE-SCALE-PREVIEW)))
            )))))
 
-  (combine
-   guides
-   (freeze
-    (combine
-     ; actual bumpers
-     (transform render-arena-bumper
-                (affine-compose
-                 (move-y y+)
-                 (scale (dir 10 1/256 1/256))))
-     (transform render-arena-bumper
-                (affine-compose
-                 (move-y y-)
-                 (scale (dir 10 1/256 1/256))))))))
+  (combine guides BUMPERS))
 
 (: render-game-play-ball : State-Play -> Pict3D)
 (define (render-game-play-ball s)
   (define ball (State-Play-ball s))
+  (define ball-pos-dir (pos- (Ball-pos ball) origin))
   (combine
    (render-game-play-ball-predicted s)
-   (light
-    (Ball-pos ball)
-    (emitted "oldlace" 0.1)
-    #:range 1)
-   (with-emitted (emitted "oldlace" 1.5)
-     (sphere (Ball-pos ball) BALL-RADIUS))))
+   (move BALL-LIGHT ball-pos-dir)
+   (move BALL-PLAY  ball-pos-dir)))
 
 (: render-game-play-ball-predicted : State-Play -> Pict3D)
 (define (render-game-play-ball-predicted s)
-  (combine (for/list : (Listof Pict3D)
-    ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
-    (define is-player (positive? (pos-x predicted-pos)))
-    (cond [(null? predicted-pos) empty-pict3d]
-          [else (with-emitted
-                    (emitted "oldlace" 0.3)
-                  (transform
-                   (sphere origin BALL-RADIUS)
-                   (affine-compose
-                    (move (pos- predicted-pos origin))
-                    (rotate-y (if is-player 90.0 -90.0)))))]))))
+  (combine
+   (for/list : (Listof Pict3D)
+     ([predicted-pos (State-Play-ball-predicted-pos-ends s)])
+     (define is-player (positive? (pos-x predicted-pos)))
+     (cond [(null? predicted-pos) empty-pict3d]
+           [else (transform
+                  BALL-PREVIEW
+                  (affine-compose
+                   (move (pos- predicted-pos origin))
+                   (rotate-y (if is-player 90.0 -90.0))))]))))
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
   (define player (State-Play-player s))
   (define score (Player-score player))
-  (define score-last-frame (unbox (Player-score-last-frame player)))
-  (define pict-last (unbox (State-pict-last s)))
-  (define cached (and pict-last
-                      score-last-frame
-                      (= score score-last-frame)
-                      (get-group pict-last '(hud))))
-  (or cached
-      (group (combine
-              ; player score
-              (transform (render-player-score score)
-                         (position-screen-space-pixels s 100.0 100.0 1.0))
-              ; player lives
-              (transform
-               (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
-                 (combine
-                  (for/list : (Listof Pict3D)
-                    ([n (range 0 (Player-lives player))])
-                    (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
-               (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
-             'hud)))
+  ;;; (define score-last-frame (unbox (Player-score-last-frame player)))
+  ;;; (define pict-last (unbox (State-pict-last s)))
+  ;;; (define cached (and pict-last
+  ;;;                     score-last-frame
+  ;;;                     (= score score-last-frame)
+  ;;;                     (get-group pict-last '(hud))))
+  ;;; (or cached
+  (group (combine
+          ; player score
+          (transform (render-player-score score)
+                     (position-screen-space-pixels s 100.0 100.0 1.0))
+          ; player lives
+          (transform
+           (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+             (combine
+              (for/list : (Listof Pict3D)
+                ([n (range 0 (Player-lives player))])
+                (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
+           (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
+         'hud))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)
-  (parameterize
-      ([current-material (material #:ambient 0.0
-                                   #:diffuse 0.0
-                                   #:specular 0.0
-                                   #:roughness 0.3)]
-       [current-emitted COLOR-OPPONENT-EMITTED])
-    (rectangle (pos OPPONENT-X (Opponent-y (State-Play-opponent s)) 0.0)
-               PADDLE-SCALE)))
+  (move OPPONENT-PADDLE (dir OPPONENT-X (Opponent-y (State-Play-opponent s)) 0.0)))
 
 (: render-game-play-player : State-Play -> Pict3D)
 (define (render-game-play-player s)
-  (parameterize
-      ([current-material (material #:ambient 0.0
-                                   #:diffuse 0.0
-                                   #:specular 0.6
-                                   #:roughness 0.3)]
-       [current-emitted COLOR-PLAYER-EMITTED])
-    (rectangle (pos PLAYER-X (Player-y (State-Play-player s)) 0.0)
-               PADDLE-SCALE)))
+  (move PLAYER-PADDLE (dir PLAYER-X (Player-y (State-Play-player s)) 0.0)))
 
 (: render-game-play-lights+camera : State-Play -> Pict3D)
 (define (render-game-play-lights+camera s)
-  (combine (light (pos 0 1 2) (emitted "Thistle"))
-           (light (pos 0 -1 -2) (emitted "PowderBlue"))
-           (camera s)))
+  (combine GLOBAL-LIGHTS (camera s)))

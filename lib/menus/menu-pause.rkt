@@ -29,9 +29,11 @@
 
 (: Pause-Menu-exit : (Menu-On-Exit State-Pause-Menu))
 (define (Pause-Menu-exit s n t)
+  (define resume-state (State-Pause-Menu-resume-state s))
+  (when resume-state
+    (box-cas! (State-t resume-state) (unbox (State-t resume-state)) t))
   (struct-copy
-   State-Play (State-Pause-Menu-resume-state s)
-   [t #:parent State t]
+   State-Play resume-state
    [pause-state (struct-copy State-Pause-Menu s
                              ; clear the old resume-state, will
                              ; get reset if re-pause-menu

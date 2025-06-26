@@ -1,6 +1,6 @@
 Pong3D
 ===
-A 3D version of the classic arcade game Pong, written in Racket.
+A 3D version of the classic arcade game Pong, written in Typed Racket.
 
 https://github.com/user-attachments/assets/1c53b46a-4dcd-4244-b2e3-8999851b4314
 

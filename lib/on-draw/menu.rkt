@@ -63,7 +63,7 @@
   (define active-color (Menu-Item-color-active menu-item))
   (define active-start (unbox (Menu-Item-active-start menu-item)))
   (define active-end   (unbox (Menu-Item-active-end   menu-item)))
-  (define t (State-t s))
+  (define t (unbox (State-t s)))
 
   (: time-since : Flonum)
   (define time-since
@@ -104,7 +104,7 @@
 (define (Menu-Item-scale s menu menu-item)
   (define active-start (unbox (Menu-Item-active-start menu-item)))
   (define active-end   (unbox (Menu-Item-active-end   menu-item)))
-  (define t (State-t s))
+  (define t (unbox (State-t s)))
 
   (: time-since : Flonum)
   (define time-since

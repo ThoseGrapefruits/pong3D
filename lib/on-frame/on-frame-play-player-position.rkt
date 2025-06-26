@@ -19,7 +19,7 @@
   (define player-y (Player-y player))
   (define player-y-desired (Player-y-desired player))
   (define pressed (State-pressed s))
-  (define dt (State-dt s))
+  (define dt (unbox (State-dt s)))
   (cond
     [(set-member? pressed "left")
       (State-Play-set-player-position
@@ -30,7 +30,6 @@
        s
        (+ player-y (* dt PLAYER-SPEED KEYBOARD-SPEED-FACTOR)))]
     [player-y-desired
-     (define dt (State-dt s))
      (define diffff-y (- player-y-desired player-y))
      (define max-err (* dt PLAYER-SPEED))
      (define diffff-y-clamped (max (- max-err)

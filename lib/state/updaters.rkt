@@ -14,11 +14,11 @@
 
 (: State-update-counters : State-Any Natural Flonum -> State-Any)
 (define (State-update-counters s n t)
-  (State-update-parent
-   s
-   [dt #:parent State (- t (State-t s)) ]
-   [n #:parent State n]
-   [t #:parent State t]))
+  (define dt (- t (unbox (State-t s))))
+  (box-cas! (State-dt s) (unbox (State-dt s)) dt)
+  (box-cas! (State-n s)  (unbox (State-n s))  n)
+  (box-cas! (State-t s)  (unbox (State-t s))  t)
+  s)
 
 (: State-update-trace-mouse : State-Any Integer Integer -> State-Any)
 (define (State-update-trace-mouse s x y)

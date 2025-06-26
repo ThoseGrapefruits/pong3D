@@ -44,6 +44,7 @@
 (: on-frame-play-ball-position : State-Play -> State-Play)
 (define (on-frame-play-ball-position s)
   (define ball (State-Play-ball s))
+  (define dt (unbox (State-dt s)))
   (struct-copy
    State-Play s
    [ball (struct-copy
@@ -51,7 +52,7 @@
           [pos
            (pos+ (Ball-pos ball)
                  (dir-scale (Ball-dir ball)
-                            (* (State-dt s) BALL-SPEED)))])]))
+                            (* dt BALL-SPEED)))])]))
 
 ; Given the current state and a predicted future ball position, if that position
 ; is past a bound that should have reflected the ball, return the reflection
@@ -124,9 +125,10 @@
 
 (: move-reflect : State-Play -> State-Play)
 (define (move-reflect s)
+  (define dt (unbox (State-dt s)))
   (define-values (state-new reflected ball-new)
     (move-reflect-ball s (State-Play-ball s)
-                       (* (State-dt s) BALL-SPEED)))
+                       (* dt BALL-SPEED)))
   (struct-copy
    State-Play state-new
    [ball ball-new]

@@ -40,7 +40,8 @@
                  (on-draw-game-over  s)
                  (on-draw-main-menu  s)
                  (on-draw-pause-menu s)))
-  (set-box! (State-pict-last s) drawn)
+  (define pict-last (State-pict-last s))
+  (box-cas! pict-last (unbox pict-last) drawn)
   drawn)
 
 ; RENDER — CONSTANTS

@@ -42,7 +42,7 @@
   (define player (State-Play-player s))
   (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
          (rs-play SOUND-SCORE-ON-OPPONENT)
-         (define state-fresh (state-reset-play s (State-n s) (State-t s)))
+         (define state-fresh (state-reset-play s (unbox (State-n s)) (unbox (State-t s))))
          (struct-copy
           State-Play s
           [ball (State-Play-ball state-fresh)]
@@ -57,7 +57,7 @@
             [score-multiplier (+ 1.0 (Player-score-multiplier player))]
             [score            (get-new-player-score player 10)])])]
         [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
-         (define state-fresh (state-reset-play s (State-n s) (State-t s)))
+         (define state-fresh (state-reset-play s (unbox (State-n s)) (unbox (State-t s))))
          (define player-lives-next (max 0 (sub1 (Player-lives player))))
          (if (positive? player-lives-next) (rs-play SOUND-SCORE-ON-PLAYER) null)
          ; Feels a bit excessive to generate an entire new fresh state, but we

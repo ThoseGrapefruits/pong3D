@@ -37,19 +37,19 @@
 (define BUMPER-CONTACT-BUFFER (+ BALL-RADIUS (dir-dx PADDLE-SCALE)))
 
 (: FOV : Positive-Real)
-(define FOV 60)
+(define FOV #i60)
 
 (: FPS : Flonum)
-(define FPS 60.0)
+(define FPS #i60)
 
 (: FRAME-DELAY-MILLIS : Positive-Real)
-(define FRAME-DELAY-MILLIS (max 1.0 (abs (/ 1000.0 FPS))))
+(define FRAME-DELAY-MILLIS (max #i1 (abs (/ #i1000 FPS))))
 
 (: OPPONENT-SPEED : Flonum)
 (define OPPONENT-SPEED 0.0035)
 
 (: OPPONENT-X : Flonum)
-(define OPPONENT-X -1.0)
+(define OPPONENT-X #i-1)
 
 (: OPPONENT-X-COLLISION : Flonum)
 (define OPPONENT-X-COLLISION (+ OPPONENT-X BUMPER-CONTACT-BUFFER))
@@ -58,7 +58,7 @@
 (define OPPONENT-BOUNDS (- OPPONENT-X BOUNDS-BUMPER-GAP))
 
 (: PLAYER-X : Flonum)
-(define PLAYER-X 1.0)
+(define PLAYER-X #i1)
 
 (: PLAYER-X-COLLISION : Flonum)
 (define PLAYER-X-COLLISION   (- PLAYER-X   BUMPER-CONTACT-BUFFER))
@@ -70,7 +70,7 @@
 (define PLAYER-SPEED 0.05)
 
 (: REDIRECT-FACTOR : Flonum)
-(define REDIRECT-FACTOR 40.0)
+(define REDIRECT-FACTOR #i40)
 
 (: SCREEN-WIDTH-INIT : Positive-Integer)
 (define SCREEN-WIDTH-INIT 1200)

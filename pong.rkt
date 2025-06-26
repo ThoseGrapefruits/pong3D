@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (module profile-wrapper racket/base
-  (require profile)
+  (require (only-in profile profile-thunk))
   (provide profile-thunk))
 
 (require
@@ -66,7 +66,7 @@
               #:width SCREEN-WIDTH-INIT
               #:height SCREEN-HEIGHT-INIT))
 
-(run)
+(profile-thunk run #:threads #t)
 
 (rs-stop)
 (exit 0)
