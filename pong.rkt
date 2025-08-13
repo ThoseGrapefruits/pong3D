@@ -12,10 +12,10 @@
   "./lib/on-key/on-key.rkt"
   "./lib/on-mouse/on-mouse.rkt"
   "./lib/on-resize.rkt"
-  "./lib/sound/song.rkt"
-  "./lib/sound/song-background.rkt"
-  "./lib/sound/sound.rkt"
-  "./lib/sound/song-background.rkt"
+  ; "./lib/sound/song.rkt"
+  ; "./lib/sound/song-background.rkt"
+  ; "./lib/sound/sound.rkt"
+  ; "./lib/sound/song-background.rkt"
   "./lib/state/init.rkt"
   "./lib/state/stop.rkt"
   "./lib/state/validation.rkt")
@@ -40,7 +40,7 @@
 ;   x     /                        ╰─╯                        \
 ;  /     /                                                     \            ⊕
 ; ⊕     /                                                       \           |
-;      /                        ╓───────╖                        \          z 
+;      /                        ╓───────╖                        \          z
 ;     /                         ╙───────╜                         \         |
 ;    /                        ⊖ ——— y ——— ⊕                        \        ⊖
 
@@ -48,8 +48,8 @@
 ; - Bumper: the glowing rails along the sides of the arena, off of which the balls bounce
 ; - Paddle: the rectangular prisms controlled by the player and opponent
 
-(define thread-sound-startup (rs-play SOUND-STARTUP))
-(define song-stream-menu (rs-play-song SONG-MENU))
+; (define thread-sound-startup (rs-play SOUND-STARTUP))
+; (define song-stream-menu (rs-play-song SONG-MENU))
 
 (define (run)
   (big-bang3d (state-start #f)
@@ -66,7 +66,7 @@
               #:width SCREEN-WIDTH-INIT
               #:height SCREEN-HEIGHT-INIT))
 
-(profile-thunk run #:threads #t)
+(run)
 
-(rs-stop)
+; (rs-stop)
 (exit 0)
