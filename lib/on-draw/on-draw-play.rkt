@@ -195,9 +195,9 @@
   (combine
     empty-pict3d
     (render-sample-text-cor s)
-    ; (render-sample-text-smol s "s")
-    ; (render-sample-text-tqbf s)
-    ; (render-sample-text-wop s)
+    (render-sample-text-smol s "s")
+    (render-sample-text-tqbf s)
+    (render-sample-text-wop s)
     ))
 
 (: render-sample-text-cor : State-Play -> Pict3D)

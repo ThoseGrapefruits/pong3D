@@ -6,7 +6,7 @@
            pos-x)
   (only-in typed-compose compose-n)
   "../config.rkt"
-  ; "../sound/sound.rkt"
+  "../sound/sound.rkt"
   "../state/init.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt"
@@ -32,7 +32,7 @@
 (: on-frame-play-endgame : State-Play -> (U State-Game-Over State-Play))
 (define (on-frame-play-endgame s)
   (cond [(= 0 (Player-lives (State-Play-player s)))
-         ; (rs-play SOUND-ENDGAME)
+         (rs-play SOUND-ENDGAME)
          (State-transition State-Game-Over s s)]
         [else s]))
 
@@ -41,7 +41,7 @@
   (define ball (State-Play-ball s))
   (define player (State-Play-player s))
   (cond [(< (pos-x (Ball-pos ball)) OPPONENT-BOUNDS)
-         ; (rs-play SOUND-SCORE-ON-OPPONENT)
+         (rs-play SOUND-SCORE-ON-OPPONENT)
          (define state-fresh (state-reset-play s (unbox (State-n s)) (unbox (State-t s))))
          (struct-copy
           State-Play s
@@ -59,7 +59,7 @@
         [(> (pos-x (Ball-pos ball)) PLAYER-BOUNDS)
          (define state-fresh (state-reset-play s (unbox (State-n s)) (unbox (State-t s))))
          (define player-lives-next (max 0 (sub1 (Player-lives player))))
-         ; (if (positive? player-lives-next) (rs-play SOUND-SCORE-ON-PLAYER) null)
+         (if (positive? player-lives-next) (rs-play SOUND-SCORE-ON-PLAYER) null)
          ; Feels a bit excessive to generate an entire new fresh state, but we
          ; are using most of it here.
          (struct-copy

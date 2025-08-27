@@ -20,7 +20,7 @@
            -y)
   (only-in typed-compose compose-n)
   "../config.rkt"
-  ; "../sound/sound.rkt"
+  "../sound/sound.rkt"
   "../state/accessors.rkt"
   "../state/state.rkt"
   "../util/ball.rkt"
@@ -75,7 +75,7 @@
     ; left wall collision
     [(and (negative? (dir-dy (Ball-dir ball)))
           (< ball-y (- BALL-MAX-Y)))
-     ; (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
+     (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (define dist-past-wall-y (- (- BALL-MAX-Y) ball-y))
      (define dist-past-wall (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-wall-y (abs (dir-dy ball-moved)))))
@@ -84,7 +84,7 @@
     ; right wall collision
     [(and (positive? (dir-dy ball-dir))
           (> ball-y BALL-MAX-Y))
-     ; (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
+     (rs-play-random SOUNDS-BALL-BOUNCE-WALL)
      (define dist-past-wall-y (- ball-y BALL-MAX-Y))
      (define dist-past-wall (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-wall-y (abs (dir-dy ball-moved)))))
@@ -103,7 +103,7 @@
      (define dist-past-bumper-x (- OPPONENT-X-COLLISION ball-x))
      (define dist-past-bumper (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-bumper-x (abs (dir-dx ball-moved)))))
-     ; (rs-play-random SOUNDS-BALL-BOUNCE-OPPONENT)
+     (rs-play-random SOUNDS-BALL-BOUNCE-OPPONENT)
      (values +x reflection-axis dist-past-bumper)]
 
     ; player collision
@@ -119,7 +119,7 @@
      (define dist-past-bumper-x (- ball-x PLAYER-X-COLLISION))
      (define dist-past-bumper (* (pos-dist ball-pos ball-pos-next)
                                (/ dist-past-bumper-x (abs (dir-dx ball-moved)))))
-     ; (rs-play-random SOUNDS-BALL-BOUNCE-PLAYER)
+     (rs-play-random SOUNDS-BALL-BOUNCE-PLAYER)
      (values -x reflection-axis dist-past-bumper)]
     [else (values #f #f 0.0)]))
 
