@@ -23,18 +23,18 @@
 (: make-Menu-Item-Type-Slider-Flonum :
    #:decimal-digits Nonnegative-Integer
    #:key  Pref-Key
+   [#:format (-> Flonum String)]
    #:max  Flonum
    #:min  Flonum
-   [#:format (-> Flonum String)]
    [#:value-getter (-> Flonum)]
    [#:value-setter (-> Flonum Void)]
    -> Menu-Item-Type-Slider-Flonum)
 (define (make-Menu-Item-Type-Slider-Flonum
          #:decimal-digits decimal-digits
+         #:format [format #f]
          #:key key
          #:max max-value
          #:min min-value
-         #:format [format #f]
          #:value-getter [value-getter #f]
          #:value-setter [value-setter #f])
   (Menu-Item-Type-Slider-Flonum

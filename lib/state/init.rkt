@@ -7,6 +7,7 @@
            empty-pict3d
            pos
            pos-y)
+  (only-in racket/math exact-round)
   (only-in racket/set set)
   "../config.rkt"
   "../on-draw/palette.rkt"
@@ -117,6 +118,8 @@
                    #:label "Main volume"
                    #:tag   'volume-main
                    #:type  (make-Menu-Item-Type-Slider-Flonum
+                            #:format (λ ([n : Flonum])
+                                       (format "~a" (exact-round (* n 10))))
                             #:key 'volume-main
                             #:decimal-digits 1
                             #:min 0.0

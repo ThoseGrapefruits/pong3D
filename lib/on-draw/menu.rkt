@@ -162,13 +162,13 @@
    Menu-Item-Type-Slider -> Pict3D)
 (define (render-menu-item-slider s menu menu-item i siblings type)
   (define label (Menu-Item-label menu-item))
-  (: value-getter : -> Any)
-  (define value-getter
-  (cond [(Menu-Item-Type-Slider-Flonum? type)
-         (Menu-Item-Type-Slider-Flonum-value-getter type)]
-        [else
-         (λ () "")]))
-  (define label-wrapped (format "~a <~a>" label (value-getter)))
+  (: value-formatted String)
+  (define value-formatted
+    (cond [(Menu-Item-Type-Slider-Flonum? type)
+           ((Menu-Item-Type-Slider-Flonum-format type)
+            ((Menu-Item-Type-Slider-Flonum-value-getter type)))]
+          [else ""]))
+  (define label-wrapped (format "~a <~a>" label value-formatted))
   (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
   (define label-rendered
     (parameterize ([current-emitted emitted-text])
