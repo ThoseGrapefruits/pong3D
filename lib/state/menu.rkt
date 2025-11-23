@@ -69,8 +69,8 @@
   (define active-end   (unbox (Menu-Item-active-end     menu-item)))
   (define print-string
     (case mode
-      [(#t) "~a(struct:Menu-Item ~s ~s [active s:~a\te:~a]"]   ; write
       [(#f) "~a(struct:Menu-Item ~a ~a [active s:~a\te:~a]"]   ; display
+      [(#t) "~a(struct:Menu-Item ~s ~s [active s:~a\te:~a]"]   ; write
       [else "~a(struct:Menu-Item ~a ~s [active s:~a\te:~a]"])) ; print
   (define indent
     (if mode "" (build-string depth (λ (i) (if (= 0 i) #\newline #\space)))))

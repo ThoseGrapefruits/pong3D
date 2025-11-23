@@ -66,6 +66,8 @@
               #:width SCREEN-WIDTH-INIT
               #:height SCREEN-HEIGHT-INIT))
 
+; To profile performance
+; (profile-thunk run)
 (run)
 
 ; (rs-stop)

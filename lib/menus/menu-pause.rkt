@@ -9,8 +9,9 @@
          "./navigation.rkt")
 
 (provide Pause-Menu-activate
-         Pause-Menu-go-out
+         Pause-Menu-go-horizontal
          Pause-Menu-go-in
+         Pause-Menu-go-out
          Pause-Menu-go-vertical)
 
 (: Pause-Menu-activate : (Menu-On-Activate State-Pause-Menu))
@@ -25,6 +26,15 @@
          (state-start s t)]
         [(path=? path (list 'root-pause 'exit))
          (State-transition State-Stop s)]
+        [else s]))
+
+(: Pause-Menu-change : (Menu-On-Change State-Pause-Menu))
+(define (Pause-Menu-change s n t path menu-item)
+  (printf "Pause-Menu-change ~v ~v~n" path menu-item)
+  (cond [(not (State-Pause-Menu? s)) s]
+        [(path=? path (list 'root-main 'settings 'sound 'volume-main))
+         ; TODO play demo sounds
+         s]
         [else s]))
 
 (: Pause-Menu-exit : (Menu-On-Exit State-Pause-Menu))
@@ -48,6 +58,11 @@
 (define (Pause-Menu-go-in s n t path-source)
   (define menu (State-Pause-Menu-menu s))
   (Menu-go-in s menu n t path-source Pause-Menu-activate))
+
+(: Pause-Menu-go-horizontal : State-Pause-Menu Natural Flonum (U -1 1) -> State-Any)
+(define (Pause-Menu-go-horizontal s n t offset)
+  (define menu (State-Pause-Menu-menu s))
+  (Menu-go-horizontal s menu n t offset #:on-change Pause-Menu-change))
 
 (: Pause-Menu-go-vertical : State-Pause-Menu Natural Flonum (U -1 1) -> State-Any)
 (define (Pause-Menu-go-vertical s n t offset)

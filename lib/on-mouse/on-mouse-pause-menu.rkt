@@ -9,16 +9,21 @@
 
 (: on-mouse-pause-menu : State-Pause-Menu Natural Flonum Integer Integer String -> State-Any)
 (define (on-mouse-pause-menu s n t x y e)
-  (cond [(string=? e "move")    (on-mouse-pause-menu-move s n t)]
-        [(string=? e "left-up") (on-mouse-pause-menu-left-up s n t)]
-        [else                   s]))
+  (cond [(string=? e "move")      (on-mouse-pause-menu-move      s n t)]
+        [(string=? e "left-down") (on-mouse-pause-menu-left-down s n t)]
+        [(string=? e "left-up")   (on-mouse-pause-menu-left-up   s n t)]
+        [else                     s]))
+
+(: on-mouse-pause-menu-left-down : State-Pause-Menu Natural Flonum -> State-Any)
+(define (on-mouse-pause-menu-left-down s n t)
+  (define menu (State-Pause-Menu-menu s))
+  (Menu-on-mouse-left-down s menu n t))
 
 (: on-mouse-pause-menu-left-up : State-Pause-Menu Natural Flonum -> State-Any)
 (define (on-mouse-pause-menu-left-up s n t)
   (define menu (State-Pause-Menu-menu s))
   (define on-activate : (Menu-On-Activate State-Pause-Menu)
-    (λ (s n t _)
-      (Pause-Menu-go-in s n t 'hover)))
+    (λ (s n t _) (Pause-Menu-go-in s n t 'active)))
   (Menu-on-mouse-left-up s menu n t
                          #:on-activate on-activate))
 

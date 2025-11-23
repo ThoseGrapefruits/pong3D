@@ -62,6 +62,7 @@
 (define (rs-play sound [loop #f])
   ; TODO would be good to pull this over but it's an internal function in rsound
   ; (rs:check-below-threshold sound 2.0)
+
   (define (get-path)
     (define volume (* volume-global
                       (min 1.0 (volume-main))

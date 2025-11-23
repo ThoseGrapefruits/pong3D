@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
-(require "./util.rkt"
+(require (only-in racket/function curry)
+         "./util.rkt"
          "../menus/menu-pause.rkt"
          "../state/state.rkt")
 
@@ -8,13 +9,23 @@
 
 (: on-key-immediate-pause-menu : State-Pause-Menu Natural Flonum String -> State-Any)
 (define (on-key-immediate-pause-menu s n t k)
+  (define pressed? (curry (curry just-pressed? s) k))
+
   (cond
-    [(just-pressed? s k "escape" "a")
-     (Pause-Menu-go-out      s n t        )]
-    [(just-pressed? s k "space"  "d" "\n" "\r")
+    [(pressed? "escape" "a")
+     (Pause-Menu-go-out      s n t)]
+    [(pressed? "return" "enter" "space"
+               (list->string '(#\return))
+               (list->string '(#\newline))
+               (list->string '(#\return #\newline))
+               (list->string '(#\space)))
      (Pause-Menu-go-in       s n t 'active)]
-    [(just-pressed? s k "up"     "w")
-     (Pause-Menu-go-vertical s n t      -1)]
-    [(just-pressed? s k "down"   "s")
-     (Pause-Menu-go-vertical s n t       1)]
+    [(pressed? "up"     "w")
+     (Pause-Menu-go-vertical s n t -1)]
+    [(pressed? "down"   "s")
+     (Pause-Menu-go-vertical s n t  1)]
+    [(pressed? "left" "a")
+     (Pause-Menu-go-horizontal s n t -1)]
+    [(pressed? "right" "d")
+     (Pause-Menu-go-horizontal s n t  1)]
     [else s]))

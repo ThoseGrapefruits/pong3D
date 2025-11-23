@@ -17,8 +17,6 @@
 (: on-mouse-main-menu-left-down : State-Main-Menu Natural Flonum -> State-Any)
 (define (on-mouse-main-menu-left-down s n t)
   (define menu (State-Main-Menu-menu s))
-  (define on-activate : (Menu-On-Activate State-Main-Menu)
-    (λ (s n t _) s))
   (Menu-on-mouse-left-down s menu n t))
 
 (: on-mouse-main-menu-left-up : State-Main-Menu Natural Flonum -> State-Any)

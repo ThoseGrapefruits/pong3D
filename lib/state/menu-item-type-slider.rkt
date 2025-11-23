@@ -14,6 +14,7 @@
    [key            : Pref-Key]
    [max            : Flonum]
    [min            : Flonum]
+   [text-cache     : (Boxof (U (Pairof Flonum String) #f))]
    [value-getter   : (-> Flonum)]
    [value-setter   : (-> Flonum Void)])
   #:transparent)
@@ -45,6 +46,7 @@
    key
    max-value
    min-value
+   (box #f)
    (or value-getter
        (λ ()
          (get-pref-flonum key (λ () 0.0))))

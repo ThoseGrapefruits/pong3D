@@ -7,7 +7,6 @@
            empty-pict3d
            pos
            pos-y)
-  (only-in racket/math exact-round)
   (only-in racket/set set)
   "../config.rkt"
   "../on-draw/palette.rkt"
@@ -16,6 +15,7 @@
   "../util/pid.rkt"
   "./menu.rkt"
   "./menu-item-types.rkt"
+  "./menu-root-settings.rkt"
   "./state.rkt"
   "./syntax.rkt")
 
@@ -54,7 +54,7 @@
 
    ; State-Main-Menu
    (make-Menu ; menu
-    (get-main-menu-root))))
+    (get-menu-root-main))))
 
 (: state-start-play : (->* (State) (Flonum) State-Play))
 (define (state-start-play s [t 0.0])
@@ -89,8 +89,8 @@
   (Ball (dir -1.0 y 0.0)    ; dir
         (pos 0.0 0.0 0.0))) ; pos
 
-(: get-main-menu-root : -> Menu-Item)
-(define (get-main-menu-root)
+(: get-menu-root-main : -> Menu-Item)
+(define (get-menu-root-main)
   (make-Menu-Item
    #:label "pong3D"
    #:tag   'root-main
@@ -99,31 +99,7 @@
           #:color-active EMITTED-BLUE
           #:label "Start"
           #:tag   'start)
-         (make-Menu-Item
-          #:color-active EMITTED-PURPLE
-          #:label "Settings"
-          #:tag   'settings
-          #:children
-          (list (make-Menu-Item
-                 #:color-active EMITTED-BLUE
-                 #:label "Display"
-                 #:tag   'display)
-                (make-Menu-Item
-                 #:color-active EMITTED-PURPLE
-                 #:label "Sound"
-                 #:tag   'sound
-                 #:children
-                 (list (make-Menu-Item
-                   #:color-active EMITTED-BLUE
-                   #:label "Main volume"
-                   #:tag   'volume-main
-                   #:type  (make-Menu-Item-Type-Slider-Flonum
-                            #:format (λ ([n : Flonum])
-                                       (format "~a" (exact-round (* n 10))))
-                            #:key 'volume-main
-                            #:decimal-digits 1
-                            #:min 0.0
-                            #:max 1.0))))))
+         (get-menu-root-settings 'root-main)
          (make-Menu-Item
           #:color-active EMITTED-YELLOW
           #:label "Exit"

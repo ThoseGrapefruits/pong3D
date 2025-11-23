@@ -42,7 +42,7 @@
   (define streamed-tracks
     (map (λ ([track : (Listof Symbol)])
            (define ps (ps:make-pstream))
-           (ps:set-volume! ps 0.4)
+           (ps:set-volume! ps (volume-for 'music))
            (StreamedTrack ps track))
          tracks))
   (define frames-per-beat (inexact->exact (round (/ (* 60 44100) (Song-tempo song)))))
@@ -53,6 +53,9 @@
 
   (: beat-box : (Boxof Nonnegative-Integer))
   (define beat-box (box 0))
+
+  ; (: volume-last : (Boxof Flonum))
+  ; (define volume-last (box (volume-for 'music)))
 
   (: load-next : (-> Void))
   (define load-next

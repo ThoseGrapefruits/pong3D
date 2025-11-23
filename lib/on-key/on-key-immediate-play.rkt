@@ -4,6 +4,7 @@
   "./util.rkt"
   "../on-draw/palette.rkt"
   "../state/menu.rkt"
+  "../state/menu-root-pause.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt")
 
@@ -25,20 +26,6 @@
          (State-transition
           State-Pause-Menu s
           (make-Menu      ; menu
-           (get-pause-menu-root))
+           (get-menu-root-pause))
           resume-state))] ; resume-state
     [else s]))
-
-(define (get-pause-menu-root)
-  (make-Menu-Item
-   #:children (list (make-Menu-Item #:color-active EMITTED-BLUE
-                                    #:label "Resume"
-                                    #:tag 'resume)
-                    (make-Menu-Item #:color-active EMITTED-PURPLE
-                                    #:label "Main menu"
-                                    #:tag 'main-menu)
-                    (make-Menu-Item #:color-active EMITTED-YELLOW
-                                    #:label "Exit"
-                                    #:tag 'exit))
-   #:label "Pause"
-   #:tag 'root-pause))

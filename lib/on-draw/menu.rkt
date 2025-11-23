@@ -145,7 +145,7 @@
          (render-menu-item-slider s menu menu-item i siblings type)]))
 
 (: bounds-cache : (HashTable String Bounds))
-(define bounds-cache (make-hasheq))
+(define bounds-cache (make-hash))
 
 (: get-bounds : String Pict3D -> Bounds)
 (define (get-bounds label label-rendered)
@@ -162,28 +162,39 @@
    Menu-Item-Type-Slider -> Pict3D)
 (define (render-menu-item-slider s menu menu-item i siblings type)
   (define label (Menu-Item-label menu-item))
-  (: value-formatted String)
-  (define value-formatted
-    (cond [(Menu-Item-Type-Slider-Flonum? type)
-           ((Menu-Item-Type-Slider-Flonum-format type)
-            ((Menu-Item-Type-Slider-Flonum-value-getter type)))]
-          [else ""]))
-  (define label-wrapped (format "~a <~a>" label value-formatted))
   (define-values (emitted-text emitted-bg) (Menu-Item-color s menu menu-item))
+
+  (: label-wrapped String)
+  (define label-wrapped
+    (cond [(Menu-Item-Type-Slider-Flonum? type)
+          (define cache-box (Menu-Item-Type-Slider-Flonum-text-cache type))
+          (: cached : (Pairof (U Flonum #f) (U String #f)))
+          (define cached (or (unbox cache-box) (cons #f #f)))
+          (match-define (cons val-cached text-cached) cached)
+          (define value ((Menu-Item-Type-Slider-Flonum-value-getter type)))
+          (cond
+            [(and val-cached text-cached (eq? val-cached text-cached))
+             text-cached]
+            [else
+             (define text (format "~a <~a>"
+                                  label
+                                  ((Menu-Item-Type-Slider-Flonum-format type) value)))
+             (set-box! cache-box (cons value text))
+             text])
+          ]
+          [else ""]))
   (define label-rendered
     (parameterize ([current-emitted emitted-text])
       (text label-wrapped #:onchar (get-on-char s 'wave))))
-
-  (define bounds (get-bounds label-wrapped label-rendered))
-  (match-define (cons bound1 bound2) bounds)
+  (match-define (cons bound1 bound2) (get-bounds label-wrapped label-rendered))
 
   (define y (+ -0.55 (* (exact->inexact i) 0.25)))
   (transform (group (combine
                      label-rendered
                      (parameterize ([current-emitted emitted-bg])
                        (if (and bound1 bound2)
-                           (rectangle (pos+ bound1 (dir -0.2 -0.2 0.25))
-                                      (pos+ bound2 (dir  0.2  0.2 0.5)))
+                           (rectangle (pos+ bound1 (dir -0.25 -0.25 0.3))
+                                      (pos+ bound2 (dir  0.25  0.25 0.6)))
                            empty-pict3d)))
                     (Menu-Item-tag menu-item))
              (affine-compose (position-screen-space-relative s -0.8 y 0.6)
@@ -199,21 +210,19 @@
   (define label-rendered
     (parameterize ([current-emitted emitted-text])
       (text label #:onchar (get-on-char s 'wave))))
-  (define bounds (get-bounds label label-rendered))
-  (match-define (cons bound1 bound2) bounds)
+  (match-define (cons bound1 bound2) (get-bounds label label-rendered))
 
-  (transform
-   (group (combine
-           label-rendered
-           (parameterize ([current-emitted emitted-bg])
-             (if (and bound1 bound2)
-                 (rectangle (pos+ bound1 (dir -0.25 -0.25 0.25))
-                            (pos+ bound2 (dir  0.25  0.25 0.5)))
-                 empty-pict3d)))
-          (Menu-Item-tag menu-item))
-   (affine-compose
-    (position-screen-space-relative s -0.8 (+ -0.55 (* (exact->inexact i) 0.25)) 0.6)
-    (scale (* (Menu-Item-scale s menu menu-item) TEXT-SCALE)))))
+  (define y (+ -0.55 (* (exact->inexact i) 0.25)))
+  (transform (group (combine
+                     label-rendered
+                     (parameterize ([current-emitted emitted-bg])
+                       (if (and bound1 bound2)
+                           (rectangle (pos+ bound1 (dir -0.25 -0.25 0.3))
+                                      (pos+ bound2 (dir  0.25  0.25 0.6)))
+                           empty-pict3d)))
+                    (Menu-Item-tag menu-item))
+             (affine-compose (position-screen-space-relative s -0.8 y 0.6)
+                             (scale (* (Menu-Item-scale s menu menu-item) TEXT-SCALE)))))
 
 (: render-menu-items : State-Menu Menu Menu-Item (Listof Menu-Item) -> Pict3D)
 (define (render-menu-items s menu menu-item parents)

@@ -15,10 +15,7 @@
                   transform)
          "./camera.rkt"
          "./menu.rkt"
-         "./on-char-jiggle.rkt"
          "./position-screen-space.rkt"
-         "./text.rkt"
-         "../state/menu.rkt"
          "../state/state.rkt")
 
 (provide on-draw-pause-menu)
