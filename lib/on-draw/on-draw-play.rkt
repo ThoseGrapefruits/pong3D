@@ -39,7 +39,8 @@
                   sphere
                   transform
                   with-emitted)
-         racket/list
+         (only-in racket/list empty? first range)
+         (only-in racket/math exact-floor)
          (only-in racket/function identity)
          "./camera.rkt"
          "./on-char-jiggle.rkt"
@@ -49,6 +50,8 @@
          "../config.rkt"
          "../preferences/preferences.rkt"
          "../state/state.rkt")
+
+(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
 
 (provide on-draw-play)
 
@@ -115,22 +118,15 @@
           [(State-Pause-Menu? s) (State-Pause-Menu-resume-state s)]
           [else #f]))
   (define drawn (if state-play
-      (combine (render-game-play-opponent state-play)
-            ;; (render-sample-text state-play)
-               (render-game-play-player state-play)
-               (render-game-play-ball state-play)
-               (render-game-play-hud state-play)
-               (render-game-play-lights+camera state-play)
-               (render-game-play-arena state-play)
-               (render-game-play-arena-bumpers state-play))
-      empty-pict3d))
-  (when state-play
-    (define player (State-Play-player state-play))
-    (define score-last-frame (unbox (Player-score-last-frame player)))
-    (define score (Player-score player))
-    (when (or (not score-last-frame)
-              (not (= score score-last-frame)))
-      (set-box! (Player-score-last-frame player) score)))
+                    (combine (render-game-play-opponent state-play)
+                             ;; (render-sample-text state-play)
+                             (render-game-play-player state-play)
+                             (render-game-play-ball state-play)
+                             (render-game-play-hud state-play)
+                             (render-game-play-lights+camera state-play)
+                             (render-game-play-arena state-play)
+                             (render-game-play-arena-bumpers state-play))
+                    empty-pict3d))
   drawn)
 
 (define tqbf (string-append-immutable
@@ -357,28 +353,63 @@
 
 (: render-game-play-hud : State-Play -> Pict3D)
 (define (render-game-play-hud s)
+  (combine (render-game-play-hud-score s)
+           (render-game-play-hud-time s)))
+
+(: render-game-play-hud-score : State-Play -> Pict3D)
+(define (render-game-play-hud-score s)
   (define player (State-Play-player s))
   (define score (Player-score player))
-  ;;; (define score-last-frame (unbox (Player-score-last-frame player)))
-  ;;; (define pict-last (unbox (State-pict-last s)))
-  ;;; (define cached (and pict-last
-  ;;;                     score-last-frame
-  ;;;                     (= score score-last-frame)
-  ;;;                     (get-group pict-last '(hud))))
-  ;;; (or cached
-  (group (combine
-          ; player score
-          (transform (render-player-score score)
-                     (position-screen-space-pixels s 100.0 100.0 1.0))
-          ; player lives
-          (transform
-           (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
-             (combine
-              (for/list : (Listof Pict3D)
-                ([n (range 0 (Player-lives player))])
-                (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
-           (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
-         'hud))
+  (define score-last-frame (unbox (Player-score-last-frame player)))
+  (define pict-last (unbox (State-pict-last s)))
+  (define cached-score (and pict-last
+                            score-last-frame
+                            (= score score-last-frame)
+                            (get-group pict-last '(hud-score))))
+  (cond [cached-score cached-score]
+  [else (set-box! (Player-score-last-frame player) score)
+        (group (combine
+                ; player score
+                (transform (render-player-score score)
+                           (position-screen-space-pixels s 100.0 100.0 1.0))
+                ; player lives
+                (transform
+                 (parameterize ([current-emitted COLOR-PLAYER-EMITTED])
+                   (combine
+                    (for/list : (Listof Pict3D)
+                      ([n (range 0 (Player-lives player))])
+                      (cube (pos (* (exact->inexact n) -0.08) 0.0 0.0) 0.02))))
+                 (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
+               'hud-score)]))
+
+(: render-game-play-hud-time : State-Play -> Pict3D)
+(define (render-game-play-hud-time s)
+  (define time-elapsed (- (current-inexact-monotonic-milliseconds)
+                          (State-Play-time-now-minus-elapsed s)))
+  (define time-elapsed-last-frame (unbox (State-Play-time-elapsed-last-frame s)))
+  (define pict-last (unbox (State-pict-last s)))
+  (define seconds (exact-floor (/ time-elapsed 1000.0)))
+  (define cached-time (and pict-last
+                            time-elapsed-last-frame
+                            (= seconds time-elapsed-last-frame)
+                            (get-group pict-last '(hud-time))))
+  (printf "render-time — te ~s, telf: ~s, ct: ~s~n" seconds time-elapsed-last-frame cached-time)
+  (cond [cached-time cached-time]
+        [else
+         (set-box! (State-Play-time-elapsed-last-frame s) seconds)
+         (group (combine
+                 (transform
+                  (parameterize
+                      ([current-material (material #:ambient 0.0
+                                                   #:diffuse 0.0
+                                                   #:specular 0.0
+                                                   #:roughness 0.3)]
+                       [current-emitted (emitted "oldlace" 0.9)])
+                    (text (number->string seconds) #:onchar (get-on-char s 'jiggle)))
+                  (affine-compose
+                   (position-screen-space-pixels s -400.0 0.0 0.6 #:wrap? #t)
+                   (scale 0.06))))
+                'hud-time)]))
 
 (: render-game-play-opponent : State-Play -> Pict3D)
 (define (render-game-play-opponent s)

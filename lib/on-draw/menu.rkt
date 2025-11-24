@@ -13,6 +13,7 @@
            empty-pict3d
            emitted
            group
+           move
            origin
            pos+
            rectangle
@@ -80,6 +81,7 @@
         [(= time-since ANIMATION-TIME)
          (values EMITTED-MENU-ITEM-TEXT-ACTIVE active-color)]
         [else
+         (: ratio : Flonum)
          (define ratio (/ time-since ANIMATION-TIME))
          (match-define (emitted text-0r text-0g text-0b text-0a) EMITTED-MENU-ITEM-TEXT)
          (match-define (emitted text-1r text-1g text-1b text-1a) EMITTED-MENU-ITEM-TEXT-ACTIVE)
@@ -213,6 +215,7 @@
   (match-define (cons bound1 bound2) (get-bounds label label-rendered))
 
   (define y (+ -0.55 (* (exact->inexact i) 0.25)))
+  (define menu-item-scale (Menu-Item-scale s menu menu-item))
   (transform (group (combine
                      label-rendered
                      (parameterize ([current-emitted emitted-bg])
@@ -222,7 +225,10 @@
                            empty-pict3d)))
                     (Menu-Item-tag menu-item))
              (affine-compose (position-screen-space-relative s -0.8 y 0.6)
-                             (scale (* (Menu-Item-scale s menu menu-item) TEXT-SCALE)))))
+                             (move (dir (* TEXT-SCALE (- 1.0 menu-item-scale))
+                                        (* TEXT-SCALE (- 1.0 menu-item-scale))
+                                        0.0))
+                             (scale (* menu-item-scale TEXT-SCALE)))))
 
 (: render-menu-items : State-Menu Menu Menu-Item (Listof Menu-Item) -> Pict3D)
 (define (render-menu-items s menu menu-item parents)

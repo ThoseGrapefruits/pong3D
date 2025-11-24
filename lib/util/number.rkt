@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require racket/math)
+(require (only-in racket/math exact-floor))
 
 (provide (all-defined-out))
 
@@ -34,9 +34,5 @@
 (: within? : Flonum Flonum Flonum -> Boolean)
 (define (within? x low high)
   (cond
-    [(< high low)
-     (and (>= x high)
-          (<= x low))]
-    [else
-     (and (<= x high)
-          (>= x low))]))
+    [(< high low) (<= high x  low)]
+    [else         (<= low  x high)]))

@@ -103,6 +103,8 @@
 (struct State-Pause-Menu State
    ; The menu.
   ([menu : Menu]
+   ; A timestamp when the game was paused
+   [paused-at : Real]
    ; Copy of the last play state for when the game resumes. Only #f when this
    ; State-Pause-Menu is stored in pause-state of State-Play.
    [resume-state : (U #f State-Play)])
@@ -123,5 +125,8 @@
    ; able to do.
    [pause-state : (U #f State-Pause-Menu)]
    [player : Player]
-   [start-t : Flonum])
+   ; A time which represents the current time minus the elapsed playtime. Must
+   ; be adjusted on resume from a paused state.
+   [time-now-minus-elapsed : Real]
+   [time-elapsed-last-frame : (Boxof (U #f Real))])
   #:transparent)

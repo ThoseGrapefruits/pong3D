@@ -2,11 +2,12 @@
 
 (require
   "./util.rkt"
-  "../on-draw/palette.rkt"
   "../state/menu.rkt"
   "../state/menu-root-pause.rkt"
   "../state/state.rkt"
   "../state/syntax.rkt")
+
+(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
 
 (provide on-key-immediate-play)
 
@@ -27,5 +28,6 @@
           State-Pause-Menu s
           (make-Menu      ; menu
            (get-menu-root-pause))
+          (current-inexact-monotonic-milliseconds)
           resume-state))] ; resume-state
     [else s]))

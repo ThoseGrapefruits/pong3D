@@ -19,6 +19,8 @@
   "./state.rkt"
   "./syntax.rkt")
 
+(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
+
 (provide state-reset-play
          state-start
          state-start-play)
@@ -81,7 +83,8 @@
     (make-pid #:tuning-p 0.3 ; pid
               #:tuning-i 0.00001
               #:tuning-d 0.00002))
-   t))
+   (current-inexact-monotonic-milliseconds) ; time-now-minus-elapsed
+   (box #f))) ; time-elapsed-last-frame
 
 (: state-start-play-ball : -> Ball)
 (define (state-start-play-ball)
