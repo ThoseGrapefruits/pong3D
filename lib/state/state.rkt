@@ -63,14 +63,15 @@
   #:transparent)
 
 (struct Player
-  ([lives : Nonnegative-Integer]
-   [score : Nonnegative-Integer]
+  ([lives            : Nonnegative-Integer]
+   [lives-last-frame : (Boxof (U Nonnegative-Integer #f))]
+   [score            : Nonnegative-Integer]
    [score-last-frame : (Boxof (U Nonnegative-Integer #f))]
    [score-multiplier : Nonnegative-Flonum]
-   [y : Flonum]
-   [y-desired : (U Flonum #f)]
-   [y-pid : PID])
-  #:transparent)
+   [y                : Flonum]
+   [y-desired        : (U Flonum #f)]
+   [y-pid            : PID])
+   #:transparent)
 
 ; STRUCTS — STATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

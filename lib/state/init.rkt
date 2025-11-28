@@ -19,7 +19,7 @@
   "./state.rkt"
   "./syntax.rkt")
 
-(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
+(require/typed typed/racket/base [current-inexact-monotonic-milliseconds (-> Real)])
 
 (provide state-reset-play
          state-start
@@ -75,6 +75,7 @@
    #f        ; pause-state
    (Player   ; player
     3        ; lives
+    (box #f) ; lives-last-frame
     0        ; score
     (box #f) ; score-last-frame
     1.0      ; score-multiplier

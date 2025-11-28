@@ -1,4 +1,5 @@
 #lang typed/racket/base
+(require/typed typed/racket/base [current-inexact-monotonic-milliseconds (-> Real)])
 
 (require "../state/init.rkt"
          "../state/menu.rkt"
@@ -18,10 +19,7 @@
 (define (Pause-Menu-activate s n t path)
   (cond [(not (State-Pause-Menu? s)) s]
         [(path=? path (list 'root-pause 'resume))
-         (define resume-state (State-Pause-Menu-resume-state s))
-         (if (State-Pause-Menu-resume-state s)
-             (State-update-counters resume-state n t)
-             (error "pause state with no resume-state"))]
+         (Pause-Menu-resume s n t)]
         [(path=? path (list 'root-pause 'main-menu))
          (state-start s t)]
         [(path=? path (list 'root-pause 'exit))
@@ -39,15 +37,7 @@
 
 (: Pause-Menu-exit : (Menu-On-Exit State-Pause-Menu))
 (define (Pause-Menu-exit s n t)
-  (define resume-state (State-Pause-Menu-resume-state s))
-  (when resume-state
-    (box-cas! (State-t resume-state) (unbox (State-t resume-state)) t))
-  (struct-copy
-   State-Play resume-state
-   [pause-state (struct-copy State-Pause-Menu s
-                             ; clear the old resume-state, will
-                             ; get reset if re-pause-menu
-                             [resume-state #f])]))
+  (Pause-Menu-resume s n t))
 
 (: Pause-Menu-go-out : State-Pause-Menu Natural Flonum -> State-Any)
 (define (Pause-Menu-go-out s n t)
@@ -68,3 +58,15 @@
 (define (Pause-Menu-go-vertical s n t offset)
   (define menu (State-Pause-Menu-menu s))
   (Menu-go-vertical s menu n t offset))
+
+(: Pause-Menu-resume : State-Pause-Menu Natural Flonum -> State-Play)
+(define (Pause-Menu-resume s n t)
+  (define resume-state (State-Pause-Menu-resume-state s))
+  (cond [(not (State-Pause-Menu-resume-state s)) (error "pause state with no resume-state")]
+        [else (define time-since-paused (- (current-inexact-monotonic-milliseconds)
+                                           (State-Pause-Menu-paused-at s)))
+              (State-update-counters resume-state n t)
+              (struct-copy State-Play resume-state
+                           [time-now-minus-elapsed
+                            (+ (State-Play-time-now-minus-elapsed resume-state)
+                               time-since-paused)])]))

@@ -7,7 +7,7 @@
   "../state/state.rkt"
   "../state/syntax.rkt")
 
-(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
+(require/typed typed/racket/base [current-inexact-monotonic-milliseconds (-> Real)])
 
 (provide on-key-immediate-play)
 

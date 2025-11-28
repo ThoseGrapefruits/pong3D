@@ -51,7 +51,7 @@
          "../preferences/preferences.rkt"
          "../state/state.rkt")
 
-(require/typed typed/racket [current-inexact-monotonic-milliseconds (-> Real)])
+(require/typed typed/racket/base [current-inexact-monotonic-milliseconds (-> Real)])
 
 (provide on-draw-play)
 
@@ -101,6 +101,24 @@
                [current-emitted COLOR-PLAYER-EMITTED])
             (rectangle origin PADDLE-SCALE))))
 
+(: format-time : Integer -> String)
+(define (format-time n)
+  (define-values (minutes-on secs) (quotient/remainder n 60))
+  (define-values (hours-on minutes) (quotient/remainder minutes-on 60))
+  (define-values (days-on hours) (quotient/remainder hours-on 24))
+  
+  (format "~a:~a:~a" (format-time-part hours) (format-time-part minutes) (format-time-part secs)))
+
+(: format-time-part : Integer -> String)
+(define (format-time-part n)
+  (string-pad (number->string n) 2 #\0))
+
+(: string-pad : String Positive-Integer Char -> String)
+(define (string-pad str total-length padding-char)
+  (cond [(>= (string-length str) total-length) str ]
+        [else (string-append (make-string (- total-length (string-length str)) padding-char)
+                     str)]))
+
 (: get-group : Pict3D (Listof Tag) -> Pict3D)
 (define (get-group pict tags)
   (: mydentity : Pict3D -> Pict3D)
@@ -112,6 +130,8 @@
 
 (: on-draw-play : State -> Pict3D)
 (define (on-draw-play s)
+  (: state-pause : (U #f State-Pause-Menu))
+  (define state-pause (and (State-Pause-Menu? s) s))
   (: state-play : (U #f State-Play))
   (define state-play
     (cond [(State-Play? s) s]
@@ -122,7 +142,7 @@
                              ;; (render-sample-text state-play)
                              (render-game-play-player state-play)
                              (render-game-play-ball state-play)
-                             (render-game-play-hud state-play)
+                             (render-game-play-hud state-play state-pause)
                              (render-game-play-lights+camera state-play)
                              (render-game-play-arena state-play)
                              (render-game-play-arena-bumpers state-play))
@@ -351,23 +371,28 @@
                    (move (pos- predicted-pos origin))
                    (rotate-y (if is-player 90.0 -90.0))))]))))
 
-(: render-game-play-hud : State-Play -> Pict3D)
-(define (render-game-play-hud s)
+(: render-game-play-hud : State-Play (U #f State-Pause-Menu) -> Pict3D)
+(define (render-game-play-hud s sp)
   (combine (render-game-play-hud-score s)
-           (render-game-play-hud-time s)))
+           (render-game-play-hud-time s sp)))
 
 (: render-game-play-hud-score : State-Play -> Pict3D)
 (define (render-game-play-hud-score s)
   (define player (State-Play-player s))
+  (define lives (Player-lives player))
   (define score (Player-score player))
+  (define lives-last-frame (unbox (Player-lives-last-frame player)))
   (define score-last-frame (unbox (Player-score-last-frame player)))
   (define pict-last (unbox (State-pict-last s)))
   (define cached-score (and pict-last
+                            lives-last-frame
                             score-last-frame
+                            (= lives lives-last-frame)
                             (= score score-last-frame)
                             (get-group pict-last '(hud-score))))
   (cond [cached-score cached-score]
-  [else (set-box! (Player-score-last-frame player) score)
+  [else (set-box! (Player-lives-last-frame player) lives)
+        (set-box! (Player-score-last-frame player) score)
         (group (combine
                 ; player score
                 (transform (render-player-score score)
@@ -382,18 +407,17 @@
                  (position-screen-space-pixels s -100.0 100.0 1.0 #:wrap? #t)))
                'hud-score)]))
 
-(: render-game-play-hud-time : State-Play -> Pict3D)
-(define (render-game-play-hud-time s)
+(: render-game-play-hud-time : State-Play (U #f State-Pause-Menu) -> Pict3D)
+(define (render-game-play-hud-time s sp)
   (define time-elapsed (- (current-inexact-monotonic-milliseconds)
                           (State-Play-time-now-minus-elapsed s)))
   (define time-elapsed-last-frame (unbox (State-Play-time-elapsed-last-frame s)))
   (define pict-last (unbox (State-pict-last s)))
   (define seconds (exact-floor (/ time-elapsed 1000.0)))
   (define cached-time (and pict-last
-                            time-elapsed-last-frame
-                            (= seconds time-elapsed-last-frame)
-                            (get-group pict-last '(hud-time))))
-  (printf "render-time — te ~s, telf: ~s, ct: ~s~n" seconds time-elapsed-last-frame cached-time)
+                           time-elapsed-last-frame
+                           (or (= seconds time-elapsed-last-frame) sp)
+                           (get-group pict-last '(hud-time))))
   (cond [cached-time cached-time]
         [else
          (set-box! (State-Play-time-elapsed-last-frame s) seconds)
@@ -405,9 +429,9 @@
                                                    #:specular 0.0
                                                    #:roughness 0.3)]
                        [current-emitted (emitted "oldlace" 0.9)])
-                    (text (number->string seconds) #:onchar (get-on-char s 'jiggle)))
+                    (text (format-time seconds)))
                   (affine-compose
-                   (position-screen-space-pixels s -400.0 0.0 0.6 #:wrap? #t)
+                   (position-screen-space-pixels s -270.0 100.0 0.6 #:wrap? #t)
                    (scale 0.06))))
                 'hud-time)]))
 

@@ -44,7 +44,7 @@
   (define ts (* 0.000007 t))
   (λ (pict char index)
     (define hash-x (/ (+ 400 (modulo (* index 6) 203)) 4.0))
-    (define rot-x (* hash-x (cos (+ 0.0        (* hash-x ts))) 0.01))   ; pitch (up-down)
-    (define rot-y (* hash-x (cos (+ 0.0        (* hash-x ts))) 0.12))   ; yaw   (left-right)
-    (define mov-z (* hash-x (sin (+ 0.0        (* hash-x ts))) 0.0007)) ; rise
+    (define rot-x (* 0.01   hash-x (cos (+ 0.0 (* hash-x ts)))))   ; pitch (up-down)
+    (define rot-y (* 0.12   hash-x (cos (+ 0.0 (* hash-x ts)))))   ; yaw   (left-right)
+    (define mov-z (* 0.0007 hash-x (sin (+ 0.0 (* hash-x ts))))) ; rise
     (rotate-y/center (rotate-x/center (move-z pict mov-z) rot-x) rot-y)))

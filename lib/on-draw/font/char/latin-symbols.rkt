@@ -10,6 +10,8 @@
            move-x
            move-y
            pos+
+           pos-x
+           pos-y
            rectangle
            rotate-z/center
            +x
@@ -599,44 +601,42 @@
      (define single ((Char-3D-draw-raw symbol:quote-single)))
      (combine single (move-x single WIDTH-STROKE-3/2)))))
 
+(define DOT-CENTER (pos+ LINE/BASE/START (dir WIDTH-STROKE-1/4 (- WIDTH-STROKE-3/4) 0.0)))
+(define DOT-WIDTH  WIDTH-STROKE-3/4)
+
 (define symbol:comma
   (make-Char-3D-memoized
    #\,
    WIDTH-EM-1/4
    (λ () (combine
           ; circle
-          (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
-                    WIDTH-STROKE-3/4)
+          (cylinder DOT-CENTER DOT-WIDTH)
           ; tail
-          (quad-thicc (pos+ LINE/BASE/CENTER-1/4
-                            (dir (- WIDTH-STROKE-1/4) 0.0 0.0))
-                      (pos+ LINE/BASE/CENTER-1/4
-                            (dir (- WIDTH-STROKE-1/4) WIDTH-STROKE 0.0))
-                      (pos+ LINE/BASE/CENTER-1/4
-                            (dir WIDTH-STROKE-1/4     WIDTH-STROKE 0.0))
-                      (pos+ LINE/BASE/CENTER-1/4
-                            (dir WIDTH-STROKE-3/4     0.0          0.0)))))))
+          (quad-thicc (pos+ DOT-CENTER (dir (- WIDTH-STROKE-1/4) 0.0          0.0))
+                      (pos+ DOT-CENTER (dir (- WIDTH-STROKE-1/4) WIDTH-STROKE 0.0))
+                      (pos+ DOT-CENTER (dir WIDTH-STROKE-1/4     WIDTH-STROKE 0.0))
+                      (pos+ DOT-CENTER (dir DOT-WIDTH            0.0          0.0)))))))
 
 (define symbol:dot
   (make-Char-3D-memoized
    #\.
    WIDTH-EM-1/4
-   (λ () (cylinder (pos+ LINE/BASE/CENTER-1/4 -y WIDTH-STROKE-3/8)
-                   WIDTH-STROKE-3/4))))
+   (λ () (cylinder DOT-CENTER DOT-WIDTH))))
 
 (define symbol:colon
   (make-Char-3D-memoized
    #\:
    WIDTH-EM-1/4
    (λ ()
-     (define dot ((Char-3D-draw-raw symbol:dot)))
-     (combine dot (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
+     (define dot (cylinder DOT-CENTER DOT-WIDTH))
+     (combine (cylinder DOT-CENTER DOT-WIDTH)
+              (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
 
 (define symbol:semicolon
   (make-Char-3D-memoized
    #\;
    WIDTH-EM-1/4
    (λ ()
-     (define dot ((Char-3D-draw-raw symbol:dot)))
+     (define dot (cylinder DOT-CENTER DOT-WIDTH))
      (define comma ((Char-3D-draw-raw symbol:comma)))
      (combine comma (move-y dot (- WIDTH-STROKE HEIGHT-X))))))
