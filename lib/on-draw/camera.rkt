@@ -52,7 +52,7 @@
       (error "camera-dir not normalizable")))
 
 (: camera-look-at : State -> Pos)
-(define (camera-look-at s) (pos+ origin +x 0.8))
+(define (camera-look-at s) (pos+ origin +x 0.5))
 
 (: camera-point-at : State -> Affine)
 (define (camera-point-at s)

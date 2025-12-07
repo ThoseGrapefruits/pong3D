@@ -69,8 +69,8 @@
    ball-ppe  ; ball-predicted-pos-ends
    (Opponent ; opponent
     (make-pid #:tuning-p 0.2
-              #:tuning-i 0.00007
-              #:tuning-d 0.0002)
+              #:tuning-i 0.00001
+              #:tuning-d 0.00005)
     predicted-ball-y) ; y
    #f        ; pause-state
    (Player   ; player
@@ -79,11 +79,12 @@
     0        ; score
     (box #f) ; score-last-frame
     1.0      ; score-multiplier
+    (box #f) ; score-multiplier-last-frame
     0.0      ; y
     0.0      ; y-desired
     (make-pid #:tuning-p 0.3 ; pid
-              #:tuning-i 0.00001
-              #:tuning-d 0.00002))
+              #:tuning-i 0.000005
+              #:tuning-d 0.00001))
    (current-inexact-monotonic-milliseconds) ; time-now-minus-elapsed
    (box #f))) ; time-elapsed-last-frame
 

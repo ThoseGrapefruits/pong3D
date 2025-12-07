@@ -40,7 +40,11 @@
                   transform
                   with-emitted)
          (only-in racket/list empty? first range)
-         (only-in racket/math exact-floor)
+         (only-in racket/math
+                  degrees->radians
+                  pi
+                  radians->degrees
+                  exact-floor)
          (only-in racket/function identity)
          "./camera.rkt"
          "./on-char-jiggle.rkt"
@@ -61,6 +65,8 @@
 (define COLOR-PLAYER-EMITTED (emitted "plum" 2))
 (define WALL-Y+ (+ WALL-Y BALL-RADIUS))
 (define WALL-Y- (- 0.0 WALL-Y BALL-RADIUS))
+(define pi2  (* pi 2.0))
+(define pi/2 (/ pi 2.0))
 
 (define BALL-LIGHT
   (freeze (light origin
@@ -101,16 +107,18 @@
                [current-emitted COLOR-PLAYER-EMITTED])
             (rectangle origin PADDLE-SCALE))))
 
-(: format-time : Integer -> String)
-(define (format-time n)
+(: format-duration : Integer -> String)
+(define (format-duration n)
   (define-values (minutes-on secs) (quotient/remainder n 60))
-  (define-values (hours-on minutes) (quotient/remainder minutes-on 60))
-  (define-values (days-on hours) (quotient/remainder hours-on 24))
-  
-  (format "~a:~a:~a" (format-time-part hours) (format-time-part minutes) (format-time-part secs)))
+  (define-values (hours-on   minutes) (quotient/remainder minutes-on 60))
+  (define-values (days-on    hours) (quotient/remainder hours-on 24))
+  (format "~a:~a:~a"
+    (format-duration-part hours)
+    (format-duration-part minutes)
+    (format-duration-part secs)))
 
-(: format-time-part : Integer -> String)
-(define (format-time-part n)
+(: format-duration-part : Integer -> String)
+(define (format-duration-part n)
   (string-pad (number->string n) 2 #\0))
 
 (: string-pad : String Positive-Integer Char -> String)
@@ -197,14 +205,14 @@
 (define BUMPERS
   (freeze
    (combine
-    (transform render-arena-bumper
+    (transform render-arena-bumper ; right
                (affine-compose
-                (move-y WALL-Y+)
-                (scale (dir 10 1/256 1/256))))
-    (transform render-arena-bumper
+                (move (dir -4 WALL-Y+ 0))
+                (scale (dir 5 1/256 1/256))))
+    (transform render-arena-bumper ; left
                (affine-compose
-                (move-y WALL-Y-)
-                (scale (dir 10 1/256 1/256)))))))
+                (move (dir -4 WALL-Y- 0))
+                (scale (dir 5 1/256 1/256)))))))
 
 (: render-sample-text : State-Play -> Pict3D)
 (define (render-sample-text s)
@@ -285,9 +293,25 @@
                                (rotate-x -90)
                                (rotate-y 90)))))
 
+(define SUN-START-ANGLE (degrees->radians 180.0))
+
+(: get-sun-angle : State-Play -> Real)
+(define (get-sun-angle s)
+  (- SUN-START-ANGLE
+     (* 0.001 (- (current-inexact-monotonic-milliseconds)
+                 (State-Play-time-now-minus-elapsed s)))))
+
 (: render-game-play-arena-sky : State-Play -> Pict3D)
 (define (render-game-play-arena-sky s)
-  (with-emitted (emitted 0 0 0.01 20)
+  (define angle (get-sun-angle s))
+  (define y (sin angle))
+  (define y-inv (abs (- 1 y)))
+  (define x (cos angle))
+  (define r (+ 0.07 (* 0.07 y-inv) (* 0.01 x)))
+  (define g (+ 0.11 (* 0.1 y)))
+  (define b (+ 0.31 (* 0.3 y)))
+  (define l (+ 0.41 (* 0.3 y)))
+  (with-emitted (emitted r g b l)
     (cylinder origin 1
               #:arc (arc 180 360)
               #:inside? #t
@@ -297,15 +321,28 @@
               #:end-cap? #f
               #:outer-wall? #f)))
 
+(: SUN-RED : Real)
+(define SUN-RED   (/ 218.0 255.0 4.0))
+(: SUN-GREEN : Real)
+(define SUN-GREEN (/ 165.0 255.0 4.0))
+(: SUN-BLUE : Real)
+(define SUN-BLUE  (/  32.0 255.0 4.0))
+
 (: render-game-play-arena-sun : State-Play -> Pict3D)
 (define (render-game-play-arena-sun s)
-  (define t (unbox (State-t s)))
-  (transform (light origin (emitted "goldenrod" 0.0001))
-             (affine-compose
-              (rotate-z (- 135.0 (* 0.003 t)))
-              (move-y -0.5)
-              (move-z -0.99)
-              (scale 40))))
+  (define angle (get-sun-angle s))
+  (define y (sin angle))
+  (define y-inv (abs (- 1 y)))
+  (define x (cos angle))
+  (: r : Real)
+  (define r (+ SUN-RED (* 0.3 SUN-RED y-inv) (* 0.1 SUN-RED x)))
+  (define g SUN-GREEN)
+  (define b SUN-BLUE)
+  (define l (+ 0.002 (* 0.001 y)))
+  (transform (light origin (emitted r g b l))
+    (affine-compose (rotate-z (radians->degrees angle))
+      (move (dir -0.5 0.0 -0.99))
+      (scale 40))))
 
 (: render-game-play-arena-tunnel : State-Play -> Pict3D)
 (define (render-game-play-arena-tunnel s)
@@ -344,8 +381,7 @@
               (rectangle (pos OPPONENT-X WALL-Y+ 0.0) PADDLE-SCALE-PREVIEW)
               (rectangle (pos OPPONENT-X WALL-Y- 0.0) PADDLE-SCALE-PREVIEW)
               (rectangle (pos PLAYER-X WALL-Y+ 0.0) PADDLE-SCALE-PREVIEW)
-              (rectangle (pos PLAYER-X WALL-Y- 0.0) PADDLE-SCALE-PREVIEW)))
-           )))))
+              (rectangle (pos PLAYER-X WALL-Y- 0.0) PADDLE-SCALE-PREVIEW))))))))
 
   (combine guides BUMPERS))
 
@@ -373,8 +409,38 @@
 
 (: render-game-play-hud : State-Play (U #f State-Pause-Menu) -> Pict3D)
 (define (render-game-play-hud s sp)
-  (combine (render-game-play-hud-score s)
-           (render-game-play-hud-time s sp)))
+  (combine
+    (render-game-play-hud-multiplier s)
+    (render-game-play-hud-score s)
+    (render-game-play-hud-time s sp)))
+
+(: render-game-play-hud-multiplier : State-Play -> Pict3D)
+(define (render-game-play-hud-multiplier s)
+  (define player (State-Play-player s))
+  (define multiplier (Player-score-multiplier player))
+  (define multiplier-box (Player-score-multiplier-last-frame player))
+  (define multiplier-last-frame (unbox multiplier-box))
+  (define pict-last (unbox (State-pict-last s)))
+  (define cached-multiplier (and pict-last
+                           multiplier-last-frame
+                           (= multiplier multiplier-last-frame)
+                           (get-group pict-last '(hud-multiplier))))
+  (cond [cached-multiplier cached-multiplier]
+        [else
+         (set-box! multiplier-box multiplier)
+         (group (combine
+                 (transform
+                  (parameterize
+                      ([current-material (material #:ambient 0.0
+                                                   #:diffuse 0.0
+                                                   #:specular 0.0
+                                                   #:roughness 0.3)]
+                       [current-emitted (emitted "oldlace" 0.9)])
+                    (text (format "~sx" multiplier)))
+                  (affine-compose
+                   (position-screen-space-pixels s 100.0 140.0 0.4)
+                   (scale 0.04))))
+                'hud-multiplier)]))
 
 (: render-game-play-hud-score : State-Play -> Pict3D)
 (define (render-game-play-hud-score s)
@@ -429,9 +495,9 @@
                                                    #:specular 0.0
                                                    #:roughness 0.3)]
                        [current-emitted (emitted "oldlace" 0.9)])
-                    (text (format-time seconds)))
+                    (text (format-duration seconds)))
                   (affine-compose
-                   (position-screen-space-pixels s -270.0 100.0 0.6 #:wrap? #t)
+                   (position-screen-space-pixels s -260.0 100.0 0.4 #:wrap? #t)
                    (scale 0.06))))
                 'hud-time)]))
 

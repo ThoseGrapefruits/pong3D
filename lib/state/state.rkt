@@ -63,14 +63,15 @@
   #:transparent)
 
 (struct Player
-  ([lives            : Nonnegative-Integer]
-   [lives-last-frame : (Boxof (U Nonnegative-Integer #f))]
-   [score            : Nonnegative-Integer]
-   [score-last-frame : (Boxof (U Nonnegative-Integer #f))]
-   [score-multiplier : Nonnegative-Flonum]
-   [y                : Flonum]
-   [y-desired        : (U Flonum #f)]
-   [y-pid            : PID])
+  ([lives                       : Nonnegative-Integer]
+   [lives-last-frame            : (Boxof (U Nonnegative-Integer #f))]
+   [score                       : Nonnegative-Integer]
+   [score-last-frame            : (Boxof (U Nonnegative-Integer #f))]
+   [score-multiplier            : Nonnegative-Flonum]
+   [score-multiplier-last-frame : (Boxof (U Nonnegative-Flonum #f))]
+   [y                           : Flonum]
+   [y-desired                   : (U Flonum #f)]
+   [y-pid                       : PID])
    #:transparent)
 
 ; STRUCTS — STATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
