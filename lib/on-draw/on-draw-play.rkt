@@ -107,6 +107,24 @@
                [current-emitted COLOR-PLAYER-EMITTED])
             (rectangle origin PADDLE-SCALE))))
 
+(: STARS-RENDERED : Pict3D)
+(define STARS-RENDERED
+  (parameterize
+      ([current-material (material #:ambient 0.0
+                                   #:diffuse 0.0
+                                   #:specular 0.0
+                                   #:roughness 0.0)])
+    (combine (for/list : (Listof Pict3D) ([z (in-range 0 80)])
+               (parameterize ([current-emitted (emitted "oldlace" (+ 0.4 (* (random) 0.5)))])
+                 (transform
+                  (cube origin
+                        (+ 0.005 (* (random) 0.01)))
+                  (affine-compose (move (dir (-  1.0  (* 2.0 (random)))
+                                             (-  1.0  (* 2.0 (random)))
+                                             (- -0.995 (* 0.005 (random)))))
+                                  (rotate-y 45.0)
+                                  (rotate-z 45.0))))))))
+
 (: format-duration : Integer -> String)
 (define (format-duration n)
   (define-values (minutes-on secs) (quotient/remainder n 60))
@@ -285,21 +303,22 @@
                                    #:specular 0.3
                                    #:roughness 0.3)]
        [current-color (rgba 0.6 0.6 0.6)])
-    (transform (combine (render-game-play-arena-tunnel s)
+    (transform (combine (render-game-play-arena-sky s)
+                        (render-game-play-arena-stars s)
                         (render-game-play-arena-sun s)
-                        (render-game-play-arena-sky s))
+                        (render-game-play-arena-tunnel s))
                (affine-compose (scale-x 10)
                                (move-z -0.1)
                                (rotate-x -90)
                                (rotate-y 90)))))
 
-(define SUN-START-ANGLE (degrees->radians 180.0))
+(define SUN-START-ANGLE (degrees->radians 200.0))
 
 (: get-sun-angle : State-Play -> Real)
 (define (get-sun-angle s)
   (- SUN-START-ANGLE
-     (* 0.001 (- (current-inexact-monotonic-milliseconds)
-                 (State-Play-time-now-minus-elapsed s)))))
+     (* 0.0001 (- (current-inexact-monotonic-milliseconds)
+                  (State-Play-time-now-minus-elapsed s)))))
 
 (: render-game-play-arena-sky : State-Play -> Pict3D)
 (define (render-game-play-arena-sky s)
@@ -307,10 +326,10 @@
   (define y (sin angle))
   (define y-inv (abs (- 1 y)))
   (define x (cos angle))
-  (define r (+ 0.07 (* 0.07 y-inv) (* 0.01 x)))
+  (define r (+ 0.07 (* 0.06 y-inv) (* 0.01 x)))
   (define g (+ 0.11 (* 0.1 y)))
   (define b (+ 0.31 (* 0.3 y)))
-  (define l (+ 0.41 (* 0.3 y)))
+  (define l (+ 0.36 (* 0.3 y)))
   (with-emitted (emitted r g b l)
     (cylinder origin 1
               #:arc (arc 180 360)
@@ -320,6 +339,17 @@
               #:start-cap? #f
               #:end-cap? #f
               #:outer-wall? #f)))
+
+(: render-game-play-arena-stars : State-Play -> Pict3D)
+(define (render-game-play-arena-stars s)
+  (define angle (get-sun-angle s))
+  (define y (sin angle))
+  (define y-inv (abs (- 1 y)))
+  (define x (cos angle))
+  (transform STARS-RENDERED
+             (affine-compose
+              (move-z (min 0.0 (* 0.05 (- -0.5 (* y 3)))))
+              (rotate-z (radians->degrees angle)))))
 
 (: SUN-RED : Real)
 (define SUN-RED   (/ 218.0 255.0 4.0))
