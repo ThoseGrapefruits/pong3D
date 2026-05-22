@@ -11,14 +11,14 @@
  (struct-out Song))
 
 (define-struct Song
-  ([loop? : (Union 'loop 'one-shot)]
-   [tempo  : Positive-Integer]
+  ([loop?       : (Union 'loop 'one-shot)]
+   [tempo       : Positive-Integer]
    [track-count : Positive-Integer]
-   [tracks : (Listof Symbol)]))
+   [tracks      : (Listof Symbol)]))
 
 (define-struct StreamedTrack
   ([stream : PStream]
-   [track : (Listof Symbol)]))
+   [track  : (Listof Symbol)]))
 
 (define-type StreamedSong (Listof StreamedTrack))
 

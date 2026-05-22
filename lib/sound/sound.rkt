@@ -2,12 +2,12 @@
 
 (require racket/file
          (only-in racket/list empty? first second)
-         (only-in racket/match match-define)
+        ;  (only-in racket/match match-define)
          (only-in racket/math exact-round nonnegative-integer?)
-         (only-in typed-map map)
          typed/racket/gui/base
          "../preferences/preferences.rkt"
-         "./rsound.rkt")
+         "./rsound.rkt"
+         "./tone-lerp.rkt")
 
 (provide
  note-to-frequency
@@ -15,6 +15,7 @@
  rs-play
  rs-play-random
  rs-stop
+ tone-lerp
  Sound-Category
 
  SOUND-ENDGAME
@@ -61,6 +62,7 @@
 (: rs-play (->* (Pong-Sound) (Boolean) Thread))
 (define (rs-play sound [loop #f])
   ; TODO would be good to pull this over but it's an internal function in rsound
+  ; which accesses a private field in the struct
   ; (rs:check-below-threshold sound 2.0)
 
   (define (get-path)
