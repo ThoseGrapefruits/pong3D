@@ -86,7 +86,8 @@
               #:tuning-i 0.000005
               #:tuning-d 0.00001))
    (current-inexact-monotonic-milliseconds) ; time-now-minus-elapsed
-   (box #f))) ; time-elapsed-last-frame
+   (box #f) ; time-elapsed-last-frame
+   #f)) ; tuner-tone-playing
 
 (: state-start-play-ball : -> Ball)
 (define (state-start-play-ball)

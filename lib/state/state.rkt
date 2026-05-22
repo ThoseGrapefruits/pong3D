@@ -130,5 +130,6 @@
    ; A time which represents the current time minus the elapsed playtime. Must
    ; be adjusted on resume from a paused state.
    [time-now-minus-elapsed : Real]
-   [time-elapsed-last-frame : (Boxof (U #f Real))])
+   [time-elapsed-last-frame : (Boxof (U #f Real))]
+   [tuner-tone-playing : Boolean])
   #:transparent)

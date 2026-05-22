@@ -34,10 +34,16 @@
           (set-box! target-box target)
           (set-box! last-time-box (now-millis)))))
 
+;;; Example usage:
 ;;; (define-values (siggy update) (tone-lerp 500.0 1500.0))
+;;; (define-values (siggy2 update2) (tone-lerp 200.0 1500.0))
 ;;; (sleep 1)
 ;;; (update 400.0)
+;;; (update2 400.0)
 ;;; (sleep 1)
 ;;; (update 300.0)
+;;; (update2 600.0)
 ;;; (sleep 1)
+;;; (update2 300.0)
+;;; (sleep 2)
 ;;; (stop)

@@ -8,7 +8,6 @@
                "rsound"
                "srfi-lite-lib"
                "typed-compose"
-               "typed-map-lib"
                "typed-racket-lib"
                "typed-racket-more"
                "typed-racket-stream"

@@ -3,8 +3,14 @@
 (require
   (only-in pict3d
            Pos
-           pos-x)
+           pos-x
+           pos-y)
   (only-in typed-compose compose-n)
+  (only-in racket/math exact-floor)
+  (only-in typed/racket/stream
+           stream
+           stream-filter
+           stream-first)
   "../config.rkt"
   "../sound/sound.rkt"
   "../state/init.rkt"
@@ -22,6 +28,7 @@
   (cond [(State-Play? s)
          (on-frame-play-endgame
           ((compose-n ; bottom-to-top
+            on-frame-play-tuner-tone
             on-frame-play-lives
             on-frame-play-ball
             on-frame-play-opponent
@@ -73,3 +80,26 @@
             Player player
             [lives player-lives-next])])]
         [else s]))
+
+(define-values (base-tone update-base-tone) (tone-lerp 0.0 100.0))
+(define-values (tuner-tone update-tuner-tone) (tone-lerp 0.0 100.0))
+
+(: on-frame-play-tuner-tone : State-Play -> State-Play)
+(define (on-frame-play-tuner-tone s)
+  (define player (State-Play-player s))
+  (define player-y-desired (Player-y-desired player))
+  (define predicted-pos
+    (stream-first (stream-filter (λ ([p : Pos]) (positive? (pos-x p)))
+                                 (State-Play-ball-predicted-pos-ends s))))
+  (cond
+    [(and predicted-pos player-y-desired)
+      (define base-tone (get-base-tone player-y-desired))
+      (define diff (- (pos-y predicted-pos) player-y-desired))
+      (update-base-tone base-tone)
+      (update-tuner-tone (+ base-tone diff))
+      s]
+    [else s]))
+
+(: get-base-tone : Flonum -> Flonum)
+(define (get-base-tone player-y-desired)
+  (exact->inexact (note-to-frequency (exact-floor (* 12 player-y-desired)))))
