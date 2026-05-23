@@ -2,7 +2,6 @@
 
 (define name "pong-racket")
 (define deps '("base"
-               "file-watchers"
                "math-lib"
                "nested-hash"
                "rsound"
