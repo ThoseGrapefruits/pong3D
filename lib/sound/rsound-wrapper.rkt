@@ -33,6 +33,7 @@
   (prefix-out rs: play/proc)
   (prefix-out rs: reverb)
   (prefix-out rs: signal->rsound)
+  (prefix-out rs: signal-play)
   (prefix-out rs: silence)
   (prefix-out rs: sine-wave)
   (prefix-out rs: stop)

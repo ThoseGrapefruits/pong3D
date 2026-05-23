@@ -12,6 +12,7 @@
            stream-filter
            stream-first)
   "../config.rkt"
+  "../sound/rsound.rkt"
   "../sound/sound.rkt"
   "../state/init.rkt"
   "../state/state.rkt"
@@ -81,25 +82,32 @@
             [lives player-lives-next])])]
         [else s]))
 
-(define-values (base-tone update-base-tone) (tone-lerp 0.0 100.0))
-(define-values (tuner-tone update-tuner-tone) (tone-lerp 0.0 100.0))
+(define-values (base-tone update-base-tone) (tone-lerp 500.0 300.0))
+(define-values (tuner-tone update-tuner-tone) (tone-lerp 500.0 300.0))
 
 (: on-frame-play-tuner-tone : State-Play -> State-Play)
 (define (on-frame-play-tuner-tone s)
-  (define player (State-Play-player s))
-  (define player-y-desired (Player-y-desired player))
-  (define predicted-pos
-    (stream-first (stream-filter (λ ([p : Pos]) (positive? (pos-x p)))
-                                 (State-Play-ball-predicted-pos-ends s))))
-  (cond
-    [(and predicted-pos player-y-desired)
-      (define base-tone (get-base-tone player-y-desired))
-      (define diff (- (pos-y predicted-pos) player-y-desired))
+  (define ttp-box (State-Play-tuner-tone-playing s))
+  (when (not (unbox ttp-box))
+    (set-box! ttp-box #t)
+    (rs:signal-play base-tone)
+    (rs:signal-play tuner-tone))
+  (when (= 0 (modulo (unbox (State-n s)) 10))
+    (define player (State-Play-player s))
+    (define player-y (or (Player-y-desired player) (Player-y player)))
+    (define predicted-pos
+      (stream-first (stream-filter (λ ([p : Pos]) (positive? (pos-x p)))
+                                   (State-Play-ball-predicted-pos-ends s))))
+    (define predicted-y (and predicted-pos (pos-y predicted-pos)))
+    (when player-y
+      (define base-tone (get-base-tone (or predicted-y player-y)))
+      (define diff (- predicted-y player-y))
       (update-base-tone base-tone)
-      (update-tuner-tone (+ base-tone diff))
-      s]
-    [else s]))
+      (update-tuner-tone (+ base-tone (* diff 10.0)))))
+    s)
 
 (: get-base-tone : Flonum -> Flonum)
-(define (get-base-tone player-y-desired)
-  (exact->inexact (note-to-frequency (exact-floor (* 12 player-y-desired)))))
+(define (get-base-tone y)
+  (define n (exact-floor (* 12 y)))
+  (define sgn (- 1 (* 2 (modulo n 2))))
+  (exact->inexact (note-to-frequency (* sgn (modulo n 5) (modulo n 3)))))

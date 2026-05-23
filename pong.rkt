@@ -48,8 +48,8 @@
 ; - Bumper: the glowing rails along the sides of the arena, off of which the balls bounce
 ; - Paddle: the rectangular prisms controlled by the player and opponent
 
-(define thread-sound-startup (rs-play SOUND-STARTUP))
-(define song-stream-menu (rs-play-song SONG-MENU))
+;;; (define thread-sound-startup (rs-play SOUND-STARTUP))
+;;; (define song-stream-menu (rs-play-song SONG-MENU))
 
 (define (run)
   (big-bang3d (state-start #f)

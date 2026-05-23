@@ -39,6 +39,7 @@
  rs:reverb
  rs:scale
  rs:signal->rsound
+ rs:signal-play
  rs:silence
  rs:sine-wave
  rs:stop
@@ -112,6 +113,7 @@
  [rs:reverb RNetwork/s]
  [rs:scale (-> Real RSound RSound)]
  [rs:signal->rsound (-> Nonnegative-Integer RNetwork RSound)]
+ [rs:signal-play (-> RNetwork Any)]
  [rs:silence (-> Nonnegative-Integer RSound)]
  [rs:sine-wave RNetwork]
  [rs:stop (-> Void)]

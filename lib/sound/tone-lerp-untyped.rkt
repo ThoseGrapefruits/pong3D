@@ -1,6 +1,7 @@
 #lang racket/base
 (require
   rsound
+  (only-in racket/math exact-floor)
   "../util/number.rkt")
 
 (provide tone-lerp)
@@ -26,17 +27,21 @@
     [lerp = (lerp last target time-ratio)]
     [_ = (set-box! last-lerp-box lerp)]
     [sin <= sine-wave lerp]
-    [out = (* 0.1 sin)]))
-  (signal-play siggy)
+    [out = (* 0.07 sin)]))
   (values siggy
-        (lambda (target)
-          (set-box! last-box (unbox last-lerp-box))
-          (set-box! target-box target)
-          (set-box! last-time-box (now-millis)))))
+          (λ (target)
+            (define targetrounded (round target))
+            (when (not (= targetrounded (unbox target-box)))
+              (set-box! last-box (unbox last-lerp-box))
+              (set-box! target-box targetrounded)
+              (set-box! last-time-box (now-millis))))))
 
+(default-sample-rate 48000)
 ;;; Example usage:
 ;;; (define-values (siggy update) (tone-lerp 500.0 1500.0))
 ;;; (define-values (siggy2 update2) (tone-lerp 200.0 1500.0))
+;;; (signal-play siggy)
+;;; (signal-play siggy2)
 ;;; (sleep 1)
 ;;; (update 400.0)
 ;;; (update2 400.0)

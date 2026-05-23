@@ -131,5 +131,5 @@
    ; be adjusted on resume from a paused state.
    [time-now-minus-elapsed : Real]
    [time-elapsed-last-frame : (Boxof (U #f Real))]
-   [tuner-tone-playing : Boolean])
+   [tuner-tone-playing : (Boxof Boolean)])
   #:transparent)
