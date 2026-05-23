@@ -82,16 +82,14 @@
             [lives player-lives-next])])]
         [else s]))
 
-(define-values (base-tone update-base-tone) (tone-lerp 20.0 80.0))
-(define-values (tuner-tone update-tuner-tone) (tone-lerp 20.0 80.0))
+(define-values (tones update-tones) (tone-lerp-double 20.0 20.0 80.0))
 
 (: on-frame-play-tuner-tone : State-Play -> State-Play)
 (define (on-frame-play-tuner-tone s)
   (define ttp-box (State-Play-tuner-tone-playing s))
   (when (not (unbox ttp-box))
     (set-box! ttp-box #t)
-    (rs:signal-play base-tone)
-    (rs:signal-play tuner-tone))
+    (rs:signal-play tones))
   (when (= 0 (modulo (unbox (State-n s)) 5))
     (define player (State-Play-player s))
     (define player-y (or (Player-y-desired player) (Player-y player)))
@@ -102,8 +100,7 @@
     (when player-y
       (define base-tone (get-base-tone (or predicted-y player-y)))
       (define diff (- predicted-y player-y))
-      (update-base-tone base-tone)
-      (update-tuner-tone (+ base-tone (* diff 15.0)))))
+      (update-tones base-tone (+ base-tone (* diff 15.0)))))
     s)
 
 (: get-base-tone : Flonum -> Flonum)

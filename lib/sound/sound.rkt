@@ -16,6 +16,7 @@
  rs-play-random
  rs-stop
  tone-lerp
+ tone-lerp-double
  Sound-Category
 
  SOUND-ENDGAME
